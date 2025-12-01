@@ -95,8 +95,8 @@ function Posts({ posts: propPosts = null }) {
     <div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {postsToDisplay.map((post) => {
-          // Use post slug for link, or fallback to /post with id
-          const postLink = post.slug ? `/post/${post.slug}` : `/post?id=${post.id}`;
+          // Use post slug for link, or fallback to /games with id
+          const postLink = post.slug ? `/games/${post.slug}` : `/games?id=${post.id}`;
           // Fallback image if no featured image
           const imageUrl = post.image || 'https://images.unsplash.com/photo-1552820728-8b83bb6b773f?w=800&h=600&fit=crop';
 

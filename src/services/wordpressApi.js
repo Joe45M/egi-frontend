@@ -253,7 +253,9 @@ export const postsApi = {
    */
   async getByPostTypeAndSlug(postType, slug, includeImage = true) {
     try {
-      const items = await fetchFromAPI(`/${postType}?slug=${slug}&_embed=1`);
+      // URL encode the slug to handle special characters
+      const encodedSlug = encodeURIComponent(slug);
+      const items = await fetchFromAPI(`/${postType}?slug=${encodedSlug}&_embed=1`);
       
       if (!items || items.length === 0) {
         throw new Error(`${postType} with slug "${slug}" not found`);
@@ -261,6 +263,11 @@ export const postsApi = {
 
       const item = items[0];
       const transformedItem = transformPost(item);
+
+      // Extract author name from embedded data
+      if (item._embedded?.author?.[0]?.name) {
+        transformedItem.authorName = item._embedded.author[0].name;
+      }
 
       if (includeImage) {
         if (item._embedded?.['wp:featuredmedia']?.[0]?.source_url) {
@@ -309,7 +316,9 @@ export const postsApi = {
    */
   async getBySlug(slug, includeImage = true) {
     try {
-      const posts = await fetchFromAPI(`/posts?slug=${slug}&_embed=1`);
+      // URL encode the slug to handle special characters
+      const encodedSlug = encodeURIComponent(slug);
+      const posts = await fetchFromAPI(`/posts?slug=${encodedSlug}&_embed=1`);
       
       if (!posts || posts.length === 0) {
         throw new Error(`Post with slug "${slug}" not found`);
@@ -317,6 +326,11 @@ export const postsApi = {
 
       const post = posts[0];
       const transformedPost = transformPost(post);
+
+      // Extract author name from embedded data
+      if (post._embedded?.author?.[0]?.name) {
+        transformedPost.authorName = post._embedded.author[0].name;
+      }
 
       if (includeImage) {
         if (post._embedded?.['wp:featuredmedia']?.[0]?.source_url) {

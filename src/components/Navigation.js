@@ -84,11 +84,11 @@ function Navigation() {
               Home
             </Link>
             <Link
-              to="/post"
+              to="/"
               onClick={() => setOpen(false)}
               className="block pl-3 pr-4 py-2 border-l-4 text-base font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-300"
             >
-              Post
+              Games
             </Link>
           </div>
         </div>

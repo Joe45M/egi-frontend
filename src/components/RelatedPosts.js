@@ -77,7 +77,7 @@ function RelatedPosts() {
       <div className="gap-5 flex-col flex">
         {posts.map((post) => (
           <Link
-            to="/post"
+            to={post.slug ? `/games/${post.slug}` : "/games"}
             key={post.id}
             className="flex-shrink-0 bg-accent-violet-950/10 group overflow-hidden transition-shadow duration-300 rounded-lg"
           >
