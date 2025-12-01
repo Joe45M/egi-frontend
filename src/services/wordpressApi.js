@@ -1,9 +1,9 @@
 /**
  * WordPress REST API Service
- * Handles all interactions with the WordPress REST API at elitegamerinsights.com
+ * Handles all interactions with the WordPress REST API at api.elitegamerinsights.com
  */
 
-const API_BASE_URL = 'https://elitegamerinsights.com/wp-json/wp/v2';
+const API_BASE_URL = 'https://api.elitegamerinsights.com/wp-json/wp/v2';
 
 /**
  * Generic fetch function with error handling

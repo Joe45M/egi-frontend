@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
-import { Image, Ad } from './Editor';
+import { Image } from './Editor';
 import RelatedPosts from "./RelatedPosts";
 import wordpressApi from "../services/wordpressApi";
 import NotFound from "../pages/NotFound";
@@ -11,6 +11,7 @@ function PostDetail({ postType = 'games', basePath = '/games' }) {
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const contentRef = useRef(null);
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -41,6 +42,47 @@ function PostDetail({ postType = 'games', basePath = '/games' }) {
 
     fetchPost();
   }, [slug, postType]);
+
+  // Initialize AdSense ads from WordPress content
+  useEffect(() => {
+    if (!post || !contentRef.current) return;
+
+    // Wait for content to be rendered
+    const timer = setTimeout(() => {
+      const contentElement = contentRef.current;
+      if (!contentElement) return;
+
+      // Find all ad elements in the content
+      const adElements = contentElement.querySelectorAll('ins.adsbygoogle');
+      
+      // Remove any script tags (they won't execute anyway)
+      const scripts = contentElement.querySelectorAll('script');
+      scripts.forEach(script => {
+        // Only remove AdSense initialization scripts
+        if (script.textContent && script.textContent.includes('adsbygoogle')) {
+          script.remove();
+        }
+      });
+
+      // Initialize each ad
+      if (window.adsbygoogle && adElements.length > 0) {
+        adElements.forEach((adElement) => {
+          try {
+            // Check if this ad hasn't been initialized yet
+            if (!adElement.dataset.adsbygoogleStatus) {
+              // Push an empty object to initialize this specific ad
+              window.adsbygoogle.push({});
+              adElement.dataset.adsbygoogleStatus = 'done';
+            }
+          } catch (e) {
+            console.error('AdSense initialization error:', e);
+          }
+        });
+      }
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, [post]);
 
   const formatDate = (dateString) => {
     if (!dateString) return '';
@@ -154,10 +196,10 @@ function PostDetail({ postType = 'games', basePath = '/games' }) {
                         <Image url={post.image} alt={post.title} />
                     )}
                     <div 
+                      ref={contentRef}
                       className="wp-content"
                       dangerouslySetInnerHTML={{ __html: post.content }}
                     />
-                    <Ad clientId="ca-pub-xxxxx" slot="1234567890" />
                 </div>
 
                 <div className="lg:col-span-2">
