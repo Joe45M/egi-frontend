@@ -1,56 +1,42 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import wordpressApi from '../services/wordpressApi';
 
-function RelatedPosts() {
+function RelatedPosts({ postId, postType = 'games', basePath = '/games' }) {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Mock API function - simulates an API call
+    // Only fetch if postId is provided
+    if (!postId) {
+      setLoading(false);
+      return;
+    }
+
     const fetchRelatedPosts = async () => {
       try {
         setLoading(true);
-        
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
-        // Mock API response
-        const mockPosts = [
-          {
-            id: 1,
-            title: "Latest Gaming Trends 2024",
-            image: "https://images.unsplash.com/photo-1552820728-8b83bb6b773f?w=400&h=300&fit=crop"
-          },
-          {
-            id: 2,
-            title: "Top 10 Games This Month",
-            image: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400&h=300&fit=crop"
-          },
-          {
-            id: 3,
-            title: "Gaming Hardware Reviews",
-            image: "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=400&h=300&fit=crop"
-          },
-          {
-            id: 4,
-            title: "Esports Championship Updates",
-            image: "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=400&h=300&fit=crop"
-          }
-        ];
-        
-        setPosts(mockPosts);
         setError(null);
+        
+        // Fetch related posts of the same post type
+        const relatedPosts = await wordpressApi.posts.getRelatedByPostType(postType, postId, 4);
+        
+        // Exclude the current post from the results (compare as strings to be safe)
+        const filtered = (relatedPosts || []).filter((p) => String(p.id) !== String(postId));
+        // Keep the same max count (4)
+        setPosts(filtered.slice(0, 4));
       } catch (err) {
         setError('Failed to load related posts');
         console.error('Error fetching related posts:', err);
+        setPosts([]);
       } finally {
         setLoading(false);
       }
     };
 
     fetchRelatedPosts();
-  }, []);
+  }, [postId, postType]);
 
   if (loading) {
     return (
@@ -75,24 +61,32 @@ function RelatedPosts() {
     <div className="w-full">
       <h2 className="text-2xl font-bold mb-4">Related Posts</h2>
       <div className="gap-5 flex-col flex">
-        {posts.map((post) => (
-          <Link
-            to={post.slug ? `/games/${post.slug}` : "/games"}
-            key={post.id}
-            className="flex-shrink-0 bg-accent-violet-950/10 group overflow-hidden transition-shadow duration-300 rounded-lg"
-          >
-            <div className="relative flex bg-cover items-center bg-center">
-              <img src={post.image} className="w-20 mr-5 object object-cover" alt=""/>
-              <h3 className="text-lg font-bold group-hover:text-accent-violet-300 transition-colors duration-300">
-                {post.title}
-              </h3>
-            </div>
-          </Link>
-        ))}
+        {posts.length > 0 ? (
+          posts.map((post) => (
+            <Link
+              to={post.slug ? `${basePath}/${post.slug}` : basePath}
+              key={post.id}
+              className="flex-shrink-0 bg-accent-violet-950/10 group overflow-hidden transition-shadow duration-300 rounded-lg"
+            >
+              <div className="relative flex bg-cover items-center bg-center">
+                {post.image && (
+                  <img src={post.image} className="w-20 mr-5 object object-cover" alt={post.title || ''}/>
+                )}
+                <h3 
+                  className="text-lg font-bold group-hover:text-accent-violet-300 transition-colors duration-300"
+                  dangerouslySetInnerHTML={{ __html: post.title || '' }}
+                />
+              </div>
+            </Link>
+          ))
+        ) : (
+          !loading && (
+            <p className="text-gray-400">No related posts found.</p>
+          )
+        )}
       </div>
     </div>
   );
 }
 
 export default RelatedPosts;
-

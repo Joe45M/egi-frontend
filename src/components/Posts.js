@@ -21,14 +21,21 @@ function Posts({ posts: propPosts = null }) {
         setLoading(true);
         setError(null);
         
-        const games = await wordpressApi.posts.getByPostType('games', {
+        const result = await wordpressApi.posts.getByPostType('games', {
           perPage: 12,
           includeImages: true,
           orderBy: 'date',
           order: 'desc'
         });
 
-        setPosts(games);
+        // Handle both old format (array) and new format (object with posts and pagination)
+        if (Array.isArray(result)) {
+          setPosts(result);
+        } else if (result.posts && Array.isArray(result.posts)) {
+          setPosts(result.posts);
+        } else {
+          setPosts([]);
+        }
       } catch (err) {
         console.error('Error fetching games:', err);
         setError('Failed to load games. Please try again later.');

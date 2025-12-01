@@ -23,7 +23,20 @@ async function fetchFromAPI(endpoint, options = {}) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    return await response.json();
+    const data = await response.json();
+    
+    // Return data with headers for pagination info
+    if (options.includeHeaders) {
+      return {
+        data,
+        headers: {
+          total: parseInt(response.headers.get('X-WP-Total') || '0', 10),
+          totalPages: parseInt(response.headers.get('X-WP-TotalPages') || '0', 10),
+        }
+      };
+    }
+
+    return data;
   } catch (error) {
     console.error(`API Error fetching ${endpoint}:`, error);
     throw error;
@@ -167,6 +180,7 @@ export const postsApi = {
       orderBy = 'date',
       order = 'desc',
       includeImages = true,
+      taxonomyFilter = null, // Object with taxonomy name as key and term ID(s) as value, e.g., { games: 5 } or { games: [5, 10] }
     } = params;
 
     const queryParams = new URLSearchParams({
@@ -189,9 +203,23 @@ export const postsApi = {
       queryParams.append('search', search);
     }
 
+    // Support custom taxonomy filtering
+    if (taxonomyFilter && typeof taxonomyFilter === 'object') {
+      Object.keys(taxonomyFilter).forEach(taxonomy => {
+        const termIds = taxonomyFilter[taxonomy];
+        if (termIds) {
+          // Support both single ID and array of IDs
+          const ids = Array.isArray(termIds) ? termIds.join(',') : termIds.toString();
+          queryParams.append(taxonomy, ids);
+        }
+      });
+    }
+
     try {
       // WordPress REST API endpoint for custom post types: /wp/v2/{post_type}
-      const posts = await fetchFromAPI(`/${postType}?${queryParams.toString()}`);
+      const result = await fetchFromAPI(`/${postType}?${queryParams.toString()}`, { includeHeaders: true });
+      const posts = result.data || result; // Handle both with and without headers
+      const pagination = result.headers || null;
       
       const transformedPosts = posts.map(transformPost);
 
@@ -209,7 +237,34 @@ export const postsApi = {
             return post;
           })
         );
+        
+        // Return posts with pagination if available
+        if (pagination) {
+          return {
+            posts: postsWithImages,
+            pagination: {
+              total: pagination.total,
+              totalPages: pagination.totalPages,
+              currentPage: page,
+              perPage: perPage
+            }
+          };
+        }
+        
         return postsWithImages;
+      }
+
+      // Return posts with pagination if available
+      if (pagination) {
+        return {
+          posts: transformedPosts,
+          pagination: {
+            total: pagination.total,
+            totalPages: pagination.totalPages,
+            currentPage: page,
+            perPage: perPage
+          }
+        };
       }
 
       return transformedPosts;
@@ -388,6 +443,52 @@ export const postsApi = {
       throw error;
     }
   },
+
+  /**
+   * Get related posts of the same post type (by category or tags)
+   * @param {string} postType - Post type name (e.g., 'post', 'page', or custom post type)
+   * @param {number} postId - Current post ID
+   * @param {number} limit - Maximum number of related posts (default: 4)
+   */
+  async getRelatedByPostType(postType, postId, limit = 4) {
+    try {
+      // First get the current post to get its categories and tags
+      const currentPost = await fetchFromAPI(`/${postType}/${postId}`);
+      
+      const categories = currentPost.categories || [];
+      const tags = currentPost.tags || [];
+
+      // Build query to get posts with same categories or tags from the same post type
+      const queryParams = new URLSearchParams({
+        per_page: (limit + 1).toString(), // +1 to exclude current post
+        exclude: postId.toString(),
+        _embed: '1',
+      });
+
+      if (categories.length > 0) {
+        queryParams.append('categories', categories[0].toString());
+      }
+
+      const posts = await fetchFromAPI(`/${postType}?${queryParams.toString()}`);
+      
+      // Filter out the current post and take only the limit
+      const filteredPosts = posts.filter(post => post.id !== postId).slice(0, limit);
+      
+      // Transform posts
+      const relatedPosts = filteredPosts.map(post => {
+        const transformed = transformPost(post);
+        if (post._embedded?.['wp:featuredmedia']?.[0]?.source_url) {
+          transformed.image = post._embedded['wp:featuredmedia'][0].source_url;
+        }
+        return transformed;
+      });
+
+      return relatedPosts;
+    } catch (error) {
+      console.error(`Error fetching related posts for ${postType} ${postId}:`, error);
+      throw error;
+    }
+  },
 };
 
 /**
@@ -507,6 +608,72 @@ export const searchApi = {
 };
 
 /**
+ * Taxonomies API
+ */
+export const taxonomiesApi = {
+  /**
+   * Get all terms from a taxonomy
+   * @param {string} taxonomy - Taxonomy name (e.g., 'games', 'category', 'tag')
+   * @param {Object} params - Query parameters
+   * @param {number} params.perPage - Terms per page (default: 100)
+   * @param {number} params.page - Page number (default: 1)
+   */
+  async getAll(taxonomy, params = {}) {
+    const {
+      perPage = 100,
+      page = 1,
+    } = params;
+
+    const queryParams = new URLSearchParams({
+      per_page: perPage.toString(),
+      page: page.toString(),
+    });
+
+    try {
+      return await fetchFromAPI(`/${taxonomy}?${queryParams.toString()}`);
+    } catch (error) {
+      console.error(`Error fetching taxonomy "${taxonomy}":`, error);
+      throw error;
+    }
+  },
+
+  /**
+   * Get a single term by ID from a taxonomy
+   * @param {string} taxonomy - Taxonomy name
+   * @param {number} termId - Term ID
+   */
+  async getById(taxonomy, termId) {
+    try {
+      return await fetchFromAPI(`/${taxonomy}/${termId}`);
+    } catch (error) {
+      console.error(`Error fetching term ${termId} from taxonomy "${taxonomy}":`, error);
+      throw error;
+    }
+  },
+
+  /**
+   * Get a single term by slug from a taxonomy
+   * @param {string} taxonomy - Taxonomy name
+   * @param {string} slug - Term slug
+   */
+  async getBySlug(taxonomy, slug) {
+    try {
+      const encodedSlug = encodeURIComponent(slug);
+      const terms = await fetchFromAPI(`/${taxonomy}?slug=${encodedSlug}`);
+      
+      if (!terms || terms.length === 0) {
+        throw new Error(`Term with slug "${slug}" not found in taxonomy "${taxonomy}"`);
+      }
+      
+      return terms[0];
+    } catch (error) {
+      console.error(`Error fetching term by slug "${slug}" from taxonomy "${taxonomy}":`, error);
+      throw error;
+    }
+  },
+};
+
+/**
  * Default export with all API modules
  */
 const wordpressApi = {
@@ -515,6 +682,7 @@ const wordpressApi = {
   tags: tagsApi,
   media: mediaApi,
   search: searchApi,
+  taxonomies: taxonomiesApi,
 };
 
 export default wordpressApi;

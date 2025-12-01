@@ -16,3 +16,209 @@
 .cta {
     @apply text-transparent bg-clip-text font-extrabold bg-gradient-to-r from-accent-violet-500 to-accent-pink-500;
 }
+
+/* WordPress Content Styles */
+/* Styles for HTML content rendered from WordPress API */
+
+/* Base container for WordPress content */
+.wp-content {
+  @apply text-gray-300 leading-relaxed;
+}
+
+/* Paragraphs - plenty of white space */
+.wp-content p {
+  @apply mb-6 text-base leading-7;
+}
+
+/* Headings hierarchy with clear spacing */
+.wp-content h1,
+.wp-content h1.wp-block-heading {
+  @apply text-4xl font-bold mb-8 mt-10 text-white;
+}
+
+.wp-content h2,
+.wp-content h2.wp-block-heading {
+  @apply text-3xl font-bold mb-6 mt-10 text-white;
+}
+
+.wp-content h3,
+.wp-content h3.wp-block-heading {
+  @apply text-2xl font-semibold mb-5 mt-8 text-gray-100;
+}
+
+.wp-content h4,
+.wp-content h4.wp-block-heading {
+  @apply text-xl font-semibold mb-4 mt-6 text-gray-200;
+}
+
+.wp-content h5,
+.wp-content h5.wp-block-heading {
+  @apply text-lg font-medium mb-3 mt-5 text-gray-200;
+}
+
+.wp-content h6,
+.wp-content h6.wp-block-heading {
+  @apply text-base font-medium mb-3 mt-4 text-gray-300;
+}
+
+/* First heading shouldn't have top margin */
+.wp-content > h1:first-child,
+.wp-content > h2:first-child,
+.wp-content > h3:first-child,
+.wp-content > h1.wp-block-heading:first-child,
+.wp-content > h2.wp-block-heading:first-child,
+.wp-content > h3.wp-block-heading:first-child {
+  margin-top: 0;
+}
+
+/* Links with hierarchy and hover states */
+.wp-content a {
+  @apply text-accent-violet-400 underline decoration-2 underline-offset-2 transition-colors duration-200;
+}
+
+.wp-content a:hover {
+  @apply text-accent-violet-300;
+  text-decoration-color: rgb(196 181 253);
+}
+
+/* Strong/Bold text */
+.wp-content strong,
+.wp-content b {
+  @apply font-bold text-gray-200;
+}
+
+/* Emphasis/Italic text */
+.wp-content em,
+.wp-content i {
+  @apply italic text-gray-300;
+}
+
+/* Lists with proper spacing */
+.wp-content ul,
+.wp-content ol,
+.wp-content .wp-block-list {
+  @apply mb-6 ml-6 space-y-3;
+}
+
+.wp-content ul,
+.wp-content .wp-block-list {
+  @apply list-disc;
+}
+
+.wp-content ol {
+  @apply list-decimal;
+}
+
+.wp-content li {
+  @apply mb-2 leading-7;
+}
+
+/* Nested lists */
+.wp-content ul ul,
+.wp-content ol ol,
+.wp-content ul ol,
+.wp-content ol ul {
+  @apply mt-3 mb-0 ml-6;
+}
+
+/* Horizontal rules/separators */
+.wp-content hr,
+.wp-content .wp-block-separator {
+  @apply my-10 border-0 border-t border-gray-600;
+}
+
+/* Blockquotes */
+.wp-content blockquote {
+  @apply my-8 pl-6 border-l-4 border-accent-violet-500 italic text-gray-300;
+}
+
+.wp-content blockquote p {
+  @apply mb-3;
+}
+
+.wp-content blockquote p:last-child {
+  @apply mb-0;
+}
+
+/* Code blocks */
+.wp-content pre {
+  @apply my-8 p-6 bg-base-800 rounded-lg overflow-x-auto;
+}
+
+.wp-content code {
+  @apply px-2 py-1 bg-base-800 rounded text-accent-violet-300 text-sm;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+.wp-content pre code {
+  @apply p-0 bg-transparent;
+}
+
+/* Images */
+.wp-content img {
+  @apply my-8 rounded-lg shadow-lg max-w-full h-auto;
+}
+
+/* Tables */
+.wp-content table {
+  @apply my-8 w-full border-collapse;
+}
+
+.wp-content th,
+.wp-content td {
+  @apply px-4 py-3 border border-gray-600;
+}
+
+.wp-content th {
+  @apply bg-base-800 font-semibold text-left text-gray-200;
+}
+
+.wp-content td {
+  @apply text-gray-300;
+}
+
+/* Ad wrappers - minimal styling to let ads render naturally */
+.wp-content .scroll-wrapper,
+.wp-content .ad-wrapper {
+  @apply my-8;
+}
+
+/* WordPress block classes */
+.wp-content .wp-block-group {
+  @apply my-8;
+}
+
+.wp-content .wp-block-columns {
+  @apply my-8;
+}
+
+/* Ensure proper spacing between block elements */
+.wp-content > * + * {
+  margin-top: 0;
+}
+
+/* Remove bottom margin from last child */
+.wp-content > *:last-child {
+  margin-bottom: 0;
+}
+
+/* Mobile Menu Animations */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
