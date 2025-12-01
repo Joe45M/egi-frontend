@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import logo from '../assets/images/logo.svg';
+import logo from '../assets/images/image.png';
 
 function Navigation() {
   const [open, setOpen] = useState(false);

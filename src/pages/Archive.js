@@ -3,6 +3,7 @@ import { useParams, useSearchParams, Link } from "react-router-dom";
 import wordpressApi from "../services/wordpressApi";
 import Pagination from "../components/Pagination";
 import NotFound from "./NotFound";
+import PageMetadata from "../components/PageMetadata";
 
 function Archive() {
   const { type } = useParams();
@@ -151,6 +152,22 @@ function Archive() {
     return type.charAt(0).toUpperCase() + type.slice(1);
   };
 
+  // Get page title for metadata
+  const getPageTitle = () => {
+    if (selectedGame) {
+      return `${selectedGame.name} - ${getPostTypeLabel()}`;
+    }
+    return getPostTypeLabel();
+  };
+
+  // Get page description for metadata
+  const getPageDescription = () => {
+    if (selectedGame) {
+      return `Browse all ${type} articles about ${selectedGame.name} on EliteGamerInsights. Latest news, tutorials, and guides.`;
+    }
+    return `Browse all ${type} articles on EliteGamerInsights. Latest gaming news, tutorials, and culture coverage.`;
+  };
+
   // Loading state
   if (loading) {
     return (
@@ -203,7 +220,13 @@ function Archive() {
   }
 
   return (
-    <div className="pt-[200px] p-4 container mx-auto">
+    <>
+      <PageMetadata
+        title={getPageTitle()}
+        description={getPageDescription()}
+        keywords={`${type}, gaming articles, game news, ${selectedGame ? selectedGame.name + ', ' : ''}gaming content`}
+      />
+      <div className="pt-[200px] p-4 container mx-auto">
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-4xl font-bold text-white">
           {selectedGame ? `${selectedGame.name} - ${getPostTypeLabel()}` : getPostTypeLabel()}
@@ -266,6 +289,7 @@ function Archive() {
         />
       )}
     </div>
+    </>
   );
 }
 

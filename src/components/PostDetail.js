@@ -4,6 +4,7 @@ import { Image, Ad } from './Editor';
 import RelatedPosts from "./RelatedPosts";
 import wordpressApi from "../services/wordpressApi";
 import NotFound from "../pages/NotFound";
+import PageMetadata, { stripHtml, createExcerpt, SITE_URL } from "./PageMetadata";
 
 function PostDetail({ postType = 'games', basePath = '/games' }) {
   const { slug } = useParams();
@@ -90,8 +91,45 @@ function PostDetail({ postType = 'games', basePath = '/games' }) {
     return <NotFound />;
   }
 
+  // Prepare metadata for article
+  const articleTitle = stripHtml(post.title);
+  const articleExcerpt = post.excerpt ? stripHtml(post.excerpt) : createExcerpt(post.content);
+  const articleImage = post.image || null;
+  const articleUrl = `${SITE_URL}${basePath}/${slug}`;
+  const publishedDate = post.date ? new Date(post.date).toISOString() : null;
+  const modifiedDate = post.modified ? new Date(post.modified).toISOString() : publishedDate;
+  
+  // Prepare section (capitalize first letter of post type)
+  const articleSection = postType.charAt(0).toUpperCase() + postType.slice(1);
+  
+  // Prepare tags array from categories/tags if available
+  const articleTags = [];
+  if (post.categories && Array.isArray(post.categories) && post.categories.length > 0) {
+    // For now, we'll use the postType as a tag since we don't fetch category names
+    articleTags.push(postType);
+  }
+  if (post.tags && Array.isArray(post.tags) && post.tags.length > 0) {
+    // Tags would need to be fetched separately, so we'll use postType for now
+    articleTags.push('gaming');
+  }
+
   return (
-    <div className="pt-[200px] p-4 container mx-auto">
+    <>
+      <PageMetadata
+        title={articleTitle}
+        description={articleExcerpt}
+        image={articleImage}
+        imageAlt={articleTitle}
+        type="article"
+        author={post.authorName}
+        publishedTime={publishedDate}
+        modifiedTime={modifiedDate}
+        canonicalUrl={articleUrl}
+        keywords={`${postType}, gaming, ${articleTitle}`}
+        section={articleSection}
+        tags={articleTags.length > 0 ? articleTags : [postType, 'gaming']}
+      />
+      <div className="pt-[200px] p-4 container mx-auto">
         <h1 className="text-4xl font-bold mb-4 text-white" dangerouslySetInnerHTML={{ __html: post.title }}></h1>
 
         <hr className="border-t border-t-gray-60 mb-4"/>
@@ -129,6 +167,7 @@ function PostDetail({ postType = 'games', basePath = '/games' }) {
         </div>
 
     </div>
+    </>
   );
 }
 

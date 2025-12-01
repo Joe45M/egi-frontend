@@ -1,8 +1,15 @@
 import { Link } from 'react-router-dom';
+import PageMetadata from '../components/PageMetadata';
 
 function NotFound() {
   return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-[175px] py-16 min-h-[60vh] flex items-center justify-center">
+    <>
+      <PageMetadata
+        title="404 - Page Not Found"
+        description="The page you're looking for doesn't exist. Return to EliteGamerInsights homepage to continue browsing gaming news, tutorials, and culture coverage."
+        noindex={true}
+      />
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-[175px] py-16 min-h-[60vh] flex items-center justify-center">
       <div className="text-center max-w-2xl">
         {/* 404 Number with gradient */}
         <h1 className="text-9xl font-bold mb-4 bg-gradient-to-r from-accent-pink-500 to-accent-violet-500 bg-clip-text text-transparent">
@@ -42,6 +49,7 @@ function NotFound() {
         </div>
       </div>
     </div>
+    </>
   );
 }
 
