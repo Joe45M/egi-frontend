@@ -12,3 +12,7 @@
     flex: 0 0 100%;
     min-width: 0;
 }
+
+.cta {
+    @apply text-transparent bg-clip-text font-extrabold bg-gradient-to-r from-accent-violet-500 to-accent-pink-500;
+}

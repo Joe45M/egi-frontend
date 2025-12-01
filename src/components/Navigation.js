@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
+import logo from '../assets/images/logo.svg';
 
 function Navigation() {
   const [open, setOpen] = useState(false);
@@ -12,7 +13,7 @@ function Navigation() {
             <div className="flex-shrink-0 flex items-center">
 
               <Link to="/" className="text-xl font-bold text-gray-800">
-                <img src="" alt="" className="w-[100px] h-[40px] bg-gray-300"/>
+                <img src={logo} alt="EGI Logo" className="w-[100px] h-[40px] object-contain"/>
               </Link>
             </div>
 
