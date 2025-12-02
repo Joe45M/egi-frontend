@@ -456,7 +456,6 @@ export const postsApi = {
       const currentPost = await fetchFromAPI(`/${postType}/${postId}`);
       
       const categories = currentPost.categories || [];
-      const tags = currentPost.tags || [];
 
       // Build query to get posts with same categories or tags from the same post type
       const queryParams = new URLSearchParams({

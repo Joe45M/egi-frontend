@@ -17,13 +17,11 @@ const FALLBACK_GAMES = [
 function GameList() {
   const [games, setGames] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchGames = async () => {
       try {
         setLoading(true);
-        setError(null);
         
         // Try different possible taxonomy names
         const possibleTaxonomies = ['games', 'game', 'game_taxonomy'];
@@ -63,7 +61,6 @@ function GameList() {
             // Note: This assumes posts have a 'games' field with term IDs
             // WordPress REST API might include taxonomy terms in _embedded
             const gameIds = new Set();
-            const gameMap = new Map();
             
             posts.forEach(post => {
               // Check if post has games taxonomy field
@@ -113,7 +110,6 @@ function GameList() {
         setGames(transformedGames);
       } catch (err) {
         console.error('Error fetching games from WordPress:', err);
-        setError(err.message || 'Failed to load games');
         // Fallback to hardcoded list
         const fallbackGames = FALLBACK_GAMES.map((name, index) => ({
           id: index + 1,

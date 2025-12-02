@@ -96,8 +96,6 @@ function Archive() {
         // Add game filter if gameTermId is available
         // Try different taxonomy names - WordPress might use different REST base
         if (gameTermId) {
-          // Try common taxonomy name variations
-          const possibleTaxonomyNames = ['games', 'game', 'game_taxonomy'];
           // Use the first one that matches the selected game's taxonomy, or default to 'games'
           const taxonomyName = selectedGame?.taxonomy || 'games';
           params.taxonomyFilter = {
@@ -134,7 +132,7 @@ function Archive() {
     };
 
     fetchPosts();
-  }, [type, currentPage, gameTermId]);
+  }, [type, currentPage, gameTermId, selectedGame]);
 
   const formatDate = (dateString) => {
     if (!dateString) return '';

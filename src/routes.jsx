@@ -1,6 +1,5 @@
 import { createRoutesFromElements, createBrowserRouter, Route } from 'react-router-dom';
 import Layout from './components/Layout';
-import ScrollToTop from './components/ScrollToTop';
 import Home from './pages/Home';
 import Games from './pages/Games';
 import Culture from './pages/Culture';

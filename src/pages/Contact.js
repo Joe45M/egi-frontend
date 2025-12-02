@@ -3,7 +3,6 @@ import PageMetadata from '../components/PageMetadata';
 
 function Contact() {
   const [articleCount, setArticleCount] = useState(0);
-  const [isVisible, setIsVisible] = useState(false);
   const headerRef = useRef(null);
   const cardsRef = useRef(null);
   const aboutRef = useRef(null);
@@ -60,7 +59,7 @@ function Contact() {
       clearInterval(countInterval);
       observer.disconnect();
     };
-  }, []);
+  }, [increment, stepDuration]);
 
   return (
     <>
