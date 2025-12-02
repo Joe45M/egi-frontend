@@ -2,7 +2,50 @@
   command = "npm run build && npm run build:server"
   publish = "build"
 
-# Redirect all requests to SSR function, but Netlify will serve static files automatically
+# Exclude static assets from SSR - these should be served directly
+[[redirects]]
+  from = "/static/*"
+  to = "/static/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/*.js"
+  to = "/:splat.js"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/*.css"
+  to = "/:splat.css"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/*.ico"
+  to = "/:splat.ico"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/*.png"
+  to = "/:splat.png"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/*.json"
+  to = "/:splat.json"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/*.txt"
+  to = "/:splat.txt"
+  status = 200
+  force = true
+
+# Redirect all other requests (including HTML) to SSR function
 [[redirects]]
   from = "/*"
   to = "/.netlify/functions/ssr"

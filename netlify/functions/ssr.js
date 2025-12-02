@@ -28,10 +28,13 @@ function loadServerBundle() {
 }
 
 exports.handler = async (event) => {
+  // Get the URL from the event - handle both path formats
   const url = event.path || event.rawPath || '/';
   
-  // Skip SSR for static assets - Netlify should serve these directly
-  // Return 404 so Netlify can try to serve the file from the build directory
+  // Log for debugging (remove in production if needed)
+  console.log('SSR Function called for URL:', url);
+  
+  // Static assets should be handled by redirects, but as a safety check
   if (
     url.startsWith('/static/') ||
     url.match(/\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot|json|xml|txt|map|webmanifest)$/i)
@@ -57,8 +60,15 @@ exports.handler = async (event) => {
     let template = fs.readFileSync(htmlPath, 'utf8');
     
     // Inject the server-rendered HTML
+    // Handle both minified and non-minified HTML
     template = template.replace(
-      '<div id="root"></div>',
+      /<div id="root"><\/div>/g,
+      `<div id="root">${html}</div>`
+    );
+    
+    // Also handle if there's whitespace
+    template = template.replace(
+      /<div id="root">\s*<\/div>/g,
       `<div id="root">${html}</div>`
     );
 
