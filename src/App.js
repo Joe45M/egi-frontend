@@ -1,10 +1,15 @@
 import { RouterProvider } from 'react-router-dom';
 import { createAppRouter } from './routes';
+import { InitialDataProvider } from './initialDataContext';
 
 const router = createAppRouter();
 
 function App() {
-  return <RouterProvider router={router} />;
+  return (
+    <InitialDataProvider initialData={null}>
+      <RouterProvider router={router} />
+    </InitialDataProvider>
+  );
 }
 
 export default App;

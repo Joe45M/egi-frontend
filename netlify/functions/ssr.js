@@ -63,7 +63,7 @@ exports.handler = async (event) => {
       throw new Error('Server bundle not available');
     }
 
-    const { html, status, head } = serverModule.render(url);
+    const { html, status, head } = await serverModule.render(url);
 
     // Read the HTML template
     const htmlPath = path.join(__dirname, '../../build/index.html');

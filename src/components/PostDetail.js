@@ -5,15 +5,31 @@ import RelatedPosts from "./RelatedPosts";
 import wordpressApi from "../services/wordpressApi";
 import NotFound from "../pages/NotFound";
 import PageMetadata, { stripHtml, createExcerpt, SITE_URL } from "./PageMetadata";
+import { useInitialData } from "../initialDataContext";
 
 function PostDetail({ postType = 'games', basePath = '/games' }) {
   const { slug } = useParams();
-  const [post, setPost] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const initialData = useInitialData();
+  
+  // Check if we have initial data from SSR that matches this route
+  // Compare slugs after decoding to handle URL encoding
+  const normalizedSlug = slug ? decodeURIComponent(slug) : '';
+  const hasInitialData = initialData && 
+    initialData.postType === postType && 
+    initialData.post && 
+    initialData.post.slug === normalizedSlug;
+  
+  const [post, setPost] = useState(hasInitialData ? initialData.post : null);
+  const [loading, setLoading] = useState(!hasInitialData);
   const [notFound, setNotFound] = useState(false);
   const contentRef = useRef(null);
 
   useEffect(() => {
+    // If we already have initial data from SSR, skip fetching
+    if (hasInitialData) {
+      return;
+    }
+
     const fetchPost = async () => {
       if (!slug) {
         setNotFound(true);
@@ -41,7 +57,7 @@ function PostDetail({ postType = 'games', basePath = '/games' }) {
     };
 
     fetchPost();
-  }, [slug, postType]);
+  }, [slug, postType, hasInitialData]);
 
   // Initialize AdSense ads from WordPress content
   useEffect(() => {
