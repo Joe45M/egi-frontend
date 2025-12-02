@@ -16,7 +16,9 @@ esbuild
     platform: 'node',
     target: 'node18',
     format: 'cjs',
-    external: ['react', 'react-dom', 'react-dom/server', 'react-router-dom'],
+    jsx: 'automatic', // Use automatic JSX runtime
+    // Don't externalize React - bundle it for the server
+    external: [],
     loader: {
       '.jsx': 'jsx',
       '.js': 'jsx',

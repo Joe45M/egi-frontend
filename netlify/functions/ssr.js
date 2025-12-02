@@ -28,12 +28,13 @@ function loadServerBundle() {
 }
 
 exports.handler = async (event) => {
-  const url = event.path;
+  const url = event.path || event.rawPath || '/';
   
-  // Skip SSR for static assets - let Netlify serve them directly
+  // Skip SSR for static assets - Netlify should serve these directly
+  // Return 404 so Netlify can try to serve the file from the build directory
   if (
     url.startsWith('/static/') ||
-    url.match(/\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot|json|xml|txt)$/i)
+    url.match(/\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot|json|xml|txt|map|webmanifest)$/i)
   ) {
     return {
       statusCode: 404,
