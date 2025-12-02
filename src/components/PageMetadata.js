@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import { useHead } from '../headContext';
 
 const SITE_URL = 'https://elitegamerinsights.com';
 const DEFAULT_IMAGE = `${SITE_URL}/logo512.png`;
@@ -102,48 +103,68 @@ function PageMetadata({
   nofollow = false,
 }) {
   const location = useLocation();
-  
-  useEffect(() => {
-    // Build full title
-    const pageTitle = title ? `${title} | ${SITE_NAME}` : SITE_NAME;
-    
-    // Use provided description or fallback
-    const metaDescription = description || DEFAULT_DESCRIPTION;
-    
-    // Build canonical URL
-    const fullUrl = canonicalUrl || `${SITE_URL}${location.pathname}${location.search}`;
-    
-    // Handle image URL (support relative and absolute)
-    let fullImageUrl = image;
-    if (image) {
-      if (image.startsWith('http://') || image.startsWith('https://')) {
-        fullImageUrl = image;
-      } else if (image.startsWith('/')) {
-        fullImageUrl = `${SITE_URL}${image}`;
-      } else {
-        fullImageUrl = `${SITE_URL}/${image}`;
-      }
+  const headContext = useHead();
+  // Compute core metadata once so we can use it for both SSR and CSR
+  const pageTitle = title ? `${title} | ${SITE_NAME}` : SITE_NAME;
+
+  // Use provided description or fallback
+  const metaDescription = description || DEFAULT_DESCRIPTION;
+
+  // Build canonical URL
+  const fullUrl = canonicalUrl || `${SITE_URL}${location.pathname}${location.search}`;
+
+  // Handle image URL (support relative and absolute)
+  let fullImageUrl = image;
+  if (image) {
+    if (image.startsWith('http://') || image.startsWith('https://')) {
+      fullImageUrl = image;
+    } else if (image.startsWith('/')) {
+      fullImageUrl = `${SITE_URL}${image}`;
     } else {
-      fullImageUrl = DEFAULT_IMAGE;
+      fullImageUrl = `${SITE_URL}/${image}`;
     }
-    
-    // Determine image type from URL extension
-    const getImageType = (url) => {
-      if (!url) return 'image/jpeg';
-      const lowerUrl = url.toLowerCase();
-      if (lowerUrl.includes('.png')) return 'image/png';
-      if (lowerUrl.includes('.gif')) return 'image/gif';
-      if (lowerUrl.includes('.webp')) return 'image/webp';
-      return 'image/jpeg'; // default
-    };
-    
-    const imageType = getImageType(fullImageUrl);
-    
-    // Build robots meta
-    const robotsContent = [];
-    if (noindex) robotsContent.push('noindex');
-    if (nofollow) robotsContent.push('nofollow');
-    const robotsMeta = robotsContent.length > 0 ? robotsContent.join(', ') : 'index, follow';
+  } else {
+    fullImageUrl = DEFAULT_IMAGE;
+  }
+
+  // Determine image type from URL extension
+  const getImageType = (url) => {
+    if (!url) return 'image/jpeg';
+    const lowerUrl = url.toLowerCase();
+    if (lowerUrl.includes('.png')) return 'image/png';
+    if (lowerUrl.includes('.gif')) return 'image/gif';
+    if (lowerUrl.includes('.webp')) return 'image/webp';
+    return 'image/jpeg'; // default
+  };
+
+  const imageType = getImageType(fullImageUrl);
+
+  // Build robots meta
+  const robotsContent = [];
+  if (noindex) robotsContent.push('noindex');
+  if (nofollow) robotsContent.push('nofollow');
+  const robotsMeta = robotsContent.length > 0 ? robotsContent.join(', ') : 'index, follow';
+
+  // On the server, document is not available. Instead of mutating the DOM,
+  // we push the relevant head data into the head context so the SSR layer
+  // can inject it into the HTML template.
+  if (typeof document === 'undefined' && headContext && headContext.setHead) {
+    headContext.setHead({
+      title: pageTitle,
+      description: metaDescription,
+      canonicalUrl: fullUrl,
+      ogTitle: pageTitle,
+      ogDescription: metaDescription,
+      ogImage: fullImageUrl,
+      ogType: type,
+    });
+  }
+
+  // On the client, keep the existing behaviour of mutating document.head
+  useEffect(() => {
+    if (typeof document === 'undefined') {
+      return undefined;
+    }
 
     // Update title
     document.title = pageTitle;
@@ -158,38 +179,38 @@ function PageMetadata({
     if (author) {
       updateMetaTag('name', 'author', author);
     }
-    
+
     // Canonical URL
     updateLinkTag('canonical', fullUrl);
-    
+
     // Open Graph / Facebook
     updatePropertyTag('og:type', type);
     updatePropertyTag('og:url', fullUrl);
     updatePropertyTag('og:title', pageTitle);
     updatePropertyTag('og:description', metaDescription);
     updatePropertyTag('og:image', fullImageUrl);
-    
+
     // Secure URL for HTTPS images
     if (fullImageUrl.startsWith('https://')) {
       updatePropertyTag('og:image:secure_url', fullImageUrl);
     }
-    
+
     if (imageAlt) {
       updatePropertyTag('og:image:alt', imageAlt);
     }
-    
+
     if (imageWidth) {
       updatePropertyTag('og:image:width', imageWidth.toString());
     }
-    
+
     if (imageHeight) {
       updatePropertyTag('og:image:height', imageHeight.toString());
     }
-    
+
     updatePropertyTag('og:image:type', imageType);
     updatePropertyTag('og:site_name', SITE_NAME);
     updatePropertyTag('og:locale', locale);
-    
+
     // Article-specific Open Graph tags
     if (type === 'article') {
       if (publishedTime) {
@@ -208,7 +229,7 @@ function PageMetadata({
         // Remove old article:tag tags first
         const existingTags = document.querySelectorAll('meta[property="article:tag"]');
         existingTags.forEach(tag => tag.remove());
-        
+
         // Add new tags
         tags.forEach(tag => {
           const metaTag = document.createElement('meta');
@@ -221,27 +242,27 @@ function PageMetadata({
       // Remove article tags if type is not article
       removeMetaTagsByProperty('article:');
     }
-    
+
     // Twitter Card tags
     updateMetaTag('name', 'twitter:card', 'summary_large_image');
     updateMetaTag('name', 'twitter:url', fullUrl);
     updateMetaTag('name', 'twitter:title', pageTitle);
     updateMetaTag('name', 'twitter:description', metaDescription);
     updateMetaTag('name', 'twitter:image', fullImageUrl);
-    
+
     if (imageAlt) {
       updateMetaTag('name', 'twitter:image:alt', imageAlt);
     }
 
-    // Cleanup function - remove dynamically added tags when component unmounts
+    // Cleanup function - we intentionally keep tags between navigations
     return () => {
-      // Note: We don't remove all tags on cleanup because we want them to persist
-      // during navigation. They'll be updated on the next page load anyway.
+      // No-op: tags will be updated on the next navigation
     };
   }, [
-    title,
-    description,
-    image,
+    pageTitle,
+    metaDescription,
+    fullUrl,
+    fullImageUrl,
     imageAlt,
     imageWidth,
     imageHeight,
@@ -250,12 +271,13 @@ function PageMetadata({
     publishedTime,
     modifiedTime,
     keywords,
-    canonicalUrl,
     locale,
     section,
     tags,
     noindex,
     nofollow,
+    robotsMeta,
+    imageType,
     location.pathname,
     location.search,
   ]);

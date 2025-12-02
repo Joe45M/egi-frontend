@@ -63,12 +63,79 @@ exports.handler = async (event) => {
       throw new Error('Server bundle not available');
     }
 
-    const { html, status } = serverModule.render(url);
+    const { html, status, head } = serverModule.render(url);
 
     // Read the HTML template
     const htmlPath = path.join(__dirname, '../../build/index.html');
     let template = fs.readFileSync(htmlPath, 'utf8');
-    
+
+    // Inject dynamic <title> if we have one from SSR
+    if (head && head.title) {
+      const escapedTitle = head.title.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      if (template.includes('<title>')) {
+        template = template.replace(/<title>.*?<\/title>/i, `<title>${escapedTitle}</title>`);
+      } else {
+        // Insert before closing </head> as a fallback
+        template = template.replace('</head>', `<title>${escapedTitle}</title></head>`);
+      }
+    }
+
+    // Inject / override meta description
+    if (head && head.description) {
+      const escapedDesc = head.description.replace(/"/g, '&quot;');
+      if (template.match(/<meta\s+name="description"[^>]*>/i)) {
+        template = template.replace(
+          /<meta\s+name="description"[^>]*>/i,
+          `<meta name="description" content="${escapedDesc}">`
+        );
+      } else {
+        template = template.replace(
+          '</head>',
+          `<meta name="description" content="${escapedDesc}"></head>`
+        );
+      }
+    }
+
+    // Inject canonical URL if present
+    if (head && head.canonicalUrl) {
+      const escapedUrl = head.canonicalUrl.replace(/"/g, '&quot;');
+      if (template.match(/<link\s+rel="canonical"[^>]*>/i)) {
+        template = template.replace(
+          /<link\s+rel="canonical"[^>]*>/i,
+          `<link rel="canonical" href="${escapedUrl}">`
+        );
+      } else {
+        template = template.replace(
+          '</head>',
+          `<link rel="canonical" href="${escapedUrl}"></head>`
+        );
+      }
+    }
+
+    // Basic Open Graph tags
+    if (head && (head.ogTitle || head.ogDescription || head.ogImage)) {
+      const ensureOgMeta = (property, content) => {
+        if (!content) return;
+        const escaped = content.replace(/"/g, '&quot;');
+        const pattern = new RegExp(
+          `<meta\\s+property="${property}"[^>]*>`,
+          'i'
+        );
+        const tag = `<meta property="${property}" content="${escaped}">`;
+        if (pattern.test(template)) {
+          template = template.replace(pattern, tag);
+        } else {
+          template = template.replace('</head>', `${tag}</head>`);
+        }
+      };
+
+      ensureOgMeta('og:title', head.ogTitle || head.title);
+      ensureOgMeta('og:description', head.ogDescription || head.description);
+      ensureOgMeta('og:image', head.ogImage);
+      ensureOgMeta('og:type', head.ogType || 'website');
+      ensureOgMeta('og:url', head.canonicalUrl || '');
+    }
+
     // Inject the server-rendered HTML
     // Handle both minified and non-minified HTML
     const rootDivPattern = /<div\s+id="root"\s*><\/div>/gi;
