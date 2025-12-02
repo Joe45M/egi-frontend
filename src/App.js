@@ -1,39 +1,10 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Layout from './components/Layout';
-import ScrollToTop from './components/ScrollToTop';
-import Home from './pages/Home';
-import Games from './pages/Games';
-import Culture from './pages/Culture';
-import Archive from './pages/Archive';
-import DownloadSpeedCalculator from './pages/DownloadSpeedCalculator';
-import Privacy from './pages/Privacy';
-import Terms from './pages/Terms';
-import Cookies from './pages/Cookies';
-import Accessibility from './pages/Accessibility';
-import Contact from './pages/Contact';
-import NotFound from './pages/NotFound';
+import { RouterProvider } from 'react-router-dom';
+import { createAppRouter } from './routes';
+
+const router = createAppRouter();
 
 function App() {
-  return (
-    <BrowserRouter>
-      <ScrollToTop />
-      <Routes>
-        <Route path="/" element={<Layout />}>
-          <Route index element={<Home />} />
-          <Route path="games/:slug" element={<Games />} />
-          <Route path="culture/:slug" element={<Culture />} />
-          <Route path="game-download-speed-calculator" element={<DownloadSpeedCalculator />} />
-          <Route path="privacy" element={<Privacy />} />
-          <Route path="terms" element={<Terms />} />
-          <Route path="cookies" element={<Cookies />} />
-          <Route path="accessibility" element={<Accessibility />} />
-          <Route path="contact" element={<Contact />} />
-          <Route path=":type" element={<Archive />} />
-          <Route path="*" element={<NotFound />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
-  );
+  return <RouterProvider router={router} />;
 }
 
 export default App;
