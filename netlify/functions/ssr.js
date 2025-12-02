@@ -28,11 +28,21 @@ function loadServerBundle() {
 }
 
 exports.handler = async (event) => {
-  // Get the URL from the event - handle both path formats
-  const url = event.path || event.rawPath || '/';
+  // Get the URL from the event - Netlify uses different event structures
+  // Try multiple possible properties
+  let url = event.path || event.rawPath || (event.requestContext && event.requestContext.path) || '/';
   
-  // Log for debugging (remove in production if needed)
-  console.log('SSR Function called for URL:', url);
+  // If we got the full path with query string, extract just the path
+  if (url.includes('?')) {
+    url = url.split('?')[0];
+  }
+  
+  // Log for debugging - this will show in Netlify function logs
+  console.log('SSR Function called');
+  console.log('Event keys:', Object.keys(event));
+  console.log('URL:', url);
+  console.log('event.path:', event.path);
+  console.log('event.rawPath:', event.rawPath);
   
   // Static assets should be handled by redirects, but as a safety check
   if (
@@ -61,16 +71,18 @@ exports.handler = async (event) => {
     
     // Inject the server-rendered HTML
     // Handle both minified and non-minified HTML
-    template = template.replace(
-      /<div id="root"><\/div>/g,
-      `<div id="root">${html}</div>`
-    );
+    const rootDivPattern = /<div\s+id="root"\s*><\/div>/gi;
+    if (rootDivPattern.test(template)) {
+      template = template.replace(rootDivPattern, `<div id="root">${html}</div>`);
+    } else {
+      // Fallback: try without spaces
+      template = template.replace(/<div id="root"><\/div>/g, `<div id="root">${html}</div>`);
+    }
     
-    // Also handle if there's whitespace
-    template = template.replace(
-      /<div id="root">\s*<\/div>/g,
-      `<div id="root">${html}</div>`
-    );
+    // Verify replacement worked
+    if (!template.includes(`<div id="root">${html.substring(0, 50)}`)) {
+      console.warn('Warning: HTML replacement may have failed. Template still contains empty root div.');
+    }
 
     return {
       statusCode: status,

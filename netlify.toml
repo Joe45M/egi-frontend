@@ -2,7 +2,8 @@
   command = "npm run build && npm run build:server"
   publish = "build"
 
-# Exclude static assets from SSR - these should be served directly
+# IMPORTANT: Order matters! More specific rules must come first
+# Static assets should be served directly (not through SSR function)
 [[redirects]]
   from = "/static/*"
   to = "/static/:splat"
@@ -34,6 +35,18 @@
   force = true
 
 [[redirects]]
+  from = "/*.jpg"
+  to = "/:splat.jpg"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/*.svg"
+  to = "/:splat.svg"
+  status = 200
+  force = true
+
+[[redirects]]
   from = "/*.json"
   to = "/:splat.json"
   status = 200
@@ -45,11 +58,19 @@
   status = 200
   force = true
 
-# Redirect all other requests (including HTML) to SSR function
+[[redirects]]
+  from = "/*.webmanifest"
+  to = "/:splat.webmanifest"
+  status = 200
+  force = true
+
+# Redirect ALL other requests to SSR function (this catches HTML pages)
+# This must be last to catch everything else
 [[redirects]]
   from = "/*"
   to = "/.netlify/functions/ssr"
   status = 200
+  force = false
 
 [functions]
   node_bundler = "esbuild"
