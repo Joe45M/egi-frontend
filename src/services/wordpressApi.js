@@ -487,6 +487,37 @@ export const postsApi = {
       throw error;
     }
   },
+
+  /**
+   * Get multiple posts by slugs from a specific post type
+   * @param {string} postType - Post type name (e.g., 'post', 'page', or custom post type)
+   * @param {Array<string>} slugs - Array of post slugs
+   * @param {boolean} includeImage - Whether to fetch featured images (default: true)
+   * @returns {Array} Array of transformed posts
+   */
+  async getByPostTypeAndSlugs(postType, slugs, includeImage = true) {
+    if (!slugs || slugs.length === 0) {
+      return [];
+    }
+
+    try {
+      // Fetch all posts in parallel
+      const postsPromises = slugs.map(slug => 
+        this.getByPostTypeAndSlug(postType, slug, includeImage).catch(error => {
+          console.warn(`Failed to fetch ${postType} with slug "${slug}":`, error);
+          return null; // Return null for failed fetches
+        })
+      );
+
+      const posts = await Promise.all(postsPromises);
+      
+      // Filter out null values (failed fetches) and maintain order
+      return posts.filter(post => post !== null);
+    } catch (error) {
+      console.error(`Error fetching ${postType} posts by slugs:`, error);
+      throw error;
+    }
+  },
 };
 
 /**
