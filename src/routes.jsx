@@ -6,6 +6,7 @@ import Culture from './pages/Culture';
 import Archive from './pages/Archive';
 import Readlist from './pages/Readlist';
 import DownloadSpeedCalculator from './pages/DownloadSpeedCalculator';
+import KDCalculator from './pages/KDCalculator';
 import Privacy from './pages/Privacy';
 import Terms from './pages/Terms';
 import Cookies from './pages/Cookies';
@@ -22,6 +23,7 @@ export function getRouteElements() {
         <Route path="culture/:slug" element={<Culture />} />
         <Route path="readlist" element={<Readlist />} />
         <Route path="game-download-speed-calculator" element={<DownloadSpeedCalculator />} />
+        <Route path="k-d-calculator-calculate-your-kill-death-ratio" element={<KDCalculator />} />
         <Route path="privacy" element={<Privacy />} />
         <Route path="terms" element={<Terms />} />
         <Route path="cookies" element={<Cookies />} />

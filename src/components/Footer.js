@@ -24,6 +24,11 @@ function Footer() {
                 </Link>
               </li>
               <li>
+                <Link to="/k-d-calculator-calculate-your-kill-death-ratio" className="text-gray-400 hover:bg-gradient-to-r hover:from-accent-pink-400 hover:to-accent-violet-400 hover:bg-clip-text hover:text-transparent transition-all duration-300">
+                  K/D Calculator
+                </Link>
+              </li>
+              <li>
                 <Link to="/game-download-speed-calculator" className="text-gray-400 hover:bg-gradient-to-r hover:from-accent-pink-400 hover:to-accent-violet-400 hover:bg-clip-text hover:text-transparent transition-all duration-300">
                   Game Download Speed Calculator
                 </Link>
