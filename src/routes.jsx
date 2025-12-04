@@ -1,36 +1,50 @@
 import { createRoutesFromElements, createBrowserRouter, Route } from 'react-router-dom';
+import { lazy, Suspense } from 'react';
 import Layout from './components/Layout';
-import Home from './pages/Home';
-import Games from './pages/Games';
-import Culture from './pages/Culture';
-import Archive from './pages/Archive';
-import Readlist from './pages/Readlist';
-import DownloadSpeedCalculator from './pages/DownloadSpeedCalculator';
-import KDCalculator from './pages/KDCalculator';
-import Privacy from './pages/Privacy';
-import Terms from './pages/Terms';
-import Cookies from './pages/Cookies';
-import Accessibility from './pages/Accessibility';
-import Contact from './pages/Contact';
-import NotFound from './pages/NotFound';
+
+// Lazy load all route components for code splitting
+const Home = lazy(() => import('./pages/Home'));
+const Games = lazy(() => import('./pages/Games'));
+const Culture = lazy(() => import('./pages/Culture'));
+const Archive = lazy(() => import('./pages/Archive'));
+const Readlist = lazy(() => import('./pages/Readlist'));
+const DownloadSpeedCalculator = lazy(() => import('./pages/DownloadSpeedCalculator'));
+const KDCalculator = lazy(() => import('./pages/KDCalculator'));
+const Privacy = lazy(() => import('./pages/Privacy'));
+const Terms = lazy(() => import('./pages/Terms'));
+const Cookies = lazy(() => import('./pages/Cookies'));
+const Accessibility = lazy(() => import('./pages/Accessibility'));
+const Contact = lazy(() => import('./pages/Contact'));
+const NotFound = lazy(() => import('./pages/NotFound'));
+
+// Loading fallback component
+const RouteLoadingFallback = () => (
+  <div className="pt-[200px] p-4 container mx-auto">
+    <div className="animate-pulse">
+      <div className="h-12 bg-accent-violet-950/10 rounded-lg mb-4 w-3/4"></div>
+      <div className="h-px bg-gray-600 mb-4"></div>
+      <div className="h-6 bg-accent-violet-950/10 rounded mb-5 w-1/2"></div>
+    </div>
+  </div>
+);
 
 export function getRouteElements() {
   return (
     <>
       <Route path="/" element={<Layout />}>
-        <Route index element={<Home />} />
-        <Route path="games/:slug" element={<Games />} />
-        <Route path="culture/:slug" element={<Culture />} />
-        <Route path="readlist" element={<Readlist />} />
-        <Route path="game-download-speed-calculator" element={<DownloadSpeedCalculator />} />
-        <Route path="k-d-calculator-calculate-your-kill-death-ratio" element={<KDCalculator />} />
-        <Route path="privacy" element={<Privacy />} />
-        <Route path="terms" element={<Terms />} />
-        <Route path="cookies" element={<Cookies />} />
-        <Route path="accessibility" element={<Accessibility />} />
-        <Route path="contact" element={<Contact />} />
-        <Route path=":type" element={<Archive />} />
-        <Route path="*" element={<NotFound />} />
+        <Route index element={<Suspense fallback={<RouteLoadingFallback />}><Home /></Suspense>} />
+        <Route path="games/:slug" element={<Suspense fallback={<RouteLoadingFallback />}><Games /></Suspense>} />
+        <Route path="culture/:slug" element={<Suspense fallback={<RouteLoadingFallback />}><Culture /></Suspense>} />
+        <Route path="readlist" element={<Suspense fallback={<RouteLoadingFallback />}><Readlist /></Suspense>} />
+        <Route path="game-download-speed-calculator" element={<Suspense fallback={<RouteLoadingFallback />}><DownloadSpeedCalculator /></Suspense>} />
+        <Route path="k-d-calculator-calculate-your-kill-death-ratio" element={<Suspense fallback={<RouteLoadingFallback />}><KDCalculator /></Suspense>} />
+        <Route path="privacy" element={<Suspense fallback={<RouteLoadingFallback />}><Privacy /></Suspense>} />
+        <Route path="terms" element={<Suspense fallback={<RouteLoadingFallback />}><Terms /></Suspense>} />
+        <Route path="cookies" element={<Suspense fallback={<RouteLoadingFallback />}><Cookies /></Suspense>} />
+        <Route path="accessibility" element={<Suspense fallback={<RouteLoadingFallback />}><Accessibility /></Suspense>} />
+        <Route path="contact" element={<Suspense fallback={<RouteLoadingFallback />}><Contact /></Suspense>} />
+        <Route path=":type" element={<Suspense fallback={<RouteLoadingFallback />}><Archive /></Suspense>} />
+        <Route path="*" element={<Suspense fallback={<RouteLoadingFallback />}><NotFound /></Suspense>} />
       </Route>
     </>
   );

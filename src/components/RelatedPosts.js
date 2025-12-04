@@ -70,7 +70,7 @@ function RelatedPosts({ postId, postType = 'games', basePath = '/games' }) {
             >
               <div className="relative flex bg-cover items-center bg-center">
                 {post.image && (
-                  <img src={post.image} className="w-20 mr-5 object object-cover" alt={post.title || ''}/>
+                  <img src={post.image} className="w-20 mr-5 object object-cover" alt={post.title || ''} loading="lazy" decoding="async" />
                 )}
                 <h3 
                   className="text-lg font-bold group-hover:text-accent-violet-300 transition-colors duration-300"

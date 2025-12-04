@@ -66,3 +66,4 @@ If you get errors:
 - Check certbot logs: `sudo tail -f /var/log/letsencrypt/letsencrypt.log`
 - Make sure DNS is pointing to this server: `dig api.elitegamerinsights.com`
 
+

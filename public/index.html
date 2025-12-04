@@ -11,9 +11,21 @@
       content="Gaming news, tutorials, and culture coverage. Everything you need to stay informed about the gaming world."
     />
 
+    <!-- DNS Prefetch for external domains -->
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+    <link rel="dns-prefetch" href="https://cdn.usefathom.com">
+    <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com">
+    <link rel="dns-prefetch" href="https://www.clarity.ms">
+    <link rel="dns-prefetch" href="https://images.unsplash.com">
+
+    <!-- Preconnect for critical resources -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Kedebideri:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Preload critical font with font-display swap -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Kedebideri:wght@400;500;600;700;800;900&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Kedebideri:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"></noscript>
 
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
     <!--
@@ -33,27 +45,60 @@
     <title>Elitegamerinsights</title>
 
       <!-- Fathom - beautiful, simple website analytics -->
+      <link rel="preload" href="https://cdn.usefathom.com/script.js" as="script">
       <script src="https://cdn.usefathom.com/script.js" data-site="GPASAVRX" defer></script>
       <!-- / Fathom -->
       
-      <!-- Google AdSense -->
+      <!-- Google AdSense - Load asynchronously after page load -->
+      <script>
+        // Prefetch AdSense script
+        const link = document.createElement('link');
+        link.rel = 'prefetch';
+        link.href = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6764478945960117';
+        document.head.appendChild(link);
+      </script>
       <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6764478945960117"
               crossorigin="anonymous"></script>
 
-      <script type="text/javascript">
-        (function(c,l,a,r,i,t,y){
-            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-        })(window, document, "clarity", "script", "uey4q9akxr");
-    </script>
+      <!-- Microsoft Clarity - Load after page load -->
+      <script>
+        // Delay Clarity loading to improve initial page load
+        setTimeout(function() {
+          (function(c,l,a,r,i,t,y){
+              c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+              t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+              y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+          })(window, document, "clarity", "script", "uey4q9akxr");
+        }, 2000);
+      </script>
     <style>
       html, body {
         background-color: #1a1d2e;
         margin: 0;
         padding: 0;
       }
+      /* Prevent font flash by using system font initially */
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+      }
+      /* Apply custom font when loaded */
+      .fonts-loaded body {
+        font-family: 'Kedebideri', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+      }
     </style>
+    <script>
+      // Detect when fonts are loaded to prevent FOIT (Flash of Invisible Text)
+      if ('fonts' in document) {
+        document.fonts.ready.then(function() {
+          document.documentElement.classList.add('fonts-loaded');
+        });
+      } else {
+        // Fallback for browsers without Font Loading API
+        setTimeout(function() {
+          document.documentElement.classList.add('fonts-loaded');
+        }, 3000);
+      }
+    </script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>

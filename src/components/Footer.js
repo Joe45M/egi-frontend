@@ -132,7 +132,7 @@ function Footer() {
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <div className="flex items-center gap-4">
               <Link to="/">
-                <img src={logo} alt="EGI Logo" className="h-8 w-auto object-contain"/>
+                <img src={logo} alt="EGI Logo" className="h-8 w-auto object-contain" loading="lazy" />
               </Link>
               <p className="text-gray-400 text-sm">
                 © {currentYear} EGI. All rights reserved.

@@ -78,9 +78,17 @@ function Slider() {
             <div className="embla" ref={emblaRef}>
                 <div className="embla__container">
                     <div className="embla__slide">
-                        <div className="h-[500px] flex flex-col justify-end bg-cover bg-center relative z-10" style={{backgroundImage: "url('https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1470&h=600&fit=crop')"}}>
+                        <div className="h-[500px] flex flex-col justify-end bg-cover bg-center relative z-10">
+                            <img 
+                                src="https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1470&h=600&fit=crop" 
+                                alt="Latest News"
+                                className="absolute inset-0 w-full h-full object-cover"
+                                loading="eager"
+                                fetchPriority="high"
+                                decoding="async"
+                            />
                             <div className="absolute left-0 top-0 w-full h-full z-0 bg-gradient-to-t from-black/80 to-black/10"></div>
-                            <div className="container mx-auto mb-10">
+                            <div className="container mx-auto mb-10 relative z-10">
                                 <span className="text-white mb-2 relative text-sm">Latest News</span>
                                 <h3 className="text-4xl font-bold text-white relative">Stay updated with the latest gaming news</h3>
                             </div>
@@ -94,17 +102,28 @@ function Slider() {
     return (
         <div className="embla" ref={emblaRef}>
             <div className="embla__container">
-                {posts.map((post) => {
+                {posts.map((post, index) => {
                     const imageUrl = post.image || 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1470&h=600&fit=crop';
                     // Link to games post detail page
                     const postLink = post.slug ? `/games/${post.slug}` : `/games?id=${post.id}`;
+                    // First slide loads immediately, others lazy load
+                    const isFirstSlide = index === 0;
                     
                     return (
                         <div key={post.id} className="embla__slide">
                             <Link to={postLink}>
-                                <div className="h-[500px] flex flex-col justify-end bg-cover bg-center relative z-10 cursor-pointer hover:opacity-95 transition-opacity duration-300" style={{backgroundImage: `url('${imageUrl}')`}}>
+                                <div className="h-[500px] flex flex-col justify-end bg-cover bg-center relative z-10 cursor-pointer hover:opacity-95 transition-opacity duration-300">
+                                    {/* Use img tag for better lazy loading control */}
+                                    <img 
+                                        src={imageUrl} 
+                                        alt={post.title || 'Featured post'}
+                                        className="absolute inset-0 w-full h-full object-cover"
+                                        loading={isFirstSlide ? "eager" : "lazy"}
+                                        fetchPriority={isFirstSlide ? "high" : "auto"}
+                                        decoding="async"
+                                    />
                                     <div className="absolute left-0 top-0 w-full h-full z-0 bg-gradient-to-t from-black/80 to-black/10"></div>
-                                    <div className="container mx-auto mb-10 px-5 lg:px-0">
+                                    <div className="container mx-auto mb-10 px-5 lg:px-0 relative z-10">
                                         {post.date && (
                                             <span className="text-white mb-2 relative text-sm block">{formatDate(post.date)}</span>
                                         )}

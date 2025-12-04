@@ -253,15 +253,19 @@ function Archive() {
               className="relative group overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 rounded-lg"
             >
               {/* Background Image */}
-              <div
-                className="relative h-64 bg-cover bg-center rounded-lg"
-                style={{ backgroundImage: `url(${imageUrl})` }}
-              >
+              <div className="relative h-64 overflow-hidden rounded-lg">
+                <img 
+                  src={imageUrl} 
+                  alt={post.title || 'Post image'}
+                  className="absolute inset-0 w-full h-full object-cover"
+                  loading="lazy"
+                  decoding="async"
+                />
                 {/* Gradient Overlay */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent rounded-lg"></div>
                 
                 {/* Content */}
-                <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                <div className="absolute bottom-0 left-0 right-0 p-6 text-white z-10">
                   {post.date && (
                     <p className="text-sm text-gray-300 mb-1">
                       {formatDate(post.date)}

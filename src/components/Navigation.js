@@ -54,75 +54,70 @@ function Navigation() {
 
   return (
     <>
-    <nav className="bg-base-900/50 backdrop-blur-2xl shadow-sm fixed top-0 left-0 right-0 z-50">
-      <div className={`border-b border-gray-500/10 transition-all duration-700 ease-[cubic-bezier(0.4,0,0.2,1)] ${
+    <nav className="bg-base-900/50 backdrop-blur-2xl shadow-sm fixed top-0 left-0 right-0 z-50 border-b border-gray-500/10">
+      <div className={`transition-all duration-700 ease-[cubic-bezier(0.4,0,0.2,1)] ${
         isScrolledDown 
           ? 'transform -translate-y-full opacity-0 scale-95 max-h-0 overflow-hidden pointer-events-none' 
           : 'transform translate-y-0 opacity-100 scale-100 max-h-32'
       }`}>
         <div className="container py-5 mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center">
+            {/* Logo */}
             <div className="flex-shrink-0 flex items-center">
-
               <Link to="/" className="text-xl font-bold text-gray-800">
-                <img src={logo} alt="EGI Logo" className="w-[100px] h-[40px] object-contain"/>
+                <img src={logo} alt="EGI Logo" className="w-[100px] h-[40px] object-contain" fetchPriority="high" />
               </Link>
             </div>
 
-          <div>
-            <Link to="/readlist" className="inline-flex gap-2 font-[600] items-center px-4 py-2 text-white bg-gradient-to-r from-accent-pink-500 to-accent-violet-500 rounded-full transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-accent-violet-500/50 hover:from-accent-pink-600 hover:to-accent-violet-600">
-              <svg className="w-5" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256"><path d="M184,32H72A16,16,0,0,0,56,48V224a8,8,0,0,0,12.24,6.78L128,193.43l59.77,37.35A8,8,0,0,0,200,224V48A16,16,0,0,0,184,32Zm0,16V161.57l-51.77-32.35a8,8,0,0,0-8.48,0L72,161.56V48ZM132.23,177.22a8,8,0,0,0-8.48,0L72,209.57V180.43l56-35,56,35v29.14Z"></path></svg>
-              Read list
-            </Link>
-          </div>
-
-          </div>
-        </div>
-      </div>
-
-      <div className="flex justify-center py-5 bg-accent-violet-950/10">
-        <div className="flex justify-center">
-          <div className="hidden sm:ml-6 sm:flex sm:space-x-8 items-center justify-center">
-            <Link
-                to="/"
-                className="text-white tracking-wider"
-            >
-              Home
-            </Link>
-            <Link
-                to="/games"
-                className="text-white tracking-wider"
-            >
-              Gaming news
-            </Link>
-            <Link
-                to="/culture"
-                className="text-white tracking-wider"
-            >
-              Culture
-            </Link>
-          </div>
-        </div>
-
-        <div className="flex items-center sm:hidden">
-          <button
-              type="button"
-              onClick={() => setOpen(!open)}
-              className={`relative z-[60] inline-flex items-center justify-center p-2 rounded-lg text-white hover:bg-white/10 focus:outline-none transition-all duration-300 ${
-                open ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto'
-              }`}
-              aria-expanded={open}
-          >
-            <span className="sr-only">Open main menu</span>
-            <div className="relative w-6 h-6">
-              <span className="absolute top-0 left-0 w-6 h-0.5 bg-white transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"></span>
-              <span className="absolute top-2.5 left-0 w-6 h-0.5 bg-white transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"></span>
-              <span className="absolute top-5 left-0 w-6 h-0.5 bg-white transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"></span>
+            {/* Navigation Links - Desktop */}
+            <div className="hidden sm:flex sm:space-x-8 items-center justify-center flex-1">
+              <Link
+                  to="/"
+                  className="text-white tracking-wider"
+              >
+                Home
+              </Link>
+              <Link
+                  to="/games"
+                  className="text-white tracking-wider"
+              >
+                Gaming news
+              </Link>
+              <Link
+                  to="/culture"
+                  className="text-white tracking-wider"
+              >
+                Culture
+              </Link>
             </div>
-          </button>
+
+            {/* Read List Button & Mobile Menu Button */}
+            <div className="flex items-center gap-4">
+              <Link to="/readlist" className="hidden sm:inline-flex gap-2 font-[600] items-center px-4 py-2 text-white bg-gradient-to-r from-accent-pink-500 to-accent-violet-500 rounded-full transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-accent-violet-500/50 hover:from-accent-pink-600 hover:to-accent-violet-600">
+                <svg className="w-5" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256"><path d="M184,32H72A16,16,0,0,0,56,48V224a8,8,0,0,0,12.24,6.78L128,193.43l59.77,37.35A8,8,0,0,0,200,224V48A16,16,0,0,0,184,32Zm0,16V161.57l-51.77-32.35a8,8,0,0,0-8.48,0L72,161.56V48ZM132.23,177.22a8,8,0,0,0-8.48,0L72,209.57V180.43l56-35,56,35v29.14Z"></path></svg>
+                Read list
+              </Link>
+
+              {/* Mobile Menu Button */}
+              <button
+                  type="button"
+                  onClick={() => setOpen(!open)}
+                  className={`relative z-[60] inline-flex items-center justify-center p-2 rounded-lg text-white hover:bg-white/10 focus:outline-none transition-all duration-300 sm:hidden ${
+                    open ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto'
+                  }`}
+                  aria-expanded={open}
+              >
+                <span className="sr-only">Open main menu</span>
+                <div className="relative w-6 h-6">
+                  <span className="absolute top-0 left-0 w-6 h-0.5 bg-white transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"></span>
+                  <span className="absolute top-2.5 left-0 w-6 h-0.5 bg-white transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"></span>
+                  <span className="absolute top-5 left-0 w-6 h-0.5 bg-white transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"></span>
+                </div>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
-
     </nav>
 
     {/* Mobile Menu Overlay - Outside nav for proper z-index */}
@@ -194,7 +189,8 @@ function Navigation() {
           {[
             { to: '/', label: 'Home', delay: 0 },
             { to: '/games', label: 'Gaming news', delay: 100 },
-            { to: '/culture', label: 'Culture', delay: 200 }
+            { to: '/culture', label: 'Culture', delay: 200 },
+            { to: '/readlist', label: 'Read list', delay: 300 }
           ].map((item, index) => (
             <Link
               key={item.to}

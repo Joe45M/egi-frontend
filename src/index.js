@@ -2,7 +2,13 @@ import React from 'react';
 import { hydrateRoot, createRoot } from 'react-dom/client';
 import './index.css';
 import App from './App';
-import reportWebVitals from './reportWebVitals';
+
+// Lazy load web vitals reporting to not block initial render
+const reportWebVitals = () => {
+  import('./reportWebVitals').then(({ default: reportWebVitals }) => {
+    reportWebVitals();
+  });
+};
 
 const rootElement = document.getElementById('root');
 
@@ -24,7 +30,10 @@ if (rootElement.hasChildNodes()) {
   );
 }
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+// Load web vitals reporting after initial render
+if (process.env.NODE_ENV === 'production') {
+  // Only load in production to avoid blocking development
+  setTimeout(() => {
+    reportWebVitals();
+  }, 1000);
+}

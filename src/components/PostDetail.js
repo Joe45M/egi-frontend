@@ -1,12 +1,14 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, lazy, Suspense } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Image } from './Editor';
-import RelatedPosts from "./RelatedPosts";
 import SavePost from "./SavePost";
 import wordpressApi from "../services/wordpressApi";
 import NotFound from "../pages/NotFound";
 import PageMetadata, { stripHtml, createExcerpt, SITE_URL } from "./PageMetadata";
 import { useInitialData } from "../initialDataContext";
+
+// Lazy load RelatedPosts component
+const RelatedPosts = lazy(() => import("./RelatedPosts"));
 
 function PostDetail({ postType = 'games', basePath = '/games' }) {
   const { slug } = useParams();
@@ -217,7 +219,16 @@ function PostDetail({ postType = 'games', basePath = '/games' }) {
                 </div>
 
                 <div className="lg:col-span-2">
-                    <RelatedPosts postId={post.id} postType={postType} basePath={basePath} />
+                    <Suspense fallback={
+                      <div>
+                        <h2 className="text-2xl font-bold mb-4">Related Posts</h2>
+                        {[1, 2, 3, 4].map((i) => (
+                          <div key={i} className="flex-1 bg-accent-violet-950/10 animate-pulse rounded-lg h-16 mb-5"></div>
+                        ))}
+                      </div>
+                    }>
+                      <RelatedPosts postId={post.id} postType={postType} basePath={basePath} />
+                    </Suspense>
                 </div>
             </div>
         </div>
