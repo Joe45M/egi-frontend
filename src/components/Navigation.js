@@ -4,41 +4,6 @@ import logo from '../assets/images/image.png';
 
 function Navigation() {
   const [open, setOpen] = useState(false);
-  const [isScrolledDown, setIsScrolledDown] = useState(false);
-  const [lastScrollY, setLastScrollY] = useState(0);
-
-  useEffect(() => {
-    let ticking = false;
-
-    const handleScroll = () => {
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          const currentScrollY = window.scrollY;
-          
-          // Only hide if scrolled down more than 50px
-          if (currentScrollY > 50) {
-            if (currentScrollY > lastScrollY && currentScrollY - lastScrollY > 5) {
-              // Scrolling down (with threshold to prevent flickering)
-              setIsScrolledDown(true);
-            } else if (currentScrollY < lastScrollY && lastScrollY - currentScrollY > 5) {
-              // Scrolling up (with threshold to prevent flickering)
-              setIsScrolledDown(false);
-            }
-          } else {
-            // At the top, always show
-            setIsScrolledDown(false);
-          }
-          
-          setLastScrollY(currentScrollY);
-          ticking = false;
-        });
-        ticking = true;
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [lastScrollY]);
 
   // Lock body scroll when menu is open
   useEffect(() => {
@@ -54,13 +19,8 @@ function Navigation() {
 
   return (
     <>
-    <nav className="bg-base-900/50 backdrop-blur-2xl shadow-sm fixed top-0 left-0 right-0 z-50 border-b border-gray-500/10">
-      <div className={`transition-all duration-700 ease-[cubic-bezier(0.4,0,0.2,1)] ${
-        isScrolledDown 
-          ? 'transform -translate-y-full opacity-0 scale-95 max-h-0 overflow-hidden pointer-events-none' 
-          : 'transform translate-y-0 opacity-100 scale-100 max-h-32'
-      }`}>
-        <div className="container py-5 mx-auto px-4 sm:px-6 lg:px-8">
+    <nav className="bg-base-900/50 backdrop-blur-2xl shadow-sm sticky top-0 left-0 right-0 z-50 border-b border-gray-500/10">
+      <div className="container py-5 mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center">
             {/* Logo */}
             <div className="flex-shrink-0 flex items-center">
@@ -117,7 +77,6 @@ function Navigation() {
             </div>
           </div>
         </div>
-      </div>
     </nav>
 
     {/* Mobile Menu Overlay - Outside nav for proper z-index */}
