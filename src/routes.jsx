@@ -5,6 +5,8 @@ import Layout from './components/Layout';
 // Lazy load all route components for code splitting
 const Home = lazy(() => import('./pages/Home'));
 const Games = lazy(() => import('./pages/Games'));
+const OldGame = lazy(() => import('./pages/OldGame'));
+const OldGameRedirect = lazy(() => import('./pages/OldGameRedirect'));
 const Culture = lazy(() => import('./pages/Culture'));
 const Archive = lazy(() => import('./pages/Archive'));
 const Readlist = lazy(() => import('./pages/Readlist'));
@@ -34,6 +36,8 @@ export function getRouteElements() {
       <Route path="/" element={<Layout />}>
         <Route index element={<Suspense fallback={<RouteLoadingFallback />}><Home /></Suspense>} />
         <Route path="games/:slug" element={<Suspense fallback={<RouteLoadingFallback />}><Games /></Suspense>} />
+        <Route path="game/:slug/" element={<Suspense fallback={<RouteLoadingFallback />}><OldGameRedirect /></Suspense>} />
+        <Route path="game/:slug" element={<Suspense fallback={<RouteLoadingFallback />}><OldGame /></Suspense>} />
         <Route path="culture/:slug" element={<Suspense fallback={<RouteLoadingFallback />}><Culture /></Suspense>} />
         <Route path="readlist" element={<Suspense fallback={<RouteLoadingFallback />}><Readlist /></Suspense>} />
         <Route path="game-download-speed-calculator" element={<Suspense fallback={<RouteLoadingFallback />}><DownloadSpeedCalculator /></Suspense>} />
