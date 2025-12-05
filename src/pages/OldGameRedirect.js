@@ -1,9 +1,12 @@
 import { useParams, Navigate } from "react-router-dom";
 
-// Redirect component for old URL structure with trailing slash: /game/:slug/ -> /game/:slug
+// Redirect old URL structure with trailing slash: /game/:slug/ -> /games?game=:slug
 function OldGameRedirect() {
   const { slug } = useParams();
-  return <Navigate to={`/game/${slug}`} replace />;
+  if (!slug) {
+    return null;
+  }
+  return <Navigate to={`/games?game=${slug}`} replace />;
 }
 
 export default OldGameRedirect;

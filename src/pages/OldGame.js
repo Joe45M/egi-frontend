@@ -1,8 +1,12 @@
-import PostDetail from "../components/PostDetail";
+import { useParams, Navigate } from "react-router-dom";
 
-// Component for old URL structure: /game/:slug
+// Redirect old URL structure: /game/:slug -> /games?game=:slug
 function OldGame() {
-  return <PostDetail postType="games" basePath="/game" />;
+  const { slug } = useParams();
+  if (!slug) {
+    return null;
+  }
+  return <Navigate to={`/games?game=${slug}`} replace />;
 }
 
 export default OldGame;
