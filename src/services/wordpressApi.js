@@ -44,6 +44,22 @@ async function fetchFromAPI(endpoint, options = {}) {
 }
 
 /**
+ * Decode HTML entities in a string
+ * @param {string} html - HTML string with entities
+ * @returns {string} Decoded string
+ */
+function decodeHtmlEntities(html) {
+  if (!html || typeof html !== 'string') {
+    return html || '';
+  }
+  
+  // Create a temporary textarea element to decode HTML entities
+  const textarea = document.createElement('textarea');
+  textarea.innerHTML = html;
+  return textarea.value;
+}
+
+/**
  * Get featured image URL from media ID
  */
 async function getFeaturedImageUrl(mediaId) {
@@ -64,9 +80,10 @@ async function getFeaturedImageUrl(mediaId) {
  * Transform WordPress post data to match component expectations
  */
 function transformPost(post) {
+  const rawTitle = post.title?.rendered || post.title || '';
   return {
     id: post.id,
-    title: post.title?.rendered || post.title || '',
+    title: decodeHtmlEntities(rawTitle),
     date: post.date || post.modified || '',
     slug: post.slug || '',
     excerpt: post.excerpt?.rendered || post.excerpt || '',
