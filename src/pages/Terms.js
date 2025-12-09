@@ -1,6 +1,21 @@
-import PageMetadata from '../components/PageMetadata';
+import PageMetadata, { SITE_URL } from '../components/PageMetadata';
+import StructuredSchema, { generateWebPageSchema, generateBreadcrumbSchema } from '../components/StructuredSchema';
 
 function Terms() {
+  const schemas = [
+    generateWebPageSchema({
+      name: "Terms of Service",
+      description: "Read EliteGamerInsights' terms of service to understand the rules and regulations for using our website and services.",
+      url: `${SITE_URL}/terms`
+    }),
+    generateBreadcrumbSchema({
+      items: [
+        { name: 'Home', url: SITE_URL },
+        { name: 'Terms of Service', url: `${SITE_URL}/terms` }
+      ]
+    })
+  ];
+
   return (
     <>
       <PageMetadata
@@ -8,6 +23,7 @@ function Terms() {
         description="Read EliteGamerInsights' terms of service to understand the rules and regulations for using our website and services."
         keywords="terms of service, user agreement, website terms, legal"
       />
+      <StructuredSchema schemas={schemas} />
       <div className="min-h-screen pt-[175px] pb-20 px-4 sm:px-6 lg:px-8">
       <div className="container mx-auto max-w-4xl">
         <h1 className="text-4xl md:text-5xl font-bold mb-8 bg-gradient-to-r from-accent-violet-400 to-accent-pink-400 bg-clip-text text-transparent">

@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
-import PageMetadata from '../components/PageMetadata';
+import PageMetadata, { SITE_URL } from '../components/PageMetadata';
+import StructuredSchema, { generateSoftwareApplicationSchema, generateWebPageSchema, generateBreadcrumbSchema } from '../components/StructuredSchema';
 
 function KDCalculator() {
   const [kills, setKills] = useState('');
@@ -43,6 +44,26 @@ function KDCalculator() {
     return extra;
   }, [parsed, targetKD]);
 
+  const schemas = [
+    generateWebPageSchema({
+      name: "KD Calculator - Calculate Your Kill / Death Ratio",
+      description: "Use our KD Calculator to calculate your Kill / Death (K/D) and KDA ratios for games like Call of Duty. Track your performance and see how many more kills you need to reach your target K/D.",
+      url: `${SITE_URL}/k-d-calculator-calculate-your-kill-death-ratio`
+    }),
+    generateSoftwareApplicationSchema({
+      name: "KD Calculator",
+      description: "Calculate your Kill / Death (K/D) and KDA ratios for multiplayer games. Track your performance and see how many more kills you need to reach your target K/D.",
+      applicationCategory: "UtilityApplication",
+      url: `${SITE_URL}/k-d-calculator-calculate-your-kill-death-ratio`
+    }),
+    generateBreadcrumbSchema({
+      items: [
+        { name: 'Home', url: SITE_URL },
+        { name: 'KD Calculator', url: `${SITE_URL}/k-d-calculator-calculate-your-kill-death-ratio` }
+      ]
+    })
+  ];
+
   return (
     <>
       <PageMetadata
@@ -50,6 +71,7 @@ function KDCalculator() {
         description="Use our KD Calculator to calculate your Kill / Death (K/D) and KDA ratios for games like Call of Duty. Track your performance and see how many more kills you need to reach your target K/D."
         keywords="kd calculator, k/d calculator, kill death ratio, kda calculator, call of duty kd, gaming stats"
       />
+      <StructuredSchema schemas={schemas} />
       <div className="min-h-screen py-20 pt-[175px] px-4 sm:px-6 lg:px-8">
         <div className="container mx-auto max-w-4xl">
           {/* Header */}

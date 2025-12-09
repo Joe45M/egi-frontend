@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import PageMetadata from '../components/PageMetadata';
+import PageMetadata, { SITE_URL } from '../components/PageMetadata';
+import StructuredSchema, { generateSoftwareApplicationSchema, generateWebPageSchema, generateBreadcrumbSchema } from '../components/StructuredSchema';
 
 function DownloadSpeedCalculator() {
   const [fileSize, setFileSize] = useState('');
@@ -82,6 +83,26 @@ function DownloadSpeedCalculator() {
     setSpeedUnit('Mbps');
   };
 
+  const schemas = [
+    generateWebPageSchema({
+      name: "Game Download Speed Calculator",
+      description: "Calculate how long it will take to download your games, patches, and updates. Maximize your gaming experience and never let slow downloads disrupt your gaming again.",
+      url: `${SITE_URL}/game-download-speed-calculator`
+    }),
+    generateSoftwareApplicationSchema({
+      name: "Game Download Speed Calculator",
+      description: "Calculate how long it will take to download your games, patches, and updates based on file size and download speed.",
+      applicationCategory: "UtilityApplication",
+      url: `${SITE_URL}/game-download-speed-calculator`
+    }),
+    generateBreadcrumbSchema({
+      items: [
+        { name: 'Home', url: SITE_URL },
+        { name: 'Download Speed Calculator', url: `${SITE_URL}/game-download-speed-calculator` }
+      ]
+    })
+  ];
+
   return (
     <>
       <PageMetadata
@@ -89,6 +110,7 @@ function DownloadSpeedCalculator() {
         description="Calculate how long it will take to download your games, patches, and updates. Maximize your gaming experience and never let slow downloads disrupt your gaming again."
         keywords="download speed calculator, game download time, download calculator, internet speed, gaming downloads"
       />
+      <StructuredSchema schemas={schemas} />
       <div className="min-h-screen py-20 pt-[175px] px-4 sm:px-6 lg:px-8">
       <div className="container mx-auto max-w-4xl">
         {/* Header */}

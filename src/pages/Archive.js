@@ -3,7 +3,8 @@ import { useParams, useSearchParams, Link } from "react-router-dom";
 import wordpressApi from "../services/wordpressApi";
 import Pagination from "../components/Pagination";
 import NotFound from "./NotFound";
-import PageMetadata from "../components/PageMetadata";
+import PageMetadata, { SITE_URL } from "../components/PageMetadata";
+import StructuredSchema, { generateCollectionPageSchema, generateBreadcrumbSchema, generateWebPageSchema } from "../components/StructuredSchema";
 
 function Archive() {
   const { type } = useParams();
@@ -217,6 +218,37 @@ function Archive() {
     );
   }
 
+  const schemas = [
+    generateWebPageSchema({
+      name: getPageTitle(),
+      description: getPageDescription(),
+      url: `${SITE_URL}/${type}${selectedGame ? `?game=${selectedGame.slug || selectedGame.id}` : ''}`
+    }),
+    generateCollectionPageSchema({
+      name: getPageTitle(),
+      description: getPageDescription(),
+      url: `${SITE_URL}/${type}${selectedGame ? `?game=${selectedGame.slug || selectedGame.id}` : ''}`,
+      numberOfItems: posts.length,
+      itemListElement: posts.map(post => ({
+        name: post.title,
+        url: `${SITE_URL}/${type}/${post.slug}`,
+        image: post.image,
+        description: post.excerpt
+      }))
+    }),
+    generateBreadcrumbSchema({
+      items: [
+        { name: 'Home', url: SITE_URL },
+        ...(selectedGame ? [
+          { name: getPostTypeLabel(), url: `${SITE_URL}/${type}` },
+          { name: selectedGame.name, url: `${SITE_URL}/${type}?game=${selectedGame.slug || selectedGame.id}` }
+        ] : [
+          { name: getPostTypeLabel(), url: `${SITE_URL}/${type}` }
+        ])
+      ]
+    })
+  ];
+
   return (
     <>
       <PageMetadata
@@ -224,6 +256,7 @@ function Archive() {
         description={getPageDescription()}
         keywords={`${type}, gaming articles, game news, ${selectedGame ? selectedGame.name + ', ' : ''}gaming content`}
       />
+      <StructuredSchema schemas={schemas} />
       <div className="pt-[200px] p-4 container mx-auto">
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-4xl font-bold text-white">

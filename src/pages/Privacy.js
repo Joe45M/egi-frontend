@@ -1,6 +1,21 @@
-import PageMetadata from '../components/PageMetadata';
+import PageMetadata, { SITE_URL } from '../components/PageMetadata';
+import StructuredSchema, { generateWebPageSchema, generateBreadcrumbSchema } from '../components/StructuredSchema';
 
 function Privacy() {
+  const schemas = [
+    generateWebPageSchema({
+      name: "Privacy Policy",
+      description: "Read EliteGamerInsights' privacy policy to understand how we collect, use, and protect your personal information when you visit our website.",
+      url: `${SITE_URL}/privacy`
+    }),
+    generateBreadcrumbSchema({
+      items: [
+        { name: 'Home', url: SITE_URL },
+        { name: 'Privacy Policy', url: `${SITE_URL}/privacy` }
+      ]
+    })
+  ];
+
   return (
     <>
       <PageMetadata
@@ -8,6 +23,7 @@ function Privacy() {
         description="Read EliteGamerInsights' privacy policy to understand how we collect, use, and protect your personal information when you visit our website."
         keywords="privacy policy, data protection, GDPR, CCPA, privacy rights"
       />
+      <StructuredSchema schemas={schemas} />
       <div className="min-h-screen pt-[175px] pb-20 px-4 sm:px-6 lg:px-8">
       <div className="container mx-auto max-w-4xl">
         <h1 className="text-4xl md:text-5xl font-bold mb-8 bg-gradient-to-r from-accent-violet-400 to-accent-pink-400 bg-clip-text text-transparent">

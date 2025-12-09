@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import wordpressApi from '../services/wordpressApi';
 import { getReadlist } from '../utils/readlist';
-import PageMetadata from '../components/PageMetadata';
+import PageMetadata, { SITE_URL } from '../components/PageMetadata';
 import SavePost from '../components/SavePost';
+import StructuredSchema, { generateWebPageSchema, generateBreadcrumbSchema, generateCollectionPageSchema } from '../components/StructuredSchema';
 
 function Readlist() {
   const [posts, setPosts] = useState([]);
@@ -117,6 +118,32 @@ function Readlist() {
     return `/${postType}/${post.slug}`;
   };
 
+  const schemas = [
+    generateWebPageSchema({
+      name: "My Readlist - Saved Articles",
+      description: "View all your saved articles and posts in one place.",
+      url: `${SITE_URL}/readlist`
+    }),
+    generateCollectionPageSchema({
+      name: "My Readlist",
+      description: "View all your saved articles and posts in one place.",
+      url: `${SITE_URL}/readlist`,
+      numberOfItems: posts.length,
+      itemListElement: posts.map(post => ({
+        name: post.title,
+        url: `${SITE_URL}${getPostPath(post)}`,
+        image: post.image,
+        description: post.excerpt
+      }))
+    }),
+    generateBreadcrumbSchema({
+      items: [
+        { name: 'Home', url: SITE_URL },
+        { name: 'My Readlist', url: `${SITE_URL}/readlist` }
+      ]
+    })
+  ];
+
   return (
     <>
       <PageMetadata
@@ -124,6 +151,7 @@ function Readlist() {
         description="View all your saved articles and posts in one place."
         keywords="readlist, saved articles, bookmarks"
       />
+      <StructuredSchema schemas={schemas} />
       <div className="pt-[200px] p-4 container mx-auto">
         <h1 className="text-4xl font-bold mb-8 text-white">My Readlist</h1>
 

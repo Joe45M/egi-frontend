@@ -1,5 +1,6 @@
 import { lazy, Suspense } from "react";
-import PageMetadata from "../components/PageMetadata";
+import PageMetadata, { SITE_URL } from "../components/PageMetadata";
+import StructuredSchema, { generateWebPageSchema, generateBreadcrumbSchema } from "../components/StructuredSchema";
 
 // Lazy load heavy components
 const Slider = lazy(() => import("../components/Slider"));
@@ -14,6 +15,19 @@ const ComponentLoadingFallback = () => (
 );
 
 function Home() {
+  const schemas = [
+    generateWebPageSchema({
+      name: "Gaming News, Tutorials & Culture Coverage",
+      description: "Your ultimate destination for gaming news, complete tutorials, and gaming culture. EliteGamerInsights delivers compelling content that fuels gamers with the latest updates, guides, and insights.",
+      url: SITE_URL
+    }),
+    generateBreadcrumbSchema({
+      items: [
+        { name: "Home", url: SITE_URL }
+      ]
+    })
+  ];
+
   return (
     <>
       <PageMetadata
@@ -21,6 +35,7 @@ function Home() {
         description="Your ultimate destination for gaming news, complete tutorials, and gaming culture. EliteGamerInsights delivers compelling content that fuels gamers with the latest updates, guides, and insights."
         keywords="gaming news, game tutorials, gaming culture, game guides, video game news, gaming tips"
       />
+      <StructuredSchema schemas={schemas} />
       <div>
           <Suspense fallback={<ComponentLoadingFallback />}>
             <Slider />

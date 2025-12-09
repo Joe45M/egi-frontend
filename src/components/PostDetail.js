@@ -6,6 +6,7 @@ import wordpressApi from "../services/wordpressApi";
 import NotFound from "../pages/NotFound";
 import PageMetadata, { stripHtml, createExcerpt, SITE_URL } from "./PageMetadata";
 import { useInitialData } from "../initialDataContext";
+import StructuredSchema, { generateArticleSchema, generateBreadcrumbSchema } from "./StructuredSchema";
 
 // Lazy load RelatedPosts component
 const RelatedPosts = lazy(() => import("./RelatedPosts"));
@@ -174,6 +175,35 @@ function PostDetail({ postType = 'games', basePath = '/games' }) {
     articleTags.push('gaming');
   }
 
+  // Generate structured schemas
+  const schemas = [
+    generateArticleSchema({
+      headline: articleTitle,
+      description: articleExcerpt,
+      image: articleImage,
+      datePublished: publishedDate,
+      dateModified: modifiedDate,
+      author: post.authorName ? {
+        '@type': 'Person',
+        name: post.authorName
+      } : {
+        '@type': 'Organization',
+        name: 'EliteGamerInsights'
+      },
+      url: articleUrl,
+      articleSection: articleSection,
+      keywords: articleTags.length > 0 ? articleTags.join(', ') : `${postType}, gaming`,
+      articleBody: stripHtml(post.content)
+    }),
+    generateBreadcrumbSchema({
+      items: [
+        { name: 'Home', url: SITE_URL },
+        { name: articleSection, url: `${SITE_URL}/${postType}` },
+        { name: articleTitle, url: articleUrl }
+      ]
+    })
+  ];
+
   return (
     <>
       <PageMetadata
@@ -190,6 +220,7 @@ function PostDetail({ postType = 'games', basePath = '/games' }) {
         section={articleSection}
         tags={articleTags.length > 0 ? articleTags : [postType, 'gaming']}
       />
+      <StructuredSchema schemas={schemas} />
       <div className="pt-[200px] p-4 container mx-auto">
         <h1 className="text-4xl font-bold mb-4 text-white" dangerouslySetInnerHTML={{ __html: post.title }}></h1>
 

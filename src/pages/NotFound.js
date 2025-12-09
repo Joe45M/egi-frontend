@@ -1,7 +1,16 @@
 import { Link } from 'react-router-dom';
-import PageMetadata from '../components/PageMetadata';
+import PageMetadata, { SITE_URL } from '../components/PageMetadata';
+import StructuredSchema, { generateWebPageSchema } from '../components/StructuredSchema';
 
 function NotFound() {
+  const schemas = [
+    generateWebPageSchema({
+      name: "404 - Page Not Found",
+      description: "The page you're looking for doesn't exist. Return to EliteGamerInsights homepage to continue browsing gaming news, tutorials, and culture coverage.",
+      url: window.location.href
+    })
+  ];
+
   return (
     <>
       <PageMetadata
@@ -9,6 +18,7 @@ function NotFound() {
         description="The page you're looking for doesn't exist. Return to EliteGamerInsights homepage to continue browsing gaming news, tutorials, and culture coverage."
         noindex={true}
       />
+      <StructuredSchema schemas={schemas} />
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-[175px] py-16 min-h-[60vh] flex items-center justify-center">
       <div className="text-center max-w-2xl">
         {/* 404 Number with gradient */}

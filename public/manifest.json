@@ -1,6 +1,7 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "EGI",
+  "name": "EliteGamerInsights - Gaming News, Tutorials & Culture",
+  "description": "Your ultimate destination for gaming news, complete tutorials, and gaming culture. EliteGamerInsights delivers compelling content that fuels gamers with the latest updates, guides, and insights.",
   "icons": [
     {
       "src": "favicon.ico",
@@ -18,8 +19,14 @@
       "sizes": "512x512"
     }
   ],
-  "start_url": ".",
+  "start_url": "/",
   "display": "standalone",
   "theme_color": "#1a1d2e",
-  "background_color": "#1a1d2e"
+  "background_color": "#1a1d2e",
+  "orientation": "portrait-primary",
+  "categories": ["games", "entertainment", "news"],
+  "lang": "en-US",
+  "dir": "ltr",
+  "scope": "/",
+  "prefer_related_applications": false
 }

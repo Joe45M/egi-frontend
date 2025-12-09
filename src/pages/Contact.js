@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import PageMetadata from '../components/PageMetadata';
+import PageMetadata, { SITE_URL } from '../components/PageMetadata';
+import StructuredSchema, { generateWebPageSchema, generateBreadcrumbSchema } from '../components/StructuredSchema';
 
 function Contact() {
   const [articleCount, setArticleCount] = useState(0);
@@ -61,6 +62,20 @@ function Contact() {
     };
   }, [increment, stepDuration]);
 
+  const schemas = [
+    generateWebPageSchema({
+      name: "Contact Us - Work With EliteGamerInsights",
+      description: "Get in touch with EliteGamerInsights. From early access opportunities to reviews and guest posting, let's work together to create compelling gaming content.",
+      url: `${SITE_URL}/contact`
+    }),
+    generateBreadcrumbSchema({
+      items: [
+        { name: 'Home', url: SITE_URL },
+        { name: 'Contact', url: `${SITE_URL}/contact` }
+      ]
+    })
+  ];
+
   return (
     <>
       <PageMetadata
@@ -68,6 +83,7 @@ function Contact() {
         description="Get in touch with EliteGamerInsights. From early access opportunities to reviews and guest posting, let's work together to create compelling gaming content."
         keywords="contact, gaming website, work with us, guest post, game reviews, early access"
       />
+      <StructuredSchema schemas={schemas} />
       <div className="min-h-screen pt-[175px] pb-20 px-4 sm:px-6 lg:px-8">
       <div className="container mx-auto max-w-4xl">
 

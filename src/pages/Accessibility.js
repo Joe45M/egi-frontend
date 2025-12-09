@@ -1,6 +1,21 @@
-import PageMetadata from '../components/PageMetadata';
+import PageMetadata, { SITE_URL } from '../components/PageMetadata';
+import StructuredSchema, { generateWebPageSchema, generateBreadcrumbSchema } from '../components/StructuredSchema';
 
 function Accessibility() {
+  const schemas = [
+    generateWebPageSchema({
+      name: "Accessibility Statement",
+      description: "EliteGamerInsights is committed to digital accessibility. Learn about our accessibility features and how we ensure our website is accessible to all users.",
+      url: `${SITE_URL}/accessibility`
+    }),
+    generateBreadcrumbSchema({
+      items: [
+        { name: 'Home', url: SITE_URL },
+        { name: 'Accessibility Statement', url: `${SITE_URL}/accessibility` }
+      ]
+    })
+  ];
+
   return (
     <>
       <PageMetadata
@@ -8,6 +23,7 @@ function Accessibility() {
         description="EliteGamerInsights is committed to digital accessibility. Learn about our accessibility features and how we ensure our website is accessible to all users."
         keywords="accessibility, WCAG, ADA, website accessibility, accessible design"
       />
+      <StructuredSchema schemas={schemas} />
       <div className="min-h-screen pt-[175px] pb-20 px-4 sm:px-6 lg:px-8">
       <div className="container mx-auto max-w-4xl">
         <h1 className="text-4xl md:text-5xl font-bold mb-8 bg-gradient-to-r from-accent-violet-400 to-accent-pink-400 bg-clip-text text-transparent">

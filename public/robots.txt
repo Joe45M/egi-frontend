@@ -1,3 +1,23 @@
 # https://www.robotstxt.org/robotstxt.html
+# Robots.txt for EliteGamerInsights
+
+# Allow all search engines
 User-agent: *
-Disallow:
+Allow: /
+
+# Disallow admin and private areas (if any)
+Disallow: /admin/
+Disallow: /api/
+Disallow: /_next/
+Disallow: /static/
+
+# Allow important resources
+Allow: /static/css/
+Allow: /static/js/
+Allow: /static/images/
+
+# Sitemap location
+Sitemap: https://elitegamerinsights.com/sitemap.xml
+
+# Crawl-delay (optional, adjust as needed)
+Crawl-delay: 1
