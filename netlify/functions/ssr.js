@@ -11,7 +11,7 @@ function loadServerBundle() {
   if (serverRender) {
     return serverRender;
   }
-  
+
   try {
     const serverPath = path.join(__dirname, '../../build/server.js');
     if (fs.existsSync(serverPath)) {
@@ -23,7 +23,7 @@ function loadServerBundle() {
   } catch (error) {
     console.error('Error loading server bundle:', error);
   }
-  
+
   return null;
 }
 
@@ -31,19 +31,19 @@ exports.handler = async (event) => {
   // Get the URL from the event - Netlify uses different event structures
   // Try multiple possible properties
   let url = event.path || event.rawPath || (event.requestContext && event.requestContext.path) || '/';
-  
+
   // If we got the full path with query string, extract just the path
   if (url.includes('?')) {
     url = url.split('?')[0];
   }
-  
+
   // Log for debugging - this will show in Netlify function logs
   console.log('SSR Function called');
   console.log('Event keys:', Object.keys(event));
   console.log('URL:', url);
   console.log('event.path:', event.path);
   console.log('event.rawPath:', event.rawPath);
-  
+
   // Static assets should be handled by redirects, but as a safety check
   if (
     url.startsWith('/static/') ||
@@ -57,7 +57,7 @@ exports.handler = async (event) => {
 
   try {
     const serverModule = loadServerBundle();
-    
+
     if (!serverModule || !serverModule.render) {
       // Fallback to static HTML if server bundle not available
       throw new Error('Server bundle not available');
@@ -136,6 +136,30 @@ exports.handler = async (event) => {
       ensureOgMeta('og:url', head.canonicalUrl || '');
     }
 
+    // Twitter Card meta tags (use name="" attribute, not property="")
+    if (head && (head.ogTitle || head.ogDescription || head.ogImage)) {
+      const ensureTwitterMeta = (name, content) => {
+        if (!content) return;
+        const escaped = content.replace(/"/g, '&quot;');
+        const pattern = new RegExp(
+          `<meta\\s+name="${name}"[^>]*>`,
+          'i'
+        );
+        const tag = `<meta name="${name}" content="${escaped}">`;
+        if (pattern.test(template)) {
+          template = template.replace(pattern, tag);
+        } else {
+          template = template.replace('</head>', `${tag}</head>`);
+        }
+      };
+
+      ensureTwitterMeta('twitter:card', 'summary_large_image');
+      ensureTwitterMeta('twitter:title', head.ogTitle || head.title);
+      ensureTwitterMeta('twitter:description', head.ogDescription || head.description);
+      ensureTwitterMeta('twitter:image', head.ogImage);
+      ensureTwitterMeta('twitter:url', head.canonicalUrl || '');
+    }
+
     // Inject the server-rendered HTML
     // Handle both minified and non-minified HTML
     const rootDivPattern = /<div\s+id="root"\s*><\/div>/gi;
@@ -145,7 +169,7 @@ exports.handler = async (event) => {
       // Fallback: try without spaces
       template = template.replace(/<div id="root"><\/div>/g, `<div id="root">${html}</div>`);
     }
-    
+
     // Verify replacement worked
     if (!template.includes(`<div id="root">${html.substring(0, 50)}`)) {
       console.warn('Warning: HTML replacement may have failed. Template still contains empty root div.');
@@ -161,12 +185,12 @@ exports.handler = async (event) => {
     };
   } catch (error) {
     console.error('SSR Error:', error);
-    
+
     // Fallback to static HTML if SSR fails
     try {
       const htmlPath = path.join(__dirname, '../../build/index.html');
       const template = fs.readFileSync(htmlPath, 'utf8');
-      
+
       return {
         statusCode: 200,
         headers: {

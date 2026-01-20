@@ -10,6 +10,8 @@ export function createEmptyHead() {
     ogDescription: null,
     ogImage: null,
     ogType: null,
+    twitterCard: null,
+    twitterImage: null,
   };
 }
 

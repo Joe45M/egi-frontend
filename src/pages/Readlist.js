@@ -10,18 +10,16 @@ function Readlist() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [readlistSlugs, setReadlistSlugs] = useState([]);
 
   useEffect(() => {
     const loadReadlist = async () => {
       try {
         setLoading(true);
         setError(null);
-        
+
         // Get readlist items from localStorage (each item has slug and postType)
         const readlistItems = getReadlist();
-        setReadlistSlugs(readlistItems.map(item => item.slug));
-        
+
         if (readlistItems.length === 0) {
           setPosts([]);
           setLoading(false);

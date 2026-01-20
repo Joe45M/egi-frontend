@@ -1,7 +1,7 @@
 import React from 'react';
 import { renderToString } from 'react-dom/server';
 import { createMemoryRouter, RouterProvider } from 'react-router-dom';
-import { routes } from './routes';
+import { routes } from './routes-server';
 import { HeadProvider, createEmptyHead } from './headContext';
 import { InitialDataProvider } from './initialDataContext';
 import wordpressApi from './services/wordpressApi';
@@ -14,7 +14,7 @@ async function preloadRouteData(url) {
   try {
     // Parse URL to extract pathname (remove query string and hash)
     const pathname = url.split('?')[0].split('#')[0];
-    
+
     // Check if this is a game post route: /games/:slug
     const gamesMatch = pathname.match(/^\/games\/(.+)$/);
     if (gamesMatch) {
@@ -28,7 +28,7 @@ async function preloadRouteData(url) {
         return null;
       }
     }
-    
+
     // Check if this is a culture post route: /culture/:slug
     const cultureMatch = pathname.match(/^\/culture\/(.+)$/);
     if (cultureMatch) {
