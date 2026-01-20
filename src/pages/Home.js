@@ -37,6 +37,8 @@ function Home() {
       />
       <StructuredSchema schemas={schemas} />
       <div>
+          {/* Visually hidden H1 for SEO - screen reader accessible */}
+          <h1 className="sr-only">EliteGamerInsights - Gaming News, Tutorials & Culture Coverage</h1>
           <Suspense fallback={<ComponentLoadingFallback />}>
             <Slider />
           </Suspense>
