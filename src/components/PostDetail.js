@@ -14,15 +14,27 @@ const RelatedPosts = lazy(() => import("./RelatedPosts"));
 function PostDetail({ postType = 'games', basePath = '/games' }) {
   const { slug } = useParams();
   const initialData = useInitialData();
-  
+
   // Check if we have initial data from SSR that matches this route
   // Compare slugs after decoding to handle URL encoding
   const normalizedSlug = slug ? decodeURIComponent(slug) : '';
-  const hasInitialData = initialData && 
-    initialData.postType === postType && 
-    initialData.post && 
+  const hasInitialData = initialData &&
+    initialData.postType === postType &&
+    initialData.post &&
     initialData.post.slug === normalizedSlug;
-  
+
+  // Debug logging for SSR
+  if (typeof window === 'undefined') {
+    console.log('PostDetail SSR Debug:', {
+      postType,
+      slug,
+      normalizedSlug,
+      hasInitialData,
+      initialDataPostType: initialData?.postType,
+      initialDataSlug: initialData?.post?.slug,
+    });
+  }
+
   const [post, setPost] = useState(hasInitialData ? initialData.post : null);
   const [loading, setLoading] = useState(!hasInitialData);
   const [notFound, setNotFound] = useState(false);
@@ -74,7 +86,7 @@ function PostDetail({ postType = 'games', basePath = '/games' }) {
 
       // Find all ad elements in the content
       const adElements = contentElement.querySelectorAll('ins.adsbygoogle');
-      
+
       // Remove any script tags (they won't execute anyway)
       const scripts = contentElement.querySelectorAll('script');
       scripts.forEach(script => {
@@ -160,10 +172,10 @@ function PostDetail({ postType = 'games', basePath = '/games' }) {
   const articleUrl = `${SITE_URL}${basePath}/${slug}`;
   const publishedDate = post.date ? new Date(post.date).toISOString() : null;
   const modifiedDate = post.modified ? new Date(post.modified).toISOString() : publishedDate;
-  
+
   // Prepare section (capitalize first letter of post type)
   const articleSection = postType.charAt(0).toUpperCase() + postType.slice(1);
-  
+
   // Prepare tags array from categories/tags if available
   const articleTags = [];
   if (post.categories && Array.isArray(post.categories) && post.categories.length > 0) {
@@ -224,47 +236,47 @@ function PostDetail({ postType = 'games', basePath = '/games' }) {
       <div className="pt-[200px] p-4 container mx-auto">
         <h1 className="text-4xl font-bold mb-4 text-white" dangerouslySetInnerHTML={{ __html: post.title }}></h1>
 
-        <hr className="border-t border-t-gray-60 mb-4"/>
+        <hr className="border-t border-t-gray-60 mb-4" />
 
         <div className="text-gray-400 flex-wrap mb-5 lg:mb-0 flex justify-between">
-            <div>
-                Posted by <Link to="/profile" className="w-full ">{post.authorName || 'Author'}</Link> on {formatDate(post.date)}
-            </div>
+          <div>
+            Posted by <Link to="/profile" className="w-full ">{post.authorName || 'Author'}</Link> on {formatDate(post.date)}
+          </div>
 
-            <div>
-                <SavePost slug={post.slug} postType={postType} />
-            </div>
+          <div>
+            <SavePost slug={post.slug} postType={postType} />
+          </div>
         </div>
 
         <div>
-            <div className="grid gap-5 lg:grid-cols-5">
-                <div className="lg:col-span-3">
-                    {post.image && (
-                        <Image url={post.image} alt={post.title} />
-                    )}
-                    <div 
-                      ref={contentRef}
-                      className="wp-content"
-                      dangerouslySetInnerHTML={{ __html: post.content }}
-                    />
-                </div>
-
-                <div className="lg:col-span-2">
-                    <Suspense fallback={
-                      <div>
-                        <h2 className="text-2xl font-bold mb-4">Related Posts</h2>
-                        {[1, 2, 3, 4].map((i) => (
-                          <div key={i} className="flex-1 bg-accent-violet-950/10 animate-pulse rounded-lg h-16 mb-5"></div>
-                        ))}
-                      </div>
-                    }>
-                      <RelatedPosts postId={post.id} postType={postType} basePath={basePath} />
-                    </Suspense>
-                </div>
+          <div className="grid gap-5 lg:grid-cols-5">
+            <div className="lg:col-span-3">
+              {post.image && (
+                <Image url={post.image} alt={post.title} />
+              )}
+              <div
+                ref={contentRef}
+                className="wp-content"
+                dangerouslySetInnerHTML={{ __html: post.content }}
+              />
             </div>
+
+            <div className="lg:col-span-2">
+              <Suspense fallback={
+                <div>
+                  <h2 className="text-2xl font-bold mb-4">Related Posts</h2>
+                  {[1, 2, 3, 4].map((i) => (
+                    <div key={i} className="flex-1 bg-accent-violet-950/10 animate-pulse rounded-lg h-16 mb-5"></div>
+                  ))}
+                </div>
+              }>
+                <RelatedPosts postId={post.id} postType={postType} basePath={basePath} />
+              </Suspense>
+            </div>
+          </div>
         </div>
 
-    </div>
+      </div>
     </>
   );
 }

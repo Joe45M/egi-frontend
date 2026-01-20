@@ -149,6 +149,7 @@ function PageMetadata({
   // we push the relevant head data into the head context so the SSR layer
   // can inject it into the HTML template.
   if (typeof document === 'undefined' && headContext && headContext.setHead) {
+    console.log('PageMetadata SSR: Setting head with title:', pageTitle, 'image:', fullImageUrl);
     headContext.setHead({
       title: pageTitle,
       description: metaDescription,

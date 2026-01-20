@@ -88,12 +88,16 @@ async function preloadRouteData(url) {
     console.error('Error in preloadRouteData:', error);
   }
 
+
   return null;
 }
 
 export async function render(url) {
+  console.log('entry-server: render called with URL:', url);
+
   // Pre-fetch data for routes that need it
   const initialData = await preloadRouteData(url);
+  console.log('entry-server: initialData:', initialData ? `postType=${initialData.postType}, slug=${initialData.post?.slug}` : 'null');
 
   const router = createMemoryRouter(routes, {
     initialEntries: [url],
@@ -110,6 +114,11 @@ export async function render(url) {
       </HeadProvider>
     </React.StrictMode>
   );
+
+  // Debug logging - what did we get from the render?
+  console.log('entry-server: After render, head.title:', head.title);
+  console.log('entry-server: After render, head.ogImage:', head.ogImage);
+  console.log('entry-server: HTML rendered, length:', html.length);
 
   return {
     html,

@@ -24,7 +24,7 @@ async function fetchFromAPI(endpoint, options = {}) {
     }
 
     const data = await response.json();
-    
+
     // Return data with headers for pagination info
     if (options.includeHeaders) {
       return {
@@ -52,8 +52,35 @@ function decodeHtmlEntities(html) {
   if (!html || typeof html !== 'string') {
     return html || '';
   }
-  
-  // Create a temporary textarea element to decode HTML entities
+
+  // SSR-safe implementation - use regex-based decoding for server
+  // On the client, we can use the DOM-based approach for better accuracy
+  if (typeof document === 'undefined') {
+    // Server-side: use regex-based decoding for common HTML entities
+    return html
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"')
+      .replace(/&#039;/g, "'")
+      .replace(/&#x27;/g, "'")
+      .replace(/&#x2F;/g, '/')
+      .replace(/&#39;/g, "'")
+      .replace(/&nbsp;/g, ' ')
+      .replace(/&mdash;/g, '\u2014')
+      .replace(/&ndash;/g, '\u2013')
+      .replace(/&hellip;/g, '\u2026')
+      .replace(/&lsquo;/g, '\u2018')
+      .replace(/&rsquo;/g, '\u2019')
+      .replace(/&ldquo;/g, '\u201C')
+      .replace(/&rdquo;/g, '\u201D')
+      // Handle numeric character references (e.g., &#8217;)
+      .replace(/&#(\d+);/g, (match, dec) => String.fromCharCode(dec))
+      // Handle hex character references (e.g., &#x2019;)
+      .replace(/&#x([0-9A-Fa-f]+);/g, (match, hex) => String.fromCharCode(parseInt(hex, 16)));
+  }
+
+  // Client-side: use DOM-based approach for accurate decoding
   const textarea = document.createElement('textarea');
   textarea.innerHTML = html;
   return textarea.value;
@@ -147,7 +174,7 @@ export const postsApi = {
 
     try {
       const posts = await fetchFromAPI(`/posts?${queryParams.toString()}`);
-      
+
       const transformedPosts = posts.map(transformPost);
 
       // Fetch featured images if requested
@@ -237,7 +264,7 @@ export const postsApi = {
       const result = await fetchFromAPI(`/${postType}?${queryParams.toString()}`, { includeHeaders: true });
       const posts = result.data || result; // Handle both with and without headers
       const pagination = result.headers || null;
-      
+
       const transformedPosts = posts.map(transformPost);
 
       // Fetch featured images if requested
@@ -254,7 +281,7 @@ export const postsApi = {
             return post;
           })
         );
-        
+
         // Return posts with pagination if available
         if (pagination) {
           return {
@@ -267,7 +294,7 @@ export const postsApi = {
             }
           };
         }
-        
+
         return postsWithImages;
       }
 
@@ -328,7 +355,7 @@ export const postsApi = {
       // URL encode the slug to handle special characters
       const encodedSlug = encodeURIComponent(slug);
       const items = await fetchFromAPI(`/${postType}?slug=${encodedSlug}&_embed=1`);
-      
+
       if (!items || items.length === 0) {
         throw new Error(`${postType} with slug "${slug}" not found`);
       }
@@ -391,7 +418,7 @@ export const postsApi = {
       // URL encode the slug to handle special characters
       const encodedSlug = encodeURIComponent(slug);
       const posts = await fetchFromAPI(`/posts?slug=${encodedSlug}&_embed=1`);
-      
+
       if (!posts || posts.length === 0) {
         throw new Error(`Post with slug "${slug}" not found`);
       }
@@ -428,7 +455,7 @@ export const postsApi = {
     try {
       // First get the current post to get its categories and tags
       const currentPost = await fetchFromAPI(`/posts/${postId}`);
-      
+
       const categories = currentPost.categories || [];
 
       // Build query to get posts with same categories or tags
@@ -443,7 +470,7 @@ export const postsApi = {
       }
 
       const posts = await fetchFromAPI(`/posts?${queryParams.toString()}`);
-      
+
       // Take only the limit and transform
       const relatedPosts = posts.slice(0, limit).map(post => {
         const transformed = transformPost(post);
@@ -470,7 +497,7 @@ export const postsApi = {
     try {
       // First get the current post to get its categories and tags
       const currentPost = await fetchFromAPI(`/${postType}/${postId}`);
-      
+
       const categories = currentPost.categories || [];
 
       // Build query to get posts with same categories or tags from the same post type
@@ -485,10 +512,10 @@ export const postsApi = {
       }
 
       const posts = await fetchFromAPI(`/${postType}?${queryParams.toString()}`);
-      
+
       // Filter out the current post and take only the limit
       const filteredPosts = posts.filter(post => post.id !== postId).slice(0, limit);
-      
+
       // Transform posts
       const relatedPosts = filteredPosts.map(post => {
         const transformed = transformPost(post);
@@ -519,7 +546,7 @@ export const postsApi = {
 
     try {
       // Fetch all posts in parallel
-      const postsPromises = slugs.map(slug => 
+      const postsPromises = slugs.map(slug =>
         this.getByPostTypeAndSlug(postType, slug, includeImage).catch(error => {
           console.warn(`Failed to fetch ${postType} with slug "${slug}":`, error);
           return null; // Return null for failed fetches
@@ -527,7 +554,7 @@ export const postsApi = {
       );
 
       const posts = await Promise.all(postsPromises);
-      
+
       // Filter out null values (failed fetches) and maintain order
       return posts.filter(post => post !== null);
     } catch (error) {
@@ -706,11 +733,11 @@ export const taxonomiesApi = {
     try {
       const encodedSlug = encodeURIComponent(slug);
       const terms = await fetchFromAPI(`/${taxonomy}?slug=${encodedSlug}`);
-      
+
       if (!terms || terms.length === 0) {
         throw new Error(`Term with slug "${slug}" not found in taxonomy "${taxonomy}"`);
       }
-      
+
       return terms[0];
     } catch (error) {
       console.error(`Error fetching term by slug "${slug}" from taxonomy "${taxonomy}":`, error);

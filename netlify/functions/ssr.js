@@ -65,6 +65,13 @@ exports.handler = async (event) => {
 
     const { html, status, head } = await serverModule.render(url);
 
+    // Debug logging - check if head has values
+    console.log('SSR Debug - URL:', url);
+    console.log('SSR Debug - Head values:', JSON.stringify(head, null, 2));
+    console.log('SSR Debug - HTML length:', html ? html.length : 0);
+    console.log('SSR Debug - Has title:', !!head?.title);
+    console.log('SSR Debug - Has ogImage:', !!head?.ogImage);
+
     // Read the HTML template
     const htmlPath = path.join(__dirname, '../../build/index.html');
     let template = fs.readFileSync(htmlPath, 'utf8');
