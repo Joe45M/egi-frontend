@@ -153,10 +153,25 @@ function PageMetadata({
       title: pageTitle,
       description: metaDescription,
       canonicalUrl: fullUrl,
+      // Open Graph
       ogTitle: pageTitle,
       ogDescription: metaDescription,
       ogImage: fullImageUrl,
       ogType: type,
+      ogSiteName: SITE_NAME,
+      ogLocale: locale,
+      ogImageAlt: imageAlt || pageTitle,
+      ogImageWidth: imageWidth ? String(imageWidth) : null,
+      ogImageHeight: imageHeight ? String(imageHeight) : null,
+      // Twitter
+      twitterCard: 'summary_large_image',
+      twitterImage: fullImageUrl,
+      twitterImageAlt: imageAlt || pageTitle,
+      // Article-specific (only set if type is 'article')
+      articlePublishedTime: type === 'article' ? publishedTime : null,
+      articleModifiedTime: type === 'article' ? modifiedTime : null,
+      articleAuthor: type === 'article' ? author : null,
+      articleSection: type === 'article' ? section : null,
     });
   }
 

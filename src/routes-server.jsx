@@ -4,6 +4,7 @@ import Layout from './components/Layout';
 // Direct imports for server-side rendering (no lazy loading)
 import Home from './pages/Home';
 import Games from './pages/Games';
+import GameReviews from './pages/GameReviews';
 import OldGame from './pages/OldGame';
 import OldGameRedirect from './pages/OldGameRedirect';
 import Culture from './pages/Culture';
@@ -24,6 +25,7 @@ export function getRouteElements() {
             <Route path="/" element={<Layout />}>
                 <Route index element={<Home />} />
                 <Route path="games/:slug" element={<Games />} />
+                <Route path="game-reviews/:slug" element={<GameReviews />} />
                 <Route path="game/:slug/" element={<OldGameRedirect />} />
                 <Route path="game/:slug" element={<OldGame />} />
                 <Route path="culture/:slug" element={<Culture />} />

@@ -6,12 +6,25 @@ export function createEmptyHead() {
     title: null,
     description: null,
     canonicalUrl: null,
+    // Open Graph
     ogTitle: null,
     ogDescription: null,
     ogImage: null,
     ogType: null,
+    ogSiteName: null,
+    ogLocale: null,
+    ogImageAlt: null,
+    ogImageWidth: null,
+    ogImageHeight: null,
+    // Twitter
     twitterCard: null,
     twitterImage: null,
+    twitterImageAlt: null,
+    // Article-specific
+    articlePublishedTime: null,
+    articleModifiedTime: null,
+    articleAuthor: null,
+    articleSection: null,
   };
 }
 

@@ -112,7 +112,7 @@ exports.handler = async (event) => {
       }
     }
 
-    // Basic Open Graph tags
+    // Open Graph meta tags
     if (head && (head.ogTitle || head.ogDescription || head.ogImage)) {
       const ensureOgMeta = (property, content) => {
         if (!content) return;
@@ -129,11 +129,43 @@ exports.handler = async (event) => {
         }
       };
 
+      // Core OG tags
       ensureOgMeta('og:title', head.ogTitle || head.title);
       ensureOgMeta('og:description', head.ogDescription || head.description);
       ensureOgMeta('og:image', head.ogImage);
       ensureOgMeta('og:type', head.ogType || 'website');
       ensureOgMeta('og:url', head.canonicalUrl || '');
+
+      // Additional OG tags
+      ensureOgMeta('og:site_name', head.ogSiteName || 'EliteGamerInsights');
+      ensureOgMeta('og:locale', head.ogLocale || 'en_US');
+
+      // Image metadata
+      if (head.ogImage) {
+        ensureOgMeta('og:image:alt', head.ogImageAlt);
+        if (head.ogImageWidth) ensureOgMeta('og:image:width', head.ogImageWidth);
+        if (head.ogImageHeight) ensureOgMeta('og:image:height', head.ogImageHeight);
+        // Add secure_url for HTTPS images
+        if (head.ogImage.startsWith('https://')) {
+          ensureOgMeta('og:image:secure_url', head.ogImage);
+        }
+      }
+
+      // Article-specific OG tags (for blog posts)
+      if (head.ogType === 'article') {
+        if (head.articlePublishedTime) {
+          ensureOgMeta('article:published_time', head.articlePublishedTime);
+        }
+        if (head.articleModifiedTime) {
+          ensureOgMeta('article:modified_time', head.articleModifiedTime);
+        }
+        if (head.articleAuthor) {
+          ensureOgMeta('article:author', head.articleAuthor);
+        }
+        if (head.articleSection) {
+          ensureOgMeta('article:section', head.articleSection);
+        }
+      }
     }
 
     // Twitter Card meta tags (use name="" attribute, not property="")
@@ -153,11 +185,12 @@ exports.handler = async (event) => {
         }
       };
 
-      ensureTwitterMeta('twitter:card', 'summary_large_image');
+      ensureTwitterMeta('twitter:card', head.twitterCard || 'summary_large_image');
       ensureTwitterMeta('twitter:title', head.ogTitle || head.title);
       ensureTwitterMeta('twitter:description', head.ogDescription || head.description);
-      ensureTwitterMeta('twitter:image', head.ogImage);
+      ensureTwitterMeta('twitter:image', head.twitterImage || head.ogImage);
       ensureTwitterMeta('twitter:url', head.canonicalUrl || '');
+      ensureTwitterMeta('twitter:image:alt', head.twitterImageAlt || head.ogImageAlt);
     }
 
     // Inject the server-rendered HTML

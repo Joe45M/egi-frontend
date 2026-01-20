@@ -15,31 +15,73 @@ async function preloadRouteData(url) {
     // Parse URL to extract pathname (remove query string and hash)
     const pathname = url.split('?')[0].split('#')[0];
 
+    /**
+     * Extract slug from pathname, handling malformed URLs
+     * Some bots/crawlers append junk to URLs like:
+     * /games/my-post/twsrc%2525...
+     * We only want "my-post" as the slug
+     */
+    function extractSlug(match) {
+      if (!match) return null;
+      let slug = match;
+      // Remove trailing slash
+      slug = slug.replace(/\/$/, '');
+      // If slug contains another slash, take only the first part
+      // This handles cases like "my-post/junk-from-bots"
+      if (slug.includes('/')) {
+        slug = slug.split('/')[0];
+      }
+      // Decode the slug
+      try {
+        slug = decodeURIComponent(slug);
+      } catch (e) {
+        // If decoding fails, use as-is
+      }
+      return slug;
+    }
+
     // Check if this is a game post route: /games/:slug
     const gamesMatch = pathname.match(/^\/games\/(.+)$/);
     if (gamesMatch) {
-      const slug = decodeURIComponent(gamesMatch[1]);
-      try {
-        const post = await wordpressApi.posts.getByPostTypeAndSlug('games', slug, true);
-        return { post, postType: 'games', basePath: '/games' };
-      } catch (error) {
-        console.error('Error preloading game post:', error);
-        // Return null to allow the component to handle the error
-        return null;
+      const slug = extractSlug(gamesMatch[1]);
+      if (slug) {
+        try {
+          const post = await wordpressApi.posts.getByPostTypeAndSlug('games', slug, true);
+          return { post, postType: 'games', basePath: '/games' };
+        } catch (error) {
+          console.error('Error preloading game post:', error);
+          return null;
+        }
       }
     }
 
     // Check if this is a culture post route: /culture/:slug
     const cultureMatch = pathname.match(/^\/culture\/(.+)$/);
     if (cultureMatch) {
-      const slug = decodeURIComponent(cultureMatch[1]);
-      try {
-        const post = await wordpressApi.posts.getByPostTypeAndSlug('culture', slug, true);
-        return { post, postType: 'culture', basePath: '/culture' };
-      } catch (error) {
-        console.error('Error preloading culture post:', error);
-        // Return null to allow the component to handle the error
-        return null;
+      const slug = extractSlug(cultureMatch[1]);
+      if (slug) {
+        try {
+          const post = await wordpressApi.posts.getByPostTypeAndSlug('culture', slug, true);
+          return { post, postType: 'culture', basePath: '/culture' };
+        } catch (error) {
+          console.error('Error preloading culture post:', error);
+          return null;
+        }
+      }
+    }
+
+    // Check if this is a game-reviews post route: /game-reviews/:slug
+    const gameReviewsMatch = pathname.match(/^\/game-reviews\/(.+)$/);
+    if (gameReviewsMatch) {
+      const slug = extractSlug(gameReviewsMatch[1]);
+      if (slug) {
+        try {
+          const post = await wordpressApi.posts.getByPostTypeAndSlug('game-reviews', slug, true);
+          return { post, postType: 'game-reviews', basePath: '/game-reviews' };
+        } catch (error) {
+          console.error('Error preloading game-reviews post:', error);
+          return null;
+        }
       }
     }
   } catch (error) {
