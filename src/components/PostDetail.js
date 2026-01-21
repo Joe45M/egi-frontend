@@ -8,6 +8,7 @@ import PageMetadata, { stripHtml, createExcerpt, SITE_URL } from "./PageMetadata
 import { useInitialData } from "../initialDataContext";
 import StructuredSchema, { generateArticleSchema, generateBreadcrumbSchema } from "./StructuredSchema";
 import AuthorBox from "./AuthorBox";
+import { replaceAdShortcodes } from "../utils/ads";
 
 // Lazy load RelatedPosts component
 const RelatedPosts = lazy(() => import("./RelatedPosts"));
@@ -258,7 +259,7 @@ function PostDetail({ postType = 'games', basePath = '/games' }) {
                             <div
                                 ref={contentRef}
                                 className="wp-content"
-                                dangerouslySetInnerHTML={{ __html: post.content }}
+                                dangerouslySetInnerHTML={{ __html: replaceAdShortcodes(post.content) }}
                             />
                         </div>
 
