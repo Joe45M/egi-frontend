@@ -9,38 +9,38 @@ const API_BASE_URL = 'https://api.elitegamerinsights.com/wp-json/wp/v2';
  * Generic fetch function with error handling
  */
 async function fetchFromAPI(endpoint, options = {}) {
-  try {
-    const url = endpoint.startsWith('http') ? endpoint : `${API_BASE_URL}${endpoint}`;
-    const response = await fetch(url, {
-      ...options,
-      headers: {
-        'Content-Type': 'application/json',
-        ...options.headers,
-      },
-    });
+    try {
+        const url = endpoint.startsWith('http') ? endpoint : `${API_BASE_URL}${endpoint}`;
+        const response = await fetch(url, {
+            ...options,
+            headers: {
+                'Content-Type': 'application/json',
+                ...options.headers,
+            },
+        });
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const data = await response.json();
-
-    // Return data with headers for pagination info
-    if (options.includeHeaders) {
-      return {
-        data,
-        headers: {
-          total: parseInt(response.headers.get('X-WP-Total') || '0', 10),
-          totalPages: parseInt(response.headers.get('X-WP-TotalPages') || '0', 10),
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
-      };
-    }
 
-    return data;
-  } catch (error) {
-    console.error(`API Error fetching ${endpoint}:`, error);
-    throw error;
-  }
+        const data = await response.json();
+
+        // Return data with headers for pagination info
+        if (options.includeHeaders) {
+            return {
+                data,
+                headers: {
+                    total: parseInt(response.headers.get('X-WP-Total') || '0', 10),
+                    totalPages: parseInt(response.headers.get('X-WP-TotalPages') || '0', 10),
+                }
+            };
+        }
+
+        return data;
+    } catch (error) {
+        console.error(`API Error fetching ${endpoint}:`, error);
+        throw error;
+    }
 }
 
 /**
@@ -49,713 +49,855 @@ async function fetchFromAPI(endpoint, options = {}) {
  * @returns {string} Decoded string
  */
 function decodeHtmlEntities(html) {
-  if (!html || typeof html !== 'string') {
-    return html || '';
-  }
+    if (!html || typeof html !== 'string') {
+        return html || '';
+    }
 
-  // SSR-safe implementation - use regex-based decoding for server
-  // On the client, we can use the DOM-based approach for better accuracy
-  if (typeof document === 'undefined') {
-    // Server-side: use regex-based decoding for common HTML entities
-    return html
-      .replace(/&amp;/g, '&')
-      .replace(/&lt;/g, '<')
-      .replace(/&gt;/g, '>')
-      .replace(/&quot;/g, '"')
-      .replace(/&#039;/g, "'")
-      .replace(/&#x27;/g, "'")
-      .replace(/&#x2F;/g, '/')
-      .replace(/&#39;/g, "'")
-      .replace(/&nbsp;/g, ' ')
-      .replace(/&mdash;/g, '\u2014')
-      .replace(/&ndash;/g, '\u2013')
-      .replace(/&hellip;/g, '\u2026')
-      .replace(/&lsquo;/g, '\u2018')
-      .replace(/&rsquo;/g, '\u2019')
-      .replace(/&ldquo;/g, '\u201C')
-      .replace(/&rdquo;/g, '\u201D')
-      // Handle numeric character references (e.g., &#8217;)
-      .replace(/&#(\d+);/g, (match, dec) => String.fromCharCode(dec))
-      // Handle hex character references (e.g., &#x2019;)
-      .replace(/&#x([0-9A-Fa-f]+);/g, (match, hex) => String.fromCharCode(parseInt(hex, 16)));
-  }
+    // SSR-safe implementation - use regex-based decoding for server
+    // On the client, we can use the DOM-based approach for better accuracy
+    if (typeof document === 'undefined') {
+        // Server-side: use regex-based decoding for common HTML entities
+        return html
+            .replace(/&amp;/g, '&')
+            .replace(/&lt;/g, '<')
+            .replace(/&gt;/g, '>')
+            .replace(/&quot;/g, '"')
+            .replace(/&#039;/g, "'")
+            .replace(/&#x27;/g, "'")
+            .replace(/&#x2F;/g, '/')
+            .replace(/&#39;/g, "'")
+            .replace(/&nbsp;/g, ' ')
+            .replace(/&mdash;/g, '\u2014')
+            .replace(/&ndash;/g, '\u2013')
+            .replace(/&hellip;/g, '\u2026')
+            .replace(/&lsquo;/g, '\u2018')
+            .replace(/&rsquo;/g, '\u2019')
+            .replace(/&ldquo;/g, '\u201C')
+            .replace(/&rdquo;/g, '\u201D')
+            // Handle numeric character references (e.g., &#8217;)
+            .replace(/&#(\d+);/g, (match, dec) => String.fromCharCode(dec))
+            // Handle hex character references (e.g., &#x2019;)
+            .replace(/&#x([0-9A-Fa-f]+);/g, (match, hex) => String.fromCharCode(parseInt(hex, 16)));
+    }
 
-  // Client-side: use DOM-based approach for accurate decoding
-  const textarea = document.createElement('textarea');
-  textarea.innerHTML = html;
-  return textarea.value;
+    // Client-side: use DOM-based approach for accurate decoding
+    const textarea = document.createElement('textarea');
+    textarea.innerHTML = html;
+    return textarea.value;
 }
 
 /**
  * Get featured image URL from media ID
  */
 async function getFeaturedImageUrl(mediaId) {
-  if (!mediaId || mediaId === 0) {
-    return null;
-  }
+    if (!mediaId || mediaId === 0) {
+        return null;
+    }
 
-  try {
-    const media = await fetchFromAPI(`/media/${mediaId}`);
-    return media?.source_url || null;
-  } catch (error) {
-    console.error(`Error fetching featured image ${mediaId}:`, error);
-    return null;
-  }
+    try {
+        const media = await fetchFromAPI(`/media/${mediaId}`);
+        return media?.source_url || null;
+    } catch (error) {
+        console.error(`Error fetching featured image ${mediaId}:`, error);
+        return null;
+    }
+}
+
+/**
+ * Get author data by ID
+ * @param {number} authorId - Author/User ID
+ * @returns {Object|null} Author data with name, description, avatar, slug
+ */
+async function getAuthorData(authorId) {
+    if (!authorId || authorId === 0) {
+        return null;
+    }
+
+    try {
+        const author = await fetchFromAPI(`/users/${authorId}`);
+        return {
+            name: author.name || null,
+            description: author.description || null,
+            slug: author.slug || null,
+            avatar: author.avatar_urls?.['96'] || author.avatar_urls?.['48'] || author.avatar_urls?.['24'] || null,
+        };
+    } catch (error) {
+        console.error(`Error fetching author ${authorId}:`, error);
+        return null;
+    }
 }
 
 /**
  * Transform WordPress post data to match component expectations
  */
 function transformPost(post) {
-  const rawTitle = post.title?.rendered || post.title || '';
-  return {
-    id: post.id,
-    title: decodeHtmlEntities(rawTitle),
-    date: post.date || post.modified || '',
-    slug: post.slug || '',
-    excerpt: post.excerpt?.rendered || post.excerpt || '',
-    content: post.content?.rendered || post.content || '',
-    link: post.link || '',
-    featuredMediaId: post.featured_media || 0,
-    categories: post.categories || [],
-    tags: post.tags || [],
-    author: post.author || null,
-    image: null, // Will be populated by getFeaturedImageUrl
-  };
+    const rawTitle = post.title?.rendered || post.title || '';
+    return {
+        id: post.id,
+        title: decodeHtmlEntities(rawTitle),
+        date: post.date || post.modified || '',
+        slug: post.slug || '',
+        excerpt: post.excerpt?.rendered || post.excerpt || '',
+        content: post.content?.rendered || post.content || '',
+        link: post.link || '',
+        featuredMediaId: post.featured_media || 0,
+        categories: post.categories || [],
+        tags: post.tags || [],
+        author: post.author || null,
+        image: null, // Will be populated by getFeaturedImageUrl
+    };
 }
 
 /**
  * Posts API
  */
 export const postsApi = {
-  /**
-   * Get all posts with optional filters
-   * @param {Object} params - Query parameters
-   * @param {number} params.page - Page number (default: 1)
-   * @param {number} params.perPage - Posts per page (default: 10)
-   * @param {number} params.category - Category ID to filter by
-   * @param {number} params.tag - Tag ID to filter by
-   * @param {string} params.search - Search query
-   * @param {string} params.orderBy - Order by field (date, title, etc.)
-   * @param {string} params.order - Order direction (asc, desc)
-   * @param {boolean} params.includeImages - Whether to fetch featured images (default: true)
-   */
-  async getAll(params = {}) {
-    const {
-      page = 1,
-      perPage = 10,
-      category = null,
-      tag = null,
-      search = null,
-      orderBy = 'date',
-      order = 'desc',
-      includeImages = true,
-    } = params;
+    /**
+     * Get all posts with optional filters
+     * @param {Object} params - Query parameters
+     * @param {number} params.page - Page number (default: 1)
+     * @param {number} params.perPage - Posts per page (default: 10)
+     * @param {number} params.category - Category ID to filter by
+     * @param {number} params.tag - Tag ID to filter by
+     * @param {string} params.search - Search query
+     * @param {string} params.orderBy - Order by field (date, title, etc.)
+     * @param {string} params.order - Order direction (asc, desc)
+     * @param {boolean} params.includeImages - Whether to fetch featured images (default: true)
+     */
+    async getAll(params = {}) {
+        const {
+            page = 1,
+            perPage = 10,
+            category = null,
+            tag = null,
+            search = null,
+            orderBy = 'date',
+            order = 'desc',
+            includeImages = true,
+        } = params;
 
-    const queryParams = new URLSearchParams({
-      page: page.toString(),
-      per_page: perPage.toString(),
-      orderby: orderBy,
-      order: order,
-      _embed: includeImages ? '1' : '0', // Include embedded media data
-    });
+        const queryParams = new URLSearchParams({
+            page: page.toString(),
+            per_page: perPage.toString(),
+            orderby: orderBy,
+            order: order,
+            _embed: includeImages ? '1' : '0', // Include embedded media data
+        });
 
-    if (category) {
-      queryParams.append('categories', category.toString());
-    }
+        if (category) {
+            queryParams.append('categories', category.toString());
+        }
 
-    if (tag) {
-      queryParams.append('tags', tag.toString());
-    }
+        if (tag) {
+            queryParams.append('tags', tag.toString());
+        }
 
-    if (search) {
-      queryParams.append('search', search);
-    }
+        if (search) {
+            queryParams.append('search', search);
+        }
 
-    try {
-      const posts = await fetchFromAPI(`/posts?${queryParams.toString()}`);
+        try {
+            const posts = await fetchFromAPI(`/posts?${queryParams.toString()}`);
 
-      const transformedPosts = posts.map(transformPost);
+            const transformedPosts = posts.map(transformPost);
 
-      // Fetch featured images if requested
-      if (includeImages) {
-        const postsWithImages = await Promise.all(
-          transformedPosts.map(async (post) => {
-            // Try to get image from _embedded first (faster)
-            const originalPost = posts.find(p => p.id === post.id);
-            if (originalPost?._embedded?.['wp:featuredmedia']?.[0]?.source_url) {
-              post.image = originalPost._embedded['wp:featuredmedia'][0].source_url;
-            } else if (post.featuredMediaId) {
-              post.image = await getFeaturedImageUrl(post.featuredMediaId);
+            // Fetch featured images if requested
+            if (includeImages) {
+                const postsWithImages = await Promise.all(
+                    transformedPosts.map(async (post) => {
+                        // Try to get image from _embedded first (faster)
+                        const originalPost = posts.find(p => p.id === post.id);
+                        if (originalPost?._embedded?.['wp:featuredmedia']?.[0]?.source_url) {
+                            post.image = originalPost._embedded['wp:featuredmedia'][0].source_url;
+                        } else if (post.featuredMediaId) {
+                            post.image = await getFeaturedImageUrl(post.featuredMediaId);
+                        }
+                        return post;
+                    })
+                );
+                return postsWithImages;
             }
-            return post;
-          })
-        );
-        return postsWithImages;
-      }
 
-      return transformedPosts;
-    } catch (error) {
-      console.error('Error fetching posts:', error);
-      throw error;
-    }
-  },
-
-  /**
-   * Get posts from a specific post type
-   * @param {string} postType - Post type name (e.g., 'post', 'page', or custom post type)
-   * @param {Object} params - Query parameters
-   * @param {number} params.page - Page number (default: 1)
-   * @param {number} params.perPage - Posts per page (default: 10)
-   * @param {number} params.category - Category ID to filter by
-   * @param {number} params.tag - Tag ID to filter by
-   * @param {string} params.search - Search query
-   * @param {string} params.orderBy - Order by field (date, title, etc.)
-   * @param {string} params.order - Order direction (asc, desc)
-   * @param {boolean} params.includeImages - Whether to fetch featured images (default: true)
-   */
-  async getByPostType(postType, params = {}) {
-    const {
-      page = 1,
-      perPage = 10,
-      category = null,
-      tag = null,
-      search = null,
-      orderBy = 'date',
-      order = 'desc',
-      includeImages = true,
-      taxonomyFilter = null, // Object with taxonomy name as key and term ID(s) as value, e.g., { games: 5 } or { games: [5, 10] }
-    } = params;
-
-    const queryParams = new URLSearchParams({
-      page: page.toString(),
-      per_page: perPage.toString(),
-      orderby: orderBy,
-      order: order,
-      _embed: includeImages ? '1' : '0', // Include embedded media data
-    });
-
-    if (category) {
-      queryParams.append('categories', category.toString());
-    }
-
-    if (tag) {
-      queryParams.append('tags', tag.toString());
-    }
-
-    if (search) {
-      queryParams.append('search', search);
-    }
-
-    // Support custom taxonomy filtering
-    if (taxonomyFilter && typeof taxonomyFilter === 'object') {
-      Object.keys(taxonomyFilter).forEach(taxonomy => {
-        const termIds = taxonomyFilter[taxonomy];
-        if (termIds) {
-          // Support both single ID and array of IDs
-          const ids = Array.isArray(termIds) ? termIds.join(',') : termIds.toString();
-          queryParams.append(taxonomy, ids);
+            return transformedPosts;
+        } catch (error) {
+            console.error('Error fetching posts:', error);
+            throw error;
         }
-      });
-    }
+    },
 
-    try {
-      // WordPress REST API endpoint for custom post types: /wp/v2/{post_type}
-      const result = await fetchFromAPI(`/${postType}?${queryParams.toString()}`, { includeHeaders: true });
-      const posts = result.data || result; // Handle both with and without headers
-      const pagination = result.headers || null;
+    /**
+     * Get posts from a specific post type
+     * @param {string} postType - Post type name (e.g., 'post', 'page', or custom post type)
+     * @param {Object} params - Query parameters
+     * @param {number} params.page - Page number (default: 1)
+     * @param {number} params.perPage - Posts per page (default: 10)
+     * @param {number} params.category - Category ID to filter by
+     * @param {number} params.tag - Tag ID to filter by
+     * @param {string} params.search - Search query
+     * @param {string} params.orderBy - Order by field (date, title, etc.)
+     * @param {string} params.order - Order direction (asc, desc)
+     * @param {boolean} params.includeImages - Whether to fetch featured images (default: true)
+     */
+    async getByPostType(postType, params = {}) {
+        const {
+            page = 1,
+            perPage = 10,
+            category = null,
+            tag = null,
+            search = null,
+            orderBy = 'date',
+            order = 'desc',
+            includeImages = true,
+            taxonomyFilter = null, // Object with taxonomy name as key and term ID(s) as value, e.g., { games: 5 } or { games: [5, 10] }
+        } = params;
 
-      const transformedPosts = posts.map(transformPost);
+        const queryParams = new URLSearchParams({
+            page: page.toString(),
+            per_page: perPage.toString(),
+            orderby: orderBy,
+            order: order,
+            _embed: includeImages ? '1' : '0', // Include embedded media data
+        });
 
-      // Fetch featured images if requested
-      if (includeImages) {
-        const postsWithImages = await Promise.all(
-          transformedPosts.map(async (post) => {
-            // Try to get image from _embedded first (faster)
-            const originalPost = posts.find(p => p.id === post.id);
-            if (originalPost?._embedded?.['wp:featuredmedia']?.[0]?.source_url) {
-              post.image = originalPost._embedded['wp:featuredmedia'][0].source_url;
-            } else if (post.featuredMediaId) {
-              post.image = await getFeaturedImageUrl(post.featuredMediaId);
+        if (category) {
+            queryParams.append('categories', category.toString());
+        }
+
+        if (tag) {
+            queryParams.append('tags', tag.toString());
+        }
+
+        if (search) {
+            queryParams.append('search', search);
+        }
+
+        // Support custom taxonomy filtering
+        if (taxonomyFilter && typeof taxonomyFilter === 'object') {
+            Object.keys(taxonomyFilter).forEach(taxonomy => {
+                const termIds = taxonomyFilter[taxonomy];
+                if (termIds) {
+                    // Support both single ID and array of IDs
+                    const ids = Array.isArray(termIds) ? termIds.join(',') : termIds.toString();
+                    queryParams.append(taxonomy, ids);
+                }
+            });
+        }
+
+        try {
+            // WordPress REST API endpoint for custom post types: /wp/v2/{post_type}
+            const result = await fetchFromAPI(`/${postType}?${queryParams.toString()}`, { includeHeaders: true });
+            const posts = result.data || result; // Handle both with and without headers
+            const pagination = result.headers || null;
+
+            const transformedPosts = posts.map(transformPost);
+
+            // Fetch featured images if requested
+            if (includeImages) {
+                const postsWithImages = await Promise.all(
+                    transformedPosts.map(async (post) => {
+                        // Try to get image from _embedded first (faster)
+                        const originalPost = posts.find(p => p.id === post.id);
+                        if (originalPost?._embedded?.['wp:featuredmedia']?.[0]?.source_url) {
+                            post.image = originalPost._embedded['wp:featuredmedia'][0].source_url;
+                        } else if (post.featuredMediaId) {
+                            post.image = await getFeaturedImageUrl(post.featuredMediaId);
+                        }
+                        return post;
+                    })
+                );
+
+                // Return posts with pagination if available
+                if (pagination) {
+                    return {
+                        posts: postsWithImages,
+                        pagination: {
+                            total: pagination.total,
+                            totalPages: pagination.totalPages,
+                            currentPage: page,
+                            perPage: perPage
+                        }
+                    };
+                }
+
+                return postsWithImages;
             }
-            return post;
-          })
-        );
 
-        // Return posts with pagination if available
-        if (pagination) {
-          return {
-            posts: postsWithImages,
-            pagination: {
-              total: pagination.total,
-              totalPages: pagination.totalPages,
-              currentPage: page,
-              perPage: perPage
+            // Return posts with pagination if available
+            if (pagination) {
+                return {
+                    posts: transformedPosts,
+                    pagination: {
+                        total: pagination.total,
+                        totalPages: pagination.totalPages,
+                        currentPage: page,
+                        perPage: perPage
+                    }
+                };
             }
-          };
+
+            return transformedPosts;
+        } catch (error) {
+            console.error(`Error fetching posts from post type "${postType}":`, error);
+            throw error;
+        }
+    },
+
+    /**
+     * Get a single item by ID from a specific post type
+     * @param {string} postType - Post type name (e.g., 'post', 'page', or custom post type)
+     * @param {number} itemId - Item ID
+     * @param {boolean} includeImage - Whether to fetch featured image (default: true)
+     */
+    async getByPostTypeAndId(postType, itemId, includeImage = true) {
+        try {
+            const item = await fetchFromAPI(`/${postType}/${itemId}?_embed=1`);
+            const transformedItem = transformPost(item);
+
+            if (includeImage) {
+                if (item._embedded?.['wp:featuredmedia']?.[0]?.source_url) {
+                    transformedItem.image = item._embedded['wp:featuredmedia'][0].source_url;
+                } else if (transformedItem.featuredMediaId) {
+                    transformedItem.image = await getFeaturedImageUrl(transformedItem.featuredMediaId);
+                }
+            }
+
+            return transformedItem;
+        } catch (error) {
+            console.error(`Error fetching ${postType} ${itemId}:`, error);
+            throw error;
+        }
+    },
+
+    /**
+     * Get a single item by slug from a specific post type
+     * @param {string} postType - Post type name (e.g., 'post', 'page', or custom post type)
+     * @param {string} slug - Item slug
+     * @param {boolean} includeImage - Whether to fetch featured image (default: true)
+     */
+    async getByPostTypeAndSlug(postType, slug, includeImage = true) {
+        try {
+            // URL encode the slug to handle special characters
+            const encodedSlug = encodeURIComponent(slug);
+            const items = await fetchFromAPI(`/${postType}?slug=${encodedSlug}&_embed=1`);
+
+            if (!items || items.length === 0) {
+                throw new Error(`${postType} with slug "${slug}" not found`);
+            }
+
+            const item = items[0];
+            const transformedItem = transformPost(item);
+
+            // Extract author information from embedded data, or fetch separately
+            if (item._embedded?.author?.[0]) {
+                const author = item._embedded.author[0];
+                transformedItem.authorName = author.name || null;
+                transformedItem.authorDescription = author.description || null;
+                transformedItem.authorSlug = author.slug || null;
+                // Get the largest avatar URL available (96px)
+                transformedItem.authorAvatar = author.avatar_urls?.['96'] || author.avatar_urls?.['48'] || author.avatar_urls?.['24'] || null;
+            } else if (transformedItem.author) {
+                // Author not embedded, fetch separately by ID
+                const authorData = await getAuthorData(transformedItem.author);
+                if (authorData) {
+                    transformedItem.authorName = authorData.name;
+                    transformedItem.authorDescription = authorData.description;
+                    transformedItem.authorSlug = authorData.slug;
+                    transformedItem.authorAvatar = authorData.avatar;
+                }
+            }
+
+            if (includeImage) {
+                if (item._embedded?.['wp:featuredmedia']?.[0]?.source_url) {
+                    transformedItem.image = item._embedded['wp:featuredmedia'][0].source_url;
+                } else if (transformedItem.featuredMediaId) {
+                    transformedItem.image = await getFeaturedImageUrl(transformedItem.featuredMediaId);
+                }
+            }
+
+            return transformedItem;
+        } catch (error) {
+            console.error(`Error fetching ${postType} by slug "${slug}":`, error);
+            throw error;
+        }
+    },
+
+    /**
+     * Get a single post by ID
+     * @param {number} postId - Post ID
+     * @param {boolean} includeImage - Whether to fetch featured image (default: true)
+     */
+    async getById(postId, includeImage = true) {
+        try {
+            const post = await fetchFromAPI(`/posts/${postId}?_embed=1`);
+            const transformedPost = transformPost(post);
+
+            if (includeImage) {
+                if (post._embedded?.['wp:featuredmedia']?.[0]?.source_url) {
+                    transformedPost.image = post._embedded['wp:featuredmedia'][0].source_url;
+                } else if (transformedPost.featuredMediaId) {
+                    transformedPost.image = await getFeaturedImageUrl(transformedPost.featuredMediaId);
+                }
+            }
+
+            return transformedPost;
+        } catch (error) {
+            console.error(`Error fetching post ${postId}:`, error);
+            throw error;
+        }
+    },
+
+    /**
+     * Get a single post by slug
+     * @param {string} slug - Post slug
+     * @param {boolean} includeImage - Whether to fetch featured image (default: true)
+     */
+    async getBySlug(slug, includeImage = true) {
+        try {
+            // URL encode the slug to handle special characters
+            const encodedSlug = encodeURIComponent(slug);
+            const posts = await fetchFromAPI(`/posts?slug=${encodedSlug}&_embed=1`);
+
+            if (!posts || posts.length === 0) {
+                throw new Error(`Post with slug "${slug}" not found`);
+            }
+
+            const post = posts[0];
+            const transformedPost = transformPost(post);
+
+            // Extract author information from embedded data, or fetch separately
+            if (post._embedded?.author?.[0]) {
+                const author = post._embedded.author[0];
+                transformedPost.authorName = author.name || null;
+                transformedPost.authorDescription = author.description || null;
+                transformedPost.authorSlug = author.slug || null;
+                // Get the largest avatar URL available (96px)
+                transformedPost.authorAvatar = author.avatar_urls?.['96'] || author.avatar_urls?.['48'] || author.avatar_urls?.['24'] || null;
+            } else if (transformedPost.author) {
+                // Author not embedded, fetch separately by ID
+                const authorData = await getAuthorData(transformedPost.author);
+                if (authorData) {
+                    transformedPost.authorName = authorData.name;
+                    transformedPost.authorDescription = authorData.description;
+                    transformedPost.authorSlug = authorData.slug;
+                    transformedPost.authorAvatar = authorData.avatar;
+                }
+            }
+
+            if (includeImage) {
+                if (post._embedded?.['wp:featuredmedia']?.[0]?.source_url) {
+                    transformedPost.image = post._embedded['wp:featuredmedia'][0].source_url;
+                } else if (transformedPost.featuredMediaId) {
+                    transformedPost.image = await getFeaturedImageUrl(transformedPost.featuredMediaId);
+                }
+            }
+
+            return transformedPost;
+        } catch (error) {
+            console.error(`Error fetching post by slug "${slug}":`, error);
+            throw error;
+        }
+    },
+
+    /**
+     * Get related posts (by category or tags)
+     * @param {number} postId - Current post ID
+     * @param {number} limit - Maximum number of related posts (default: 4)
+     */
+    async getRelated(postId, limit = 4) {
+        try {
+            // First get the current post to get its categories and tags
+            const currentPost = await fetchFromAPI(`/posts/${postId}`);
+
+            const categories = currentPost.categories || [];
+
+            // Build query to get posts with same categories or tags
+            const queryParams = new URLSearchParams({
+                per_page: (limit + 1).toString(), // +1 to exclude current post
+                exclude: postId.toString(),
+                _embed: '1',
+            });
+
+            if (categories.length > 0) {
+                queryParams.append('categories', categories[0].toString());
+            }
+
+            const posts = await fetchFromAPI(`/posts?${queryParams.toString()}`);
+
+            // Take only the limit and transform
+            const relatedPosts = posts.slice(0, limit).map(post => {
+                const transformed = transformPost(post);
+                if (post._embedded?.['wp:featuredmedia']?.[0]?.source_url) {
+                    transformed.image = post._embedded['wp:featuredmedia'][0].source_url;
+                }
+                return transformed;
+            });
+
+            return relatedPosts;
+        } catch (error) {
+            console.error(`Error fetching related posts for post ${postId}:`, error);
+            throw error;
+        }
+    },
+
+    /**
+     * Get related posts of the same post type (by category or tags)
+     * @param {string} postType - Post type name (e.g., 'post', 'page', or custom post type)
+     * @param {number} postId - Current post ID
+     * @param {number} limit - Maximum number of related posts (default: 4)
+     */
+    async getRelatedByPostType(postType, postId, limit = 4) {
+        try {
+            // First get the current post to get its categories and tags
+            const currentPost = await fetchFromAPI(`/${postType}/${postId}`);
+
+            const categories = currentPost.categories || [];
+
+            // Build query to get posts with same categories or tags from the same post type
+            const queryParams = new URLSearchParams({
+                per_page: (limit + 1).toString(), // +1 to exclude current post
+                exclude: postId.toString(),
+                _embed: '1',
+            });
+
+            if (categories.length > 0) {
+                queryParams.append('categories', categories[0].toString());
+            }
+
+            const posts = await fetchFromAPI(`/${postType}?${queryParams.toString()}`);
+
+            // Filter out the current post and take only the limit
+            const filteredPosts = posts.filter(post => post.id !== postId).slice(0, limit);
+
+            // Transform posts
+            const relatedPosts = filteredPosts.map(post => {
+                const transformed = transformPost(post);
+                if (post._embedded?.['wp:featuredmedia']?.[0]?.source_url) {
+                    transformed.image = post._embedded['wp:featuredmedia'][0].source_url;
+                }
+                return transformed;
+            });
+
+            return relatedPosts;
+        } catch (error) {
+            console.error(`Error fetching related posts for ${postType} ${postId}:`, error);
+            throw error;
+        }
+    },
+
+    /**
+     * Get multiple posts by slugs from a specific post type
+     * @param {string} postType - Post type name (e.g., 'post', 'page', or custom post type)
+     * @param {Array<string>} slugs - Array of post slugs
+     * @param {boolean} includeImage - Whether to fetch featured images (default: true)
+     * @returns {Array} Array of transformed posts
+     */
+    async getByPostTypeAndSlugs(postType, slugs, includeImage = true) {
+        if (!slugs || slugs.length === 0) {
+            return [];
         }
 
-        return postsWithImages;
-      }
+        try {
+            // Fetch all posts in parallel
+            const postsPromises = slugs.map(slug =>
+                this.getByPostTypeAndSlug(postType, slug, includeImage).catch(error => {
+                    console.warn(`Failed to fetch ${postType} with slug "${slug}":`, error);
+                    return null; // Return null for failed fetches
+                })
+            );
 
-      // Return posts with pagination if available
-      if (pagination) {
-        return {
-          posts: transformedPosts,
-          pagination: {
-            total: pagination.total,
-            totalPages: pagination.totalPages,
-            currentPage: page,
-            perPage: perPage
-          }
-        };
-      }
+            const posts = await Promise.all(postsPromises);
 
-      return transformedPosts;
-    } catch (error) {
-      console.error(`Error fetching posts from post type "${postType}":`, error);
-      throw error;
-    }
-  },
-
-  /**
-   * Get a single item by ID from a specific post type
-   * @param {string} postType - Post type name (e.g., 'post', 'page', or custom post type)
-   * @param {number} itemId - Item ID
-   * @param {boolean} includeImage - Whether to fetch featured image (default: true)
-   */
-  async getByPostTypeAndId(postType, itemId, includeImage = true) {
-    try {
-      const item = await fetchFromAPI(`/${postType}/${itemId}?_embed=1`);
-      const transformedItem = transformPost(item);
-
-      if (includeImage) {
-        if (item._embedded?.['wp:featuredmedia']?.[0]?.source_url) {
-          transformedItem.image = item._embedded['wp:featuredmedia'][0].source_url;
-        } else if (transformedItem.featuredMediaId) {
-          transformedItem.image = await getFeaturedImageUrl(transformedItem.featuredMediaId);
+            // Filter out null values (failed fetches) and maintain order
+            return posts.filter(post => post !== null);
+        } catch (error) {
+            console.error(`Error fetching ${postType} posts by slugs:`, error);
+            throw error;
         }
-      }
-
-      return transformedItem;
-    } catch (error) {
-      console.error(`Error fetching ${postType} ${itemId}:`, error);
-      throw error;
-    }
-  },
-
-  /**
-   * Get a single item by slug from a specific post type
-   * @param {string} postType - Post type name (e.g., 'post', 'page', or custom post type)
-   * @param {string} slug - Item slug
-   * @param {boolean} includeImage - Whether to fetch featured image (default: true)
-   */
-  async getByPostTypeAndSlug(postType, slug, includeImage = true) {
-    try {
-      // URL encode the slug to handle special characters
-      const encodedSlug = encodeURIComponent(slug);
-      const items = await fetchFromAPI(`/${postType}?slug=${encodedSlug}&_embed=1`);
-
-      if (!items || items.length === 0) {
-        throw new Error(`${postType} with slug "${slug}" not found`);
-      }
-
-      const item = items[0];
-      const transformedItem = transformPost(item);
-
-      // Extract author name from embedded data
-      if (item._embedded?.author?.[0]?.name) {
-        transformedItem.authorName = item._embedded.author[0].name;
-      }
-
-      if (includeImage) {
-        if (item._embedded?.['wp:featuredmedia']?.[0]?.source_url) {
-          transformedItem.image = item._embedded['wp:featuredmedia'][0].source_url;
-        } else if (transformedItem.featuredMediaId) {
-          transformedItem.image = await getFeaturedImageUrl(transformedItem.featuredMediaId);
-        }
-      }
-
-      return transformedItem;
-    } catch (error) {
-      console.error(`Error fetching ${postType} by slug "${slug}":`, error);
-      throw error;
-    }
-  },
-
-  /**
-   * Get a single post by ID
-   * @param {number} postId - Post ID
-   * @param {boolean} includeImage - Whether to fetch featured image (default: true)
-   */
-  async getById(postId, includeImage = true) {
-    try {
-      const post = await fetchFromAPI(`/posts/${postId}?_embed=1`);
-      const transformedPost = transformPost(post);
-
-      if (includeImage) {
-        if (post._embedded?.['wp:featuredmedia']?.[0]?.source_url) {
-          transformedPost.image = post._embedded['wp:featuredmedia'][0].source_url;
-        } else if (transformedPost.featuredMediaId) {
-          transformedPost.image = await getFeaturedImageUrl(transformedPost.featuredMediaId);
-        }
-      }
-
-      return transformedPost;
-    } catch (error) {
-      console.error(`Error fetching post ${postId}:`, error);
-      throw error;
-    }
-  },
-
-  /**
-   * Get a single post by slug
-   * @param {string} slug - Post slug
-   * @param {boolean} includeImage - Whether to fetch featured image (default: true)
-   */
-  async getBySlug(slug, includeImage = true) {
-    try {
-      // URL encode the slug to handle special characters
-      const encodedSlug = encodeURIComponent(slug);
-      const posts = await fetchFromAPI(`/posts?slug=${encodedSlug}&_embed=1`);
-
-      if (!posts || posts.length === 0) {
-        throw new Error(`Post with slug "${slug}" not found`);
-      }
-
-      const post = posts[0];
-      const transformedPost = transformPost(post);
-
-      // Extract author name from embedded data
-      if (post._embedded?.author?.[0]?.name) {
-        transformedPost.authorName = post._embedded.author[0].name;
-      }
-
-      if (includeImage) {
-        if (post._embedded?.['wp:featuredmedia']?.[0]?.source_url) {
-          transformedPost.image = post._embedded['wp:featuredmedia'][0].source_url;
-        } else if (transformedPost.featuredMediaId) {
-          transformedPost.image = await getFeaturedImageUrl(transformedPost.featuredMediaId);
-        }
-      }
-
-      return transformedPost;
-    } catch (error) {
-      console.error(`Error fetching post by slug "${slug}":`, error);
-      throw error;
-    }
-  },
-
-  /**
-   * Get related posts (by category or tags)
-   * @param {number} postId - Current post ID
-   * @param {number} limit - Maximum number of related posts (default: 4)
-   */
-  async getRelated(postId, limit = 4) {
-    try {
-      // First get the current post to get its categories and tags
-      const currentPost = await fetchFromAPI(`/posts/${postId}`);
-
-      const categories = currentPost.categories || [];
-
-      // Build query to get posts with same categories or tags
-      const queryParams = new URLSearchParams({
-        per_page: (limit + 1).toString(), // +1 to exclude current post
-        exclude: postId.toString(),
-        _embed: '1',
-      });
-
-      if (categories.length > 0) {
-        queryParams.append('categories', categories[0].toString());
-      }
-
-      const posts = await fetchFromAPI(`/posts?${queryParams.toString()}`);
-
-      // Take only the limit and transform
-      const relatedPosts = posts.slice(0, limit).map(post => {
-        const transformed = transformPost(post);
-        if (post._embedded?.['wp:featuredmedia']?.[0]?.source_url) {
-          transformed.image = post._embedded['wp:featuredmedia'][0].source_url;
-        }
-        return transformed;
-      });
-
-      return relatedPosts;
-    } catch (error) {
-      console.error(`Error fetching related posts for post ${postId}:`, error);
-      throw error;
-    }
-  },
-
-  /**
-   * Get related posts of the same post type (by category or tags)
-   * @param {string} postType - Post type name (e.g., 'post', 'page', or custom post type)
-   * @param {number} postId - Current post ID
-   * @param {number} limit - Maximum number of related posts (default: 4)
-   */
-  async getRelatedByPostType(postType, postId, limit = 4) {
-    try {
-      // First get the current post to get its categories and tags
-      const currentPost = await fetchFromAPI(`/${postType}/${postId}`);
-
-      const categories = currentPost.categories || [];
-
-      // Build query to get posts with same categories or tags from the same post type
-      const queryParams = new URLSearchParams({
-        per_page: (limit + 1).toString(), // +1 to exclude current post
-        exclude: postId.toString(),
-        _embed: '1',
-      });
-
-      if (categories.length > 0) {
-        queryParams.append('categories', categories[0].toString());
-      }
-
-      const posts = await fetchFromAPI(`/${postType}?${queryParams.toString()}`);
-
-      // Filter out the current post and take only the limit
-      const filteredPosts = posts.filter(post => post.id !== postId).slice(0, limit);
-
-      // Transform posts
-      const relatedPosts = filteredPosts.map(post => {
-        const transformed = transformPost(post);
-        if (post._embedded?.['wp:featuredmedia']?.[0]?.source_url) {
-          transformed.image = post._embedded['wp:featuredmedia'][0].source_url;
-        }
-        return transformed;
-      });
-
-      return relatedPosts;
-    } catch (error) {
-      console.error(`Error fetching related posts for ${postType} ${postId}:`, error);
-      throw error;
-    }
-  },
-
-  /**
-   * Get multiple posts by slugs from a specific post type
-   * @param {string} postType - Post type name (e.g., 'post', 'page', or custom post type)
-   * @param {Array<string>} slugs - Array of post slugs
-   * @param {boolean} includeImage - Whether to fetch featured images (default: true)
-   * @returns {Array} Array of transformed posts
-   */
-  async getByPostTypeAndSlugs(postType, slugs, includeImage = true) {
-    if (!slugs || slugs.length === 0) {
-      return [];
-    }
-
-    try {
-      // Fetch all posts in parallel
-      const postsPromises = slugs.map(slug =>
-        this.getByPostTypeAndSlug(postType, slug, includeImage).catch(error => {
-          console.warn(`Failed to fetch ${postType} with slug "${slug}":`, error);
-          return null; // Return null for failed fetches
-        })
-      );
-
-      const posts = await Promise.all(postsPromises);
-
-      // Filter out null values (failed fetches) and maintain order
-      return posts.filter(post => post !== null);
-    } catch (error) {
-      console.error(`Error fetching ${postType} posts by slugs:`, error);
-      throw error;
-    }
-  },
+    },
 };
 
 /**
  * Categories API
  */
 export const categoriesApi = {
-  /**
-   * Get all categories
-   */
-  async getAll() {
-    try {
-      return await fetchFromAPI('/categories?per_page=100');
-    } catch (error) {
-      console.error('Error fetching categories:', error);
-      throw error;
-    }
-  },
+    /**
+     * Get all categories
+     */
+    async getAll() {
+        try {
+            return await fetchFromAPI('/categories?per_page=100');
+        } catch (error) {
+            console.error('Error fetching categories:', error);
+            throw error;
+        }
+    },
 
-  /**
-   * Get a single category by ID
-   */
-  async getById(categoryId) {
-    try {
-      return await fetchFromAPI(`/categories/${categoryId}`);
-    } catch (error) {
-      console.error(`Error fetching category ${categoryId}:`, error);
-      throw error;
-    }
-  },
+    /**
+     * Get a single category by ID
+     */
+    async getById(categoryId) {
+        try {
+            return await fetchFromAPI(`/categories/${categoryId}`);
+        } catch (error) {
+            console.error(`Error fetching category ${categoryId}:`, error);
+            throw error;
+        }
+    },
 
-  /**
-   * Get posts in a category
-   */
-  async getPosts(categoryId, params = {}) {
-    return postsApi.getAll({ ...params, category: categoryId });
-  },
+    /**
+     * Get posts in a category
+     */
+    async getPosts(categoryId, params = {}) {
+        return postsApi.getAll({ ...params, category: categoryId });
+    },
 };
 
 /**
  * Tags API
  */
 export const tagsApi = {
-  /**
-   * Get all tags
-   */
-  async getAll() {
-    try {
-      return await fetchFromAPI('/tags?per_page=100');
-    } catch (error) {
-      console.error('Error fetching tags:', error);
-      throw error;
-    }
-  },
+    /**
+     * Get all tags
+     */
+    async getAll() {
+        try {
+            return await fetchFromAPI('/tags?per_page=100');
+        } catch (error) {
+            console.error('Error fetching tags:', error);
+            throw error;
+        }
+    },
 
-  /**
-   * Get a single tag by ID
-   */
-  async getById(tagId) {
-    try {
-      return await fetchFromAPI(`/tags/${tagId}`);
-    } catch (error) {
-      console.error(`Error fetching tag ${tagId}:`, error);
-      throw error;
-    }
-  },
+    /**
+     * Get a single tag by ID
+     */
+    async getById(tagId) {
+        try {
+            return await fetchFromAPI(`/tags/${tagId}`);
+        } catch (error) {
+            console.error(`Error fetching tag ${tagId}:`, error);
+            throw error;
+        }
+    },
 
-  /**
-   * Get posts with a tag
-   */
-  async getPosts(tagId, params = {}) {
-    return postsApi.getAll({ ...params, tag: tagId });
-  },
+    /**
+     * Get posts with a tag
+     */
+    async getPosts(tagId, params = {}) {
+        return postsApi.getAll({ ...params, tag: tagId });
+    },
 };
 
 /**
  * Media API
  */
 export const mediaApi = {
-  /**
-   * Get media by ID
-   */
-  async getById(mediaId) {
-    try {
-      return await fetchFromAPI(`/media/${mediaId}`);
-    } catch (error) {
-      console.error(`Error fetching media ${mediaId}:`, error);
-      throw error;
-    }
-  },
+    /**
+     * Get media by ID
+     */
+    async getById(mediaId) {
+        try {
+            return await fetchFromAPI(`/media/${mediaId}`);
+        } catch (error) {
+            console.error(`Error fetching media ${mediaId}:`, error);
+            throw error;
+        }
+    },
 
-  /**
-   * Get media URL from ID
-   */
-  async getUrl(mediaId) {
-    try {
-      const media = await fetchFromAPI(`/media/${mediaId}`);
-      return media?.source_url || null;
-    } catch (error) {
-      console.error(`Error fetching media URL ${mediaId}:`, error);
-      return null;
-    }
-  },
+    /**
+     * Get media URL from ID
+     */
+    async getUrl(mediaId) {
+        try {
+            const media = await fetchFromAPI(`/media/${mediaId}`);
+            return media?.source_url || null;
+        } catch (error) {
+            console.error(`Error fetching media URL ${mediaId}:`, error);
+            return null;
+        }
+    },
 };
 
 /**
  * Search API
  */
 export const searchApi = {
-  /**
-   * Search posts
-   * @param {string} query - Search query
-   * @param {Object} params - Additional search parameters
-   */
-  async search(query, params = {}) {
-    return postsApi.getAll({ ...params, search: query });
-  },
+    /**
+     * Search posts
+     * @param {string} query - Search query
+     * @param {Object} params - Additional search parameters
+     */
+    async search(query, params = {}) {
+        return postsApi.getAll({ ...params, search: query });
+    },
 };
 
 /**
  * Taxonomies API
  */
 export const taxonomiesApi = {
-  /**
-   * Get all terms from a taxonomy
-   * @param {string} taxonomy - Taxonomy name (e.g., 'games', 'category', 'tag')
-   * @param {Object} params - Query parameters
-   * @param {number} params.perPage - Terms per page (default: 100)
-   * @param {number} params.page - Page number (default: 1)
-   */
-  async getAll(taxonomy, params = {}) {
-    const {
-      perPage = 100,
-      page = 1,
-    } = params;
+    /**
+     * Get all terms from a taxonomy
+     * @param {string} taxonomy - Taxonomy name (e.g., 'games', 'category', 'tag')
+     * @param {Object} params - Query parameters
+     * @param {number} params.perPage - Terms per page (default: 100)
+     * @param {number} params.page - Page number (default: 1)
+     */
+    async getAll(taxonomy, params = {}) {
+        const {
+            perPage = 100,
+            page = 1,
+        } = params;
 
-    const queryParams = new URLSearchParams({
-      per_page: perPage.toString(),
-      page: page.toString(),
-    });
+        const queryParams = new URLSearchParams({
+            per_page: perPage.toString(),
+            page: page.toString(),
+        });
 
-    try {
-      return await fetchFromAPI(`/${taxonomy}?${queryParams.toString()}`);
-    } catch (error) {
-      console.error(`Error fetching taxonomy "${taxonomy}":`, error);
-      throw error;
-    }
-  },
+        try {
+            return await fetchFromAPI(`/${taxonomy}?${queryParams.toString()}`);
+        } catch (error) {
+            console.error(`Error fetching taxonomy "${taxonomy}":`, error);
+            throw error;
+        }
+    },
 
-  /**
-   * Get a single term by ID from a taxonomy
-   * @param {string} taxonomy - Taxonomy name
-   * @param {number} termId - Term ID
-   */
-  async getById(taxonomy, termId) {
-    try {
-      return await fetchFromAPI(`/${taxonomy}/${termId}`);
-    } catch (error) {
-      console.error(`Error fetching term ${termId} from taxonomy "${taxonomy}":`, error);
-      throw error;
-    }
-  },
+    /**
+     * Get a single term by ID from a taxonomy
+     * @param {string} taxonomy - Taxonomy name
+     * @param {number} termId - Term ID
+     */
+    async getById(taxonomy, termId) {
+        try {
+            return await fetchFromAPI(`/${taxonomy}/${termId}`);
+        } catch (error) {
+            console.error(`Error fetching term ${termId} from taxonomy "${taxonomy}":`, error);
+            throw error;
+        }
+    },
 
-  /**
-   * Get a single term by slug from a taxonomy
-   * @param {string} taxonomy - Taxonomy name
-   * @param {string} slug - Term slug
-   */
-  async getBySlug(taxonomy, slug) {
-    try {
-      const encodedSlug = encodeURIComponent(slug);
-      const terms = await fetchFromAPI(`/${taxonomy}?slug=${encodedSlug}`);
+    /**
+     * Get a single term by slug from a taxonomy
+     * @param {string} taxonomy - Taxonomy name
+     * @param {string} slug - Term slug
+     */
+    async getBySlug(taxonomy, slug) {
+        try {
+            const encodedSlug = encodeURIComponent(slug);
+            const terms = await fetchFromAPI(`/${taxonomy}?slug=${encodedSlug}`);
 
-      if (!terms || terms.length === 0) {
-        throw new Error(`Term with slug "${slug}" not found in taxonomy "${taxonomy}"`);
-      }
+            if (!terms || terms.length === 0) {
+                throw new Error(`Term with slug "${slug}" not found in taxonomy "${taxonomy}"`);
+            }
 
-      return terms[0];
-    } catch (error) {
-      console.error(`Error fetching term by slug "${slug}" from taxonomy "${taxonomy}":`, error);
-      throw error;
-    }
-  },
+            return terms[0];
+        } catch (error) {
+            console.error(`Error fetching term by slug "${slug}" from taxonomy "${taxonomy}":`, error);
+            throw error;
+        }
+    },
+};
+
+/**
+ * Authors API
+ */
+export const authorsApi = {
+    /**
+     * Get author by slug
+     * @param {string} slug - Author slug
+     */
+    async getBySlug(slug) {
+        try {
+            const encodedSlug = encodeURIComponent(slug);
+            const users = await fetchFromAPI(`/users?slug=${encodedSlug}`);
+
+            if (!users || users.length === 0) {
+                throw new Error(`Author with slug "${slug}" not found`);
+            }
+
+            return users[0];
+        } catch (error) {
+            console.error(`Error fetching author by slug "${slug}":`, error);
+            throw error;
+        }
+    },
+
+    /**
+     * Get author by ID
+     * @param {number} authorId - Author ID
+     */
+    async getById(authorId) {
+        try {
+            const user = await fetchFromAPI(`/users/${authorId}`);
+            return user;
+        } catch (error) {
+            console.error(`Error fetching author by ID "${authorId}":`, error);
+            throw error;
+        }
+    },
+
+    /**
+     * Get posts by author ID
+     * @param {number} authorId - Author ID
+     * @param {number} perPage - Number of posts per page (default: 20)
+     */
+    async getPosts(authorId, perPage = 20) {
+        try {
+            // Fetch posts from all post types that support author
+            const [regularPosts, gamesPosts, culturePosts, newsPosts, guidesPosts, streamingPosts] = await Promise.all([
+                fetchFromAPI(`/posts?author=${authorId}&per_page=${perPage}&_embed=1`).catch(() => []),
+                fetchFromAPI(`/games?author=${authorId}&per_page=${perPage}&_embed=1`).catch(() => []),
+                fetchFromAPI(`/culture?author=${authorId}&per_page=${perPage}&_embed=1`).catch(() => []),
+                fetchFromAPI(`/news?author=${authorId}&per_page=${perPage}&_embed=1`).catch(() => []),
+                fetchFromAPI(`/guides?author=${authorId}&per_page=${perPage}&_embed=1`).catch(() => []),
+                fetchFromAPI(`/streaming?author=${authorId}&per_page=${perPage}&_embed=1`).catch(() => []),
+            ]);
+
+            // Helper to transform posts with image and post type
+            const transformWithMeta = (posts, postType, basePath) => {
+                return (posts || []).map((post) => {
+                    const transformed = transformPost(post);
+                    if (post._embedded?.['wp:featuredmedia']?.[0]?.source_url) {
+                        transformed.image = post._embedded['wp:featuredmedia'][0].source_url;
+                    }
+                    transformed.postType = postType;
+                    transformed.basePath = basePath;
+                    return transformed;
+                });
+            };
+
+            // Transform all posts
+            const allPosts = [
+                ...transformWithMeta(regularPosts, 'posts', '/posts'),
+                ...transformWithMeta(gamesPosts, 'games', '/games'),
+                ...transformWithMeta(culturePosts, 'culture', '/culture'),
+                ...transformWithMeta(newsPosts, 'news', '/news'),
+                ...transformWithMeta(guidesPosts, 'guides', '/guides'),
+                ...transformWithMeta(streamingPosts, 'streaming', '/streaming'),
+            ];
+
+            // Sort by date (newest first)
+            allPosts.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            return allPosts;
+        } catch (error) {
+            console.error(`Error fetching posts by author ID "${authorId}":`, error);
+            return [];
+        }
+    },
 };
 
 /**
  * Default export with all API modules
  */
 const wordpressApi = {
-  posts: postsApi,
-  categories: categoriesApi,
-  tags: tagsApi,
-  media: mediaApi,
-  search: searchApi,
-  taxonomies: taxonomiesApi,
+    posts: postsApi,
+    categories: categoriesApi,
+    tags: tagsApi,
+    media: mediaApi,
+    search: searchApi,
+    taxonomies: taxonomiesApi,
+    authors: authorsApi,
 };
 
 export default wordpressApi;
