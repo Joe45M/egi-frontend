@@ -65,12 +65,12 @@ function Navigation() {
             {/* Logo */}
             <div className="flex-shrink-0 flex items-center">
               <Link to="/" className="text-xl font-bold text-gray-800">
-                <img src={logo} alt="EGI Logo" className="w-[100px] h-[40px] object-contain" fetchPriority="high" />
+                <img src={logo} alt="EGI Logo" className="w-[100px] h-[50px] object-contain" fetchPriority="high" />
               </Link>
             </div>
 
             {/* Navigation Links - Desktop */}
-            <div className="hidden sm:flex sm:space-x-8 items-center justify-center flex-1">
+            <div className="hidden sm:flex sm:space-x-8 text-[17px] items-center justify-center flex-1">
               <Link
                   to="/"
                   className="text-white tracking-wider"

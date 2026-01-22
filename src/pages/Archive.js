@@ -5,7 +5,7 @@ import Pagination from "../components/Pagination";
 import NotFound from "./NotFound";
 import PageMetadata, { SITE_URL } from "../components/PageMetadata";
 import StructuredSchema, { generateCollectionPageSchema, generateBreadcrumbSchema, generateWebPageSchema } from "../components/StructuredSchema";
-
+import PostCard from "../components/PostCard";
 function Archive() {
   const { type } = useParams();
   const [searchParams] = useSearchParams();
@@ -297,37 +297,7 @@ function Archive() {
             const imageUrl = post.image || 'https://images.unsplash.com/photo-1552820728-8b83bb6b773f?w=800&h=600&fit=crop';
 
             return (
-              <Link
-                to={postLink}
-                key={post.id}
-                className="relative group overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 rounded-lg"
-              >
-                {/* Background Image */}
-                <div className="relative h-64 overflow-hidden rounded-lg">
-                  <img
-                    src={imageUrl}
-                    alt={post.title || 'Post image'}
-                    className="absolute inset-0 w-full h-full object-cover"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                  {/* Gradient Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent rounded-lg"></div>
-
-                  {/* Content */}
-                  <div className="absolute bottom-0 left-0 right-0 p-6 text-white z-10">
-                    {post.date && (
-                      <p className="text-sm text-gray-300 mb-1">
-                        {formatDate(post.date)}
-                      </p>
-                    )}
-                    <h3
-                      className="text-xl font-bold mb-2 group-hover:text-accent-violet-300 transition-colors duration-300"
-                      dangerouslySetInnerHTML={{ __html: post.title }}
-                    />
-                  </div>
-                </div>
-              </Link>
+              <PostCard key={post.id} post={post} link={postLink} />
             );
           })}
         </div>

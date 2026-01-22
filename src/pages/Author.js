@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import wordpressApi from '../services/wordpressApi';
 import NotFound from './NotFound';
+import PostCard from '../components/PostCard';
 import PageMetadata from '../components/PageMetadata';
 
 /**
@@ -137,34 +138,11 @@ function Author() {
                     {posts.length > 0 ? (
                         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                             {posts.map((post) => (
-                                <Link
+                                <PostCard
                                     key={post.id}
-                                    to={`${post.basePath || '/games'}/${post.slug}`}
-                                    className="group bg-gradient-to-br from-accent-violet-950/20 to-base-800/30 rounded-xl overflow-hidden border border-accent-violet-900/10 hover:border-accent-violet-500/30 transition-all duration-300 hover:shadow-lg hover:shadow-accent-violet-500/10"
-                                >
-                                    {/* Post Image */}
-                                    {post.image && (
-                                        <div className="aspect-video overflow-hidden">
-                                            <img
-                                                src={post.image}
-                                                alt={post.title}
-                                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                                                loading="lazy"
-                                            />
-                                        </div>
-                                    )}
-
-                                    {/* Post Content */}
-                                    <div className="p-5">
-                                        <h3
-                                            className="text-lg font-bold text-white group-hover:text-accent-violet-300 transition-colors line-clamp-2 mb-2"
-                                            dangerouslySetInnerHTML={{ __html: post.title }}
-                                        />
-                                        <p className="text-gray-500 text-sm">
-                                            {formatDate(post.date)}
-                                        </p>
-                                    </div>
-                                </Link>
+                                    post={post}
+                                    link={`${post.basePath || '/games'}/${post.slug}`}
+                                />
                             ))}
                         </div>
                     ) : (

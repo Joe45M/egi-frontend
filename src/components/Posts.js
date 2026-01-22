@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
+import PostCard from "./PostCard";
 import wordpressApi from "../services/wordpressApi";
 
 function Posts({ posts: propPosts = null }) {
@@ -20,7 +21,7 @@ function Posts({ posts: propPosts = null }) {
       try {
         setLoading(true);
         setError(null);
-        
+
         const result = await wordpressApi.posts.getByPostType('games', {
           perPage: 12,
           includeImages: true,
@@ -53,10 +54,10 @@ function Posts({ posts: propPosts = null }) {
   const formatDate = (dateString) => {
     if (!dateString) return '';
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
     });
   };
 
@@ -105,39 +106,8 @@ function Posts({ posts: propPosts = null }) {
           // Use post slug for link, or fallback to /games with id
           const postLink = post.slug ? `/games/${post.slug}` : `/games?id=${post.id}`;
           // Fallback image if no featured image
-          const imageUrl = post.image || 'https://images.unsplash.com/photo-1552820728-8b83bb6b773f?w=800&h=600&fit=crop';
-
           return (
-            <Link
-              to={postLink}
-              key={post.id}
-              className="relative group overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 rounded-lg"
-            >
-              {/* Background Image */}
-              <div className="relative h-64 overflow-hidden">
-                <img 
-                  src={imageUrl} 
-                  alt={post.title || 'Post image'}
-                  className="absolute inset-0 w-full h-full object-cover"
-                  loading="lazy"
-                  decoding="async"
-                />
-                {/* Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
-                
-                {/* Content */}
-                <div className="absolute bottom-0 left-0 right-0 p-6 text-white z-10">
-                  {post.date && (
-                    <p className="text-sm text-gray-300 mb-1">
-                      {formatDate(post.date)}
-                    </p>
-                  )}
-                  <h3 className="text-xl font-bold mb-2 group-hover:text-accent-violet-300 transition-colors duration-300">
-                    {post.title}
-                  </h3>
-                </div>
-              </div>
-            </Link>
+            <PostCard key={post.id} post={post} link={postLink} />
           );
         })}
       </div>
