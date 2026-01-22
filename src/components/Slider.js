@@ -56,10 +56,10 @@ function Slider() {
     // Loading state
     if (loading) {
         return (
-            <div className="embla h-[500px]" ref={emblaRef}>
+            <div className="embla h-[250px] lg:h-[500px]" ref={emblaRef}>
                 <div className="embla__container">
                     <div className="embla__slide px-5">
-                        <div className="h-[500px] flex flex-col justify-end bg-cover bg-center relative z-10 bg-accent-violet-950/10 animate-pulse">
+                        <div className="h-[250px] lg:h-[500px] flex flex-col justify-end bg-cover bg-center relative z-10 bg-accent-violet-950/10 animate-pulse">
                             <div className="absolute left-0 top-0 w-full h-full z-0 bg-gradient-to-t from-black/80 to-black/10"></div>
                             <div className="container mx-auto mb-10">
                                 <span className="text-white mb-2 relative text-sm block h-4 w-20 bg-gray-200 mb-5 rounded-full animate-pulse"></span>
@@ -75,10 +75,10 @@ function Slider() {
     // Error state - show empty or fallback
     if (error || posts.length === 0) {
         return (
-            <div className="embla  h-[500px]" ref={emblaRef}>
+            <div className="embla  h-[250px] lg:h-[500px]" ref={emblaRef}>
                 <div className="embla__container">
                     <div className="embla__slide">
-                        <div className="h-[500px] flex flex-col justify-end bg-cover bg-center relative z-10">
+                        <div className="h-[250px] lg:h-[500px] flex flex-col justify-end bg-cover bg-center relative z-10">
                             <img 
                                 src="https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1470&h=600&fit=crop" 
                                 alt="Latest News"
@@ -100,7 +100,7 @@ function Slider() {
     }
 
     return (
-        <div className="embla h-[500px]" ref={emblaRef}>
+        <div className="embla h-[250px] lg:h-[500px]" ref={emblaRef}>
             <div className="embla__container">
                 {posts.map((post, index) => {
                     const imageUrl = post.image || 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1470&h=600&fit=crop';
@@ -112,7 +112,7 @@ function Slider() {
                     return (
                         <div key={post.id} className="embla__slide">
                             <Link to={postLink}>
-                                <div className="h-[500px] flex flex-col justify-end bg-cover bg-center relative z-10 cursor-pointer hover:opacity-95 transition-opacity duration-300">
+                                <div className="h-[250px] lg:h-[500px] flex flex-col justify-end bg-cover bg-center relative z-10 cursor-pointer hover:opacity-95 transition-opacity duration-300">
                                     {/* Use img tag for better lazy loading control */}
                                     <img 
                                         src={imageUrl} 
