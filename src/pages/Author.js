@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import wordpressApi from '../services/wordpressApi';
 import NotFound from './NotFound';
 import PostCard from '../components/PostCard';
@@ -46,15 +46,7 @@ function Author() {
         fetchAuthorData();
     }, [slug]);
 
-    const formatDate = (dateString) => {
-        if (!dateString) return '';
-        const date = new Date(dateString);
-        return date.toLocaleDateString('en-US', {
-            month: 'short',
-            day: 'numeric',
-            year: 'numeric',
-        });
-    };
+
 
     // Loading state
     if (loading) {

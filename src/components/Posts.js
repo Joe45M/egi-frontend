@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import PostCard from "./PostCard";
 import wordpressApi from "../services/wordpressApi";
 
@@ -50,16 +49,6 @@ function Posts({ posts: propPosts = null }) {
   }, [propPosts]);
 
   const postsToDisplay = posts;
-
-  const formatDate = (dateString) => {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  };
 
   // Loading state
   if (loading) {

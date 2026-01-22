@@ -152,15 +152,7 @@ function Archive() {
     };
   }, [type, currentPage, gameTermId, selectedGame]);
 
-  const formatDate = (dateString) => {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  };
+
 
   // Capitalize first letter of post type for display
   const getPostTypeLabel = () => {
@@ -293,8 +285,6 @@ function Archive() {
           {posts.map((post) => {
             // Use post slug for link
             const postLink = post.slug ? `/${type}/${post.slug}` : `/${type}?id=${post.id}`;
-            // Fallback image if no featured image
-            const imageUrl = post.image || 'https://images.unsplash.com/photo-1552820728-8b83bb6b773f?w=800&h=600&fit=crop';
 
             return (
               <PostCard key={post.id} post={post} link={postLink} />
