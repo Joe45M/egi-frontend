@@ -58,12 +58,12 @@ function Slider() {
         return (
             <div className="embla" ref={emblaRef}>
                 <div className="embla__container">
-                    <div className="embla__slide">
+                    <div className="embla__slide px-5">
                         <div className="h-[500px] flex flex-col justify-end bg-cover bg-center relative z-10 bg-accent-violet-950/10 animate-pulse">
                             <div className="absolute left-0 top-0 w-full h-full z-0 bg-gradient-to-t from-black/80 to-black/10"></div>
                             <div className="container mx-auto mb-10">
-                                <span className="text-white mb-2 relative text-sm">Loading...</span>
-                                <h3 className="text-4xl font-bold text-white relative">Loading...</h3>
+                                <span className="text-white mb-2 relative text-sm block h-4 w-20 bg-gray-200 mb-5 rounded-full animate-pulse"></span>
+                                <span className="text-white mb-2 relative text-sm block h-4 w-56 bg-gray-200 rounded-full animate-pulse"></span>
                             </div>
                         </div>
                     </div>
