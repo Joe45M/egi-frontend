@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import wordpressApi from '../services/wordpressApi';
 
-function RelatedPosts({ postId, postType = 'games', basePath = '/games' }) {
+function RelatedPosts({ postId, postType = 'games', basePath = '/games', limit = 4 }) {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -18,14 +18,14 @@ function RelatedPosts({ postId, postType = 'games', basePath = '/games' }) {
       try {
         setLoading(true);
         setError(null);
-        
+
         // Fetch related posts of the same post type
-        const relatedPosts = await wordpressApi.posts.getRelatedByPostType(postType, postId, 4);
-        
+        const relatedPosts = await wordpressApi.posts.getRelatedByPostType(postType, postId, limit);
+
         // Exclude the current post from the results (compare as strings to be safe)
         const filtered = (relatedPosts || []).filter((p) => String(p.id) !== String(postId));
         // Keep the same max count (4)
-        setPosts(filtered.slice(0, 4));
+        setPosts(filtered.slice(0, limit));
       } catch (err) {
         setError('Failed to load related posts');
         console.error('Error fetching related posts:', err);
@@ -72,7 +72,7 @@ function RelatedPosts({ postId, postType = 'games', basePath = '/games' }) {
                 {post.image && (
                   <img src={post.image} className="w-20 mr-5 object object-cover" alt={post.title || ''} loading="lazy" decoding="async" />
                 )}
-                <h3 
+                <h3
                   className="text-lg font-bold group-hover:text-accent-violet-300 transition-colors duration-300"
                   dangerouslySetInnerHTML={{ __html: post.title || '' }}
                 />

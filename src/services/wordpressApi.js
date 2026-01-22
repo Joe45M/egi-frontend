@@ -143,6 +143,9 @@ function transformPost(post) {
         featuredMediaId: post.featured_media || 0,
         categories: post.categories || [],
         tags: post.tags || [],
+        games: post.games || [],
+        game: post.game || [],
+        game_taxonomy: post.game_taxonomy || [],
         author: post.author || null,
         image: null, // Will be populated by getFeaturedImageUrl
     };

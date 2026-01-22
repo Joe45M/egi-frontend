@@ -12,6 +12,7 @@ import { replaceAdShortcodes } from "../utils/ads";
 
 // Lazy load RelatedPosts component
 const RelatedPosts = lazy(() => import("./RelatedPosts"));
+const GameRelatedPosts = lazy(() => import("./GameRelatedPosts"));
 
 function PostDetail({ postType = 'games', basePath = '/games' }) {
     const { slug } = useParams();
@@ -40,7 +41,30 @@ function PostDetail({ postType = 'games', basePath = '/games' }) {
     const [post, setPost] = useState(hasInitialData ? initialData.post : null);
     const [loading, setLoading] = useState(!hasInitialData);
     const [notFound, setNotFound] = useState(false);
+    const [associatedGame, setAssociatedGame] = useState(null);
     const contentRef = useRef(null);
+
+    useEffect(() => {
+        if (!post) return;
+
+        // Try to find associated game
+        const fetchGameDetails = async () => {
+            // Check common taxonomy fields
+            const gameIds = post.games || post.game || post.game_taxonomy;
+            if (gameIds && gameIds.length > 0) {
+                const gameId = gameIds[0];
+                try {
+                    // Start with 'games' taxonomy
+                    const term = await wordpressApi.taxonomies.getById('games', gameId);
+                    setAssociatedGame(term);
+                } catch (e) {
+                    console.log('Failed to fetch game details', e);
+                }
+            }
+        };
+
+        fetchGameDetails();
+    }, [post]);
 
     useEffect(() => {
         // If we already have initial data from SSR, skip fetching
@@ -272,6 +296,19 @@ function PostDetail({ postType = 'games', basePath = '/games' }) {
                                 slug={post.authorSlug}
                             />
 
+                            {/* Game Related Posts */}
+                            {associatedGame && (
+                                <Suspense fallback={<div className="h-40 bg-accent-violet-950/10 animate-pulse rounded-lg mb-8"></div>}>
+                                    <GameRelatedPosts
+                                        gameId={associatedGame.id}
+                                        gameName={associatedGame.name}
+                                        postType={postType}
+                                        currentPostId={post.id}
+                                        limit={5}
+                                    />
+                                </Suspense>
+                            )}
+
                             {/* Related Posts */}
                             <Suspense fallback={
                                 <div>
@@ -281,7 +318,7 @@ function PostDetail({ postType = 'games', basePath = '/games' }) {
                                     ))}
                                 </div>
                             }>
-                                <RelatedPosts postId={post.id} postType={postType} basePath={basePath} />
+                                <RelatedPosts postId={post.id} postType={postType} basePath={basePath} limit={6} />
                             </Suspense>
                         </div>
                     </div>

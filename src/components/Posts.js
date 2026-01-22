@@ -22,7 +22,7 @@ function Posts({ posts: propPosts = null }) {
         setError(null);
 
         const result = await wordpressApi.posts.getByPostType('games', {
-          perPage: 12,
+          perPage: 36,
           includeImages: true,
           orderBy: 'date',
           order: 'desc'

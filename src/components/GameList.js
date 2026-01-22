@@ -35,8 +35,8 @@ function GameList() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 lg:grid-cols-6">
           {games.flatMap((game, index) => [
             <Link to={`/games?game=${game.slug || game.id}`} key={game.id} className="text-gray-300 bg-accent-pink-500/10 rounded-md p-3 text-center hover:text-accent-violet-300 transition-colors duration-300 flex-shrink-0 whitespace-nowrap">
-              <img class="rounded-md h-32 md:h-44 object-cover w-full" src={'/assets/images/home/' + game.slug + '.png'} alt={'image of ' + game.name}/>
-              <div  className="mt-2 font-bold">{game.name}</div>
+              <img class="rounded-md h-32 md:h-44 object-cover w-full" src={'/assets/images/home/' + game.slug + '.png'} alt={'image of ' + game.name} loading="lazy" />
+              <div className="mt-2 font-bold">{game.name}</div>
             </Link>
           ]).filter(Boolean)}
         </div>

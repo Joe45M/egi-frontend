@@ -18,7 +18,7 @@ function Archive() {
 
   const currentPage = parseInt(searchParams.get('page') || '1', 10);
   const gameParam = searchParams.get('game'); // Can be slug or ID
-  const postsPerPage = 12;
+  const postsPerPage = 24;
   const [gameTermId, setGameTermId] = useState(null);
 
   useEffect(() => {
