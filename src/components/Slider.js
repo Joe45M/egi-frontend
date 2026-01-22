@@ -56,7 +56,7 @@ function Slider() {
     // Loading state
     if (loading) {
         return (
-            <div className="embla" ref={emblaRef}>
+            <div className="embla h-[500px]" ref={emblaRef}>
                 <div className="embla__container">
                     <div className="embla__slide px-5">
                         <div className="h-[500px] flex flex-col justify-end bg-cover bg-center relative z-10 bg-accent-violet-950/10 animate-pulse">
@@ -75,7 +75,7 @@ function Slider() {
     // Error state - show empty or fallback
     if (error || posts.length === 0) {
         return (
-            <div className="embla" ref={emblaRef}>
+            <div className="embla  h-[500px]" ref={emblaRef}>
                 <div className="embla__container">
                     <div className="embla__slide">
                         <div className="h-[500px] flex flex-col justify-end bg-cover bg-center relative z-10">
@@ -100,7 +100,7 @@ function Slider() {
     }
 
     return (
-        <div className="embla" ref={emblaRef}>
+        <div className="embla h-[500px]" ref={emblaRef}>
             <div className="embla__container">
                 {posts.map((post, index) => {
                     const imageUrl = post.image || 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1470&h=600&fit=crop';
