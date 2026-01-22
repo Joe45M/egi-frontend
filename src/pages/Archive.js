@@ -30,7 +30,7 @@ function Archive() {
           const isNumeric = /^\d+$/.test(gameParam);
           let game = null;
           let taxonomyName = null;
-          
+
           for (const taxonomy of possibleTaxonomies) {
             try {
               if (isNumeric) {
@@ -49,7 +49,7 @@ function Archive() {
               continue;
             }
           }
-          
+
           if (game) {
             setGameTermId(game.id);
             // Store taxonomy name in game object for filtering
@@ -73,18 +73,25 @@ function Archive() {
   }, [gameParam]);
 
   useEffect(() => {
+    let active = true;
+
     const fetchPosts = async () => {
+      // console.log('fetchPosts running for type:', type, 'gameTermId:', gameTermId);
       if (!type) {
-        setNotFound(true);
-        setLoading(false);
+        if (active) {
+          setNotFound(true);
+          setLoading(false);
+        }
         return;
       }
 
       try {
-        setLoading(true);
-        setError(null);
-        setNotFound(false);
-        
+        if (active) {
+          setLoading(true);
+          setError(null);
+          setNotFound(false);
+        }
+
         // Build params with optional game filter
         const params = {
           page: currentPage,
@@ -102,10 +109,12 @@ function Archive() {
           params.taxonomyFilter = {
             [taxonomyName]: gameTermId
           };
-          console.log('Filtering posts by game:', { taxonomyName, gameTermId, selectedGame });
+          // console.log('Filtering posts by game:', { taxonomyName, gameTermId, selectedGame });
         }
-        
+
         const result = await wordpressApi.posts.getByPostType(type, params);
+
+        if (!active) return;
 
         // Handle both old format (array) and new format (object with posts and pagination)
         if (Array.isArray(result)) {
@@ -119,6 +128,8 @@ function Archive() {
           setPagination(null);
         }
       } catch (err) {
+        if (!active) return;
+
         console.error(`Error fetching ${type} posts:`, err);
         // Check if it's a 404 or invalid post type
         if (err.message && (err.message.includes('404') || err.message.includes('not found'))) {
@@ -128,20 +139,26 @@ function Archive() {
         }
         setPosts([]);
       } finally {
-        setLoading(false);
+        if (active) {
+          setLoading(false);
+        }
       }
     };
 
     fetchPosts();
+
+    return () => {
+      active = false;
+    };
   }, [type, currentPage, gameTermId, selectedGame]);
 
   const formatDate = (dateString) => {
     if (!dateString) return '';
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
     });
   };
 
@@ -258,72 +275,72 @@ function Archive() {
       />
       <StructuredSchema schemas={schemas} />
       <div className="pt-[200px] p-4 container mx-auto">
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-4xl font-bold text-white">
-          {selectedGame ? `${selectedGame.name} - ${getPostTypeLabel()}` : getPostTypeLabel()}
-        </h1>
-        {selectedGame && (
-          <Link
-            to={`/${type}`}
-            className="text-accent-violet-300 hover:text-accent-violet-400 transition-colors duration-300 text-sm"
-          >
-            Clear filter
-          </Link>
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="text-4xl font-bold text-white">
+            {selectedGame ? `${selectedGame.name} - ${getPostTypeLabel()}` : getPostTypeLabel()}
+          </h1>
+          {selectedGame && (
+            <Link
+              to={`/${type}`}
+              className="text-accent-violet-300 hover:text-accent-violet-400 transition-colors duration-300 text-sm"
+            >
+              Clear filter
+            </Link>
+          )}
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {posts.map((post) => {
+            // Use post slug for link
+            const postLink = post.slug ? `/${type}/${post.slug}` : `/${type}?id=${post.id}`;
+            // Fallback image if no featured image
+            const imageUrl = post.image || 'https://images.unsplash.com/photo-1552820728-8b83bb6b773f?w=800&h=600&fit=crop';
+
+            return (
+              <Link
+                to={postLink}
+                key={post.id}
+                className="relative group overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 rounded-lg"
+              >
+                {/* Background Image */}
+                <div className="relative h-64 overflow-hidden rounded-lg">
+                  <img
+                    src={imageUrl}
+                    alt={post.title || 'Post image'}
+                    className="absolute inset-0 w-full h-full object-cover"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  {/* Gradient Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent rounded-lg"></div>
+
+                  {/* Content */}
+                  <div className="absolute bottom-0 left-0 right-0 p-6 text-white z-10">
+                    {post.date && (
+                      <p className="text-sm text-gray-300 mb-1">
+                        {formatDate(post.date)}
+                      </p>
+                    )}
+                    <h3
+                      className="text-xl font-bold mb-2 group-hover:text-accent-violet-300 transition-colors duration-300"
+                      dangerouslySetInnerHTML={{ __html: post.title }}
+                    />
+                  </div>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+
+        {/* Pagination */}
+        {pagination && (
+          <Pagination
+            currentPage={pagination.currentPage}
+            totalPages={pagination.totalPages}
+            basePath={`/${type}`}
+          />
         )}
       </div>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {posts.map((post) => {
-          // Use post slug for link
-          const postLink = post.slug ? `/${type}/${post.slug}` : `/${type}?id=${post.id}`;
-          // Fallback image if no featured image
-          const imageUrl = post.image || 'https://images.unsplash.com/photo-1552820728-8b83bb6b773f?w=800&h=600&fit=crop';
-
-          return (
-            <Link
-              to={postLink}
-              key={post.id}
-              className="relative group overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 rounded-lg"
-            >
-              {/* Background Image */}
-              <div className="relative h-64 overflow-hidden rounded-lg">
-                <img 
-                  src={imageUrl} 
-                  alt={post.title || 'Post image'}
-                  className="absolute inset-0 w-full h-full object-cover"
-                  loading="lazy"
-                  decoding="async"
-                />
-                {/* Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent rounded-lg"></div>
-                
-                {/* Content */}
-                <div className="absolute bottom-0 left-0 right-0 p-6 text-white z-10">
-                  {post.date && (
-                    <p className="text-sm text-gray-300 mb-1">
-                      {formatDate(post.date)}
-                    </p>
-                  )}
-                  <h3 
-                    className="text-xl font-bold mb-2 group-hover:text-accent-violet-300 transition-colors duration-300"
-                    dangerouslySetInnerHTML={{ __html: post.title }}
-                  />
-                </div>
-              </div>
-            </Link>
-          );
-        })}
-      </div>
-
-      {/* Pagination */}
-      {pagination && (
-        <Pagination
-          currentPage={pagination.currentPage}
-          totalPages={pagination.totalPages}
-          basePath={`/${type}`}
-        />
-      )}
-    </div>
     </>
   );
 }
