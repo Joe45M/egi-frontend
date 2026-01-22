@@ -36,7 +36,7 @@ function RelatedPosts({ postId, postType = 'games', basePath = '/games', limit =
     };
 
     fetchRelatedPosts();
-  }, [postId, postType]);
+  }, [postId, postType, limit]);
 
   if (loading) {
     return (
