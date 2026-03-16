@@ -6,6 +6,27 @@
 const API_BASE_URL = 'https://api.elitegamerinsights.com/wp-json/wp/v2';
 
 /**
+ * Manual mapping for known authors (requested by user)
+ * This ensures correct data even if WordPress user API is restricted
+ */
+const AUTHOR_MAP = {
+    1: {
+        id: 1,
+        name: 'Joe',
+        slug: 'joe',
+        description: 'Joe is a lifelong Gamer, and an expert in FPS, and culture.',
+        avatar: 'https://secure.gravatar.com/avatar/b9fc77465e52ffd7466da8973610b6fec20ac539738b50039fa53bb46ebf92c8?s=96&d=mm&r=g'
+    },
+    2: {
+        id: 2,
+        name: 'Roisin',
+        slug: 'roisin545',
+        description: 'Roisin is a lead editor and gaming enthusiast, bringing you the latest news and deep dives into the gaming world.',
+        avatar: null // Will fallback to initials
+    }
+};
+
+/**
  * Generic fetch function with error handling
  */
 async function fetchFromAPI(endpoint, options = {}) {
@@ -14,7 +35,7 @@ async function fetchFromAPI(endpoint, options = {}) {
         const response = await fetch(url, {
             ...options,
             headers: {
-                'Content-Type': 'application/json',
+                ...(options.method && options.method !== 'GET' ? { 'Content-Type': 'application/json' } : {}),
                 ...options.headers,
             },
         });
@@ -125,6 +146,55 @@ async function getAuthorData(authorId) {
         console.error(`Error fetching author ${authorId}:`, error);
         return null;
     }
+}
+
+/**
+ * Extract author data from WordPress post object or embedded data
+ * @param {Object} post - WordPress post object
+ * @returns {Object} Author data object
+ */
+async function extractAuthorData(post) {
+    const authorData = {
+        authorName: 'EliteGamerInsights',
+        authorDescription: 'Your source for gaming news, guides, and insights. We cover the latest in gaming culture, tips, and deep dives.',
+        authorSlug: null,
+        authorAvatar: null,
+    };
+
+    const authorId = post.author;
+    if (authorId && AUTHOR_MAP[authorId]) {
+        const mappedAuthor = AUTHOR_MAP[authorId];
+        authorData.authorName = mappedAuthor.name;
+        authorData.authorDescription = mappedAuthor.description;
+        authorData.authorSlug = mappedAuthor.slug;
+        authorData.authorAvatar = mappedAuthor.avatar;
+    }
+
+    // 1. Try to extract from Yoast SEO metadata (fallback/enrichment)
+    if (post.yoast_head_json?.schema?.['@graph']) {
+        const person = post.yoast_head_json.schema['@graph'].find(item => item['@type'] === 'Person');
+        if (person) {
+            authorData.authorName = authorData.authorName === 'EliteGamerInsights' ? (person.name || post.yoast_head_json.author || authorData.authorName) : authorData.authorName;
+            authorData.authorDescription = authorData.authorDescription.startsWith('Your source') ? (person.description || authorData.authorDescription) : authorData.authorDescription;
+            authorData.authorAvatar = authorData.authorAvatar || person.image?.url || null;
+            
+            if (!authorData.authorSlug && person.url) {
+                const urlParts = person.url.split('/');
+                authorData.authorSlug = urlParts[urlParts.length - 2] || null;
+            }
+        }
+    }
+
+    // 2. Try to extract from _embedded data (standard WordPress)
+    if (post._embedded?.author?.[0] && !post._embedded.author[0].code) {
+        const author = post._embedded.author[0];
+        authorData.authorName = authorData.authorName === 'EliteGamerInsights' ? (author.name || authorData.authorName) : authorData.authorName;
+        authorData.authorDescription = authorData.authorDescription.startsWith('Your source') ? (author.description || authorData.authorDescription) : authorData.authorDescription;
+        authorData.authorSlug = authorData.authorSlug || author.slug || null;
+        authorData.authorAvatar = authorData.authorAvatar || author.avatar_urls?.['96'] || author.avatar_urls?.['48'] || author.avatar_urls?.['24'] || null;
+    }
+
+    return authorData;
 }
 
 /**
@@ -356,6 +426,10 @@ export const postsApi = {
             const item = await fetchFromAPI(`/${postType}/${itemId}?_embed=1`);
             const transformedItem = transformPost(item);
 
+            // Extract author information
+            const authorData = await extractAuthorData(item);
+            Object.assign(transformedItem, authorData);
+
             if (includeImage) {
                 if (item._embedded?.['wp:featuredmedia']?.[0]?.source_url) {
                     transformedItem.image = item._embedded['wp:featuredmedia'][0].source_url;
@@ -390,24 +464,9 @@ export const postsApi = {
             const item = items[0];
             const transformedItem = transformPost(item);
 
-            // Extract author information from embedded data, or fetch separately
-            if (item._embedded?.author?.[0]) {
-                const author = item._embedded.author[0];
-                transformedItem.authorName = author.name || null;
-                transformedItem.authorDescription = author.description || null;
-                transformedItem.authorSlug = author.slug || null;
-                // Get the largest avatar URL available (96px)
-                transformedItem.authorAvatar = author.avatar_urls?.['96'] || author.avatar_urls?.['48'] || author.avatar_urls?.['24'] || null;
-            } else if (transformedItem.author) {
-                // Author not embedded, fetch separately by ID
-                const authorData = await getAuthorData(transformedItem.author);
-                if (authorData) {
-                    transformedItem.authorName = authorData.name;
-                    transformedItem.authorDescription = authorData.description;
-                    transformedItem.authorSlug = authorData.slug;
-                    transformedItem.authorAvatar = authorData.avatar;
-                }
-            }
+            // Extract author information
+            const authorData = await extractAuthorData(item);
+            Object.assign(transformedItem, authorData);
 
             if (includeImage) {
                 if (item._embedded?.['wp:featuredmedia']?.[0]?.source_url) {
@@ -433,6 +492,10 @@ export const postsApi = {
         try {
             const post = await fetchFromAPI(`/posts/${postId}?_embed=1`);
             const transformedPost = transformPost(post);
+
+            // Extract author information
+            const authorData = await extractAuthorData(post);
+            Object.assign(transformedPost, authorData);
 
             if (includeImage) {
                 if (post._embedded?.['wp:featuredmedia']?.[0]?.source_url) {
@@ -467,24 +530,9 @@ export const postsApi = {
             const post = posts[0];
             const transformedPost = transformPost(post);
 
-            // Extract author information from embedded data, or fetch separately
-            if (post._embedded?.author?.[0]) {
-                const author = post._embedded.author[0];
-                transformedPost.authorName = author.name || null;
-                transformedPost.authorDescription = author.description || null;
-                transformedPost.authorSlug = author.slug || null;
-                // Get the largest avatar URL available (96px)
-                transformedPost.authorAvatar = author.avatar_urls?.['96'] || author.avatar_urls?.['48'] || author.avatar_urls?.['24'] || null;
-            } else if (transformedPost.author) {
-                // Author not embedded, fetch separately by ID
-                const authorData = await getAuthorData(transformedPost.author);
-                if (authorData) {
-                    transformedPost.authorName = authorData.name;
-                    transformedPost.authorDescription = authorData.description;
-                    transformedPost.authorSlug = authorData.slug;
-                    transformedPost.authorAvatar = authorData.avatar;
-                }
-            }
+            // Extract author information
+            const authorData = await extractAuthorData(post);
+            Object.assign(transformedPost, authorData);
 
             if (includeImage) {
                 if (post._embedded?.['wp:featuredmedia']?.[0]?.source_url) {
@@ -810,6 +858,12 @@ export const authorsApi = {
      * @param {string} slug - Author slug
      */
     async getBySlug(slug) {
+        // 0. Check manual mapping first
+        const mappedAuthor = Object.values(AUTHOR_MAP).find(a => a.slug === slug);
+        if (mappedAuthor) {
+            return mappedAuthor;
+        }
+
         try {
             const encodedSlug = encodeURIComponent(slug);
             const users = await fetchFromAPI(`/users?slug=${encodedSlug}`);
@@ -844,45 +898,64 @@ export const authorsApi = {
      * @param {number} authorId - Author ID
      * @param {number} perPage - Number of posts per page (default: 20)
      */
-    async getPosts(authorId, perPage = 20) {
+    async getPosts(authorId, perPage = 50) {
         try {
-            // Fetch posts from all post types that support author
-            const [regularPosts, gamesPosts, culturePosts, newsPosts, guidesPosts, streamingPosts] = await Promise.all([
-                fetchFromAPI(`/posts?author=${authorId}&per_page=${perPage}&_embed=1`).catch(() => []),
-                fetchFromAPI(`/games?author=${authorId}&per_page=${perPage}&_embed=1`).catch(() => []),
-                fetchFromAPI(`/culture?author=${authorId}&per_page=${perPage}&_embed=1`).catch(() => []),
-                fetchFromAPI(`/news?author=${authorId}&per_page=${perPage}&_embed=1`).catch(() => []),
-                fetchFromAPI(`/guides?author=${authorId}&per_page=${perPage}&_embed=1`).catch(() => []),
-                fetchFromAPI(`/streaming?author=${authorId}&per_page=${perPage}&_embed=1`).catch(() => []),
-            ]);
+            // Since the WordPress server blocks the ?author=ID parameter (security restriction/WAF),
+            // we have to fetch the latest batch of posts from each type and filter them client-side.
+            // We fetch 100 (the maximum allowed) to ensure we find enough articles for the author.
+            const BATCH_SIZE = 100;
+            const endpoints = [
+                `/posts?per_page=${BATCH_SIZE}&_embed=1`,
+                `/games?per_page=${BATCH_SIZE}&_embed=1`,
+                `/culture?per_page=${BATCH_SIZE}&_embed=1`,
+                `/news?per_page=${BATCH_SIZE}&_embed=1`,
+                `/guides?per_page=${BATCH_SIZE}&_embed=1`,
+                `/streaming?per_page=${BATCH_SIZE}&_embed=1`,
+            ];
 
-            // Helper to transform posts with image and post type
-            const transformWithMeta = (posts, postType, basePath) => {
-                return (posts || []).map((post) => {
-                    const transformed = transformPost(post);
-                    if (post._embedded?.['wp:featuredmedia']?.[0]?.source_url) {
-                        transformed.image = post._embedded['wp:featuredmedia'][0].source_url;
-                    }
-                    transformed.postType = postType;
-                    transformed.basePath = basePath;
-                    return transformed;
-                });
+            const results = await Promise.all(
+                endpoints.map(endpoint => fetchFromAPI(endpoint).catch((err) => {
+                    console.warn(`Failed to fetch from ${endpoint}:`, err);
+                    return [];
+                }))
+            );
+
+            const [regularPosts, gamesPosts, culturePosts, newsPosts, guidesPosts, streamingPosts] = results;
+
+            // Helper to transform and filter posts
+            const transformAndFilter = (posts, postType, basePath) => {
+                return (posts || [])
+                    .filter(post => {
+                        // Filter by author ID on the client side to bypass server blocks
+                        const postAuthorId = parseInt(post.author, 10);
+                        return postAuthorId === parseInt(authorId, 10);
+                    })
+                    .map((post) => {
+                        const transformed = transformPost(post);
+                        if (post._embedded?.['wp:featuredmedia']?.[0]?.source_url) {
+                            transformed.image = post._embedded['wp:featuredmedia'][0].source_url;
+                        }
+                        transformed.postType = postType;
+                        transformed.basePath = basePath;
+                        return transformed;
+                    });
             };
 
-            // Transform all posts
+            // Transform and filter all posts
             const allPosts = [
-                ...transformWithMeta(regularPosts, 'posts', '/posts'),
-                ...transformWithMeta(gamesPosts, 'games', '/games'),
-                ...transformWithMeta(culturePosts, 'culture', '/culture'),
-                ...transformWithMeta(newsPosts, 'news', '/news'),
-                ...transformWithMeta(guidesPosts, 'guides', '/guides'),
-                ...transformWithMeta(streamingPosts, 'streaming', '/streaming'),
+                ...transformAndFilter(regularPosts, 'posts', '/posts'),
+                ...transformAndFilter(gamesPosts, 'games', '/games'),
+                ...transformAndFilter(culturePosts, 'culture', '/culture'),
+                ...transformAndFilter(newsPosts, 'news', '/news'),
+                ...transformAndFilter(guidesPosts, 'guides', '/guides'),
+                ...transformAndFilter(streamingPosts, 'streaming', '/streaming'),
             ];
 
             // Sort by date (newest first)
             allPosts.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-            return allPosts;
+            // Return up to perPage results
+            return allPosts.slice(0, perPage);
         } catch (error) {
             console.error(`Error fetching posts by author ID "${authorId}":`, error);
             return [];

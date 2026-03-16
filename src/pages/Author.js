@@ -120,10 +120,9 @@ function Author() {
                     </div>
                 </div>
 
-                {/* Posts Section */}
                 <div className="mb-8">
                     <h2 className="text-2xl font-bold text-white mb-6">
-                        Articles by {author.name}
+                        Most recent articles by {author.name}
                         <span className="text-gray-500 font-normal ml-2">({posts.length})</span>
                     </h2>
 
