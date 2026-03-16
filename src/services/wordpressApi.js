@@ -124,29 +124,6 @@ async function getFeaturedImageUrl(mediaId) {
     }
 }
 
-/**
- * Get author data by ID
- * @param {number} authorId - Author/User ID
- * @returns {Object|null} Author data with name, description, avatar, slug
- */
-async function getAuthorData(authorId) {
-    if (!authorId || authorId === 0) {
-        return null;
-    }
-
-    try {
-        const author = await fetchFromAPI(`/users/${authorId}`);
-        return {
-            name: author.name || null,
-            description: author.description || null,
-            slug: author.slug || null,
-            avatar: author.avatar_urls?.['96'] || author.avatar_urls?.['48'] || author.avatar_urls?.['24'] || null,
-        };
-    } catch (error) {
-        console.error(`Error fetching author ${authorId}:`, error);
-        return null;
-    }
-}
 
 /**
  * Extract author data from WordPress post object or embedded data
