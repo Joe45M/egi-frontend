@@ -527,6 +527,21 @@ export const postsApi = {
     },
 
     /**
+     * Get structured schema data for a post from saswp
+     * @param {number} postId - Post ID
+     */
+    async getPostSchema(postId) {
+        try {
+            const url = `https://api.elitegamerinsights.com/wp-json/saswp-output/posts/${postId}`;
+            const response = await fetchFromAPI(url);
+            return response?.json_ld || null;
+        } catch (error) {
+            console.error(`Error fetching post schema for post ${postId}:`, error);
+            return null;
+        }
+    },
+
+    /**
      * Get related posts (by category or tags)
      * @param {number} postId - Current post ID
      * @param {number} limit - Maximum number of related posts (default: 4)

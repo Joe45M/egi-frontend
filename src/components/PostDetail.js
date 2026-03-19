@@ -39,6 +39,7 @@ function PostDetail({ postType = 'games', basePath = '/games' }) {
     }
 
     const [post, setPost] = useState(hasInitialData ? initialData.post : null);
+    const [wpSchema, setWpSchema] = useState(null);
     const [loading, setLoading] = useState(!hasInitialData);
     const [notFound, setNotFound] = useState(false);
     const [associatedGame, setAssociatedGame] = useState(null);
@@ -65,6 +66,23 @@ function PostDetail({ postType = 'games', basePath = '/games' }) {
 
         fetchGameDetails();
     }, [post]);
+
+    useEffect(() => {
+        if (!post?.id) return;
+
+        const fetchSchema = async () => {
+            try {
+                const schema = await wordpressApi.posts.getPostSchema(post.id);
+                if (schema && Array.isArray(schema)) {
+                    setWpSchema(schema);
+                }
+            } catch (e) {
+                console.error('Error fetching WP schema', e);
+            }
+        };
+
+        fetchSchema();
+    }, [post?.id]);
 
     useEffect(() => {
         // If we already have initial data from SSR, skip fetching
@@ -213,8 +231,8 @@ function PostDetail({ postType = 'games', basePath = '/games' }) {
         articleTags.push('gaming');
     }
 
-    // Generate structured schemas
-    const schemas = [
+    // Generate structured schemas fallback
+    const fallbackSchemas = [
         generateArticleSchema({
             headline: articleTitle,
             description: articleExcerpt,
@@ -241,6 +259,8 @@ function PostDetail({ postType = 'games', basePath = '/games' }) {
             ]
         })
     ];
+
+    const schemas = wpSchema && wpSchema.length > 0 ? wpSchema : fallbackSchemas;
 
     return (
         <>
