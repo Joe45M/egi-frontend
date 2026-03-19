@@ -161,7 +161,7 @@
 
 /* Tables */
 .wp-content table {
-  @apply my-8 w-full border-collapse;
+  @apply my-8 w-full border-collapse block overflow-x-auto max-w-[90vw] lg:max-w-full;
 }
 
 .wp-content th,
