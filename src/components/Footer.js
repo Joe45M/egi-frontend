@@ -15,22 +15,7 @@ function Footer() {
             <ul className="space-y-2">
               <li>
                 <Link to="/contact" className="text-gray-400 hover:bg-gradient-to-r hover:from-accent-pink-400 hover:to-accent-violet-400 hover:bg-clip-text hover:text-transparent transition-all duration-300">
-                  About
-                </Link>
-              </li>
-              <li>
-                <Link to="/contact" className="text-gray-400 hover:bg-gradient-to-r hover:from-accent-pink-400 hover:to-accent-violet-400 hover:bg-clip-text hover:text-transparent transition-all duration-300">
-                  Contact
-                </Link>
-              </li>
-              <li>
-                <Link to="/k-d-calculator-calculate-your-kill-death-ratio" className="text-gray-400 hover:bg-gradient-to-r hover:from-accent-pink-400 hover:to-accent-violet-400 hover:bg-clip-text hover:text-transparent transition-all duration-300">
-                  K/D Calculator
-                </Link>
-              </li>
-              <li>
-                <Link to="/game-download-speed-calculator" className="text-gray-400 hover:bg-gradient-to-r hover:from-accent-pink-400 hover:to-accent-violet-400 hover:bg-clip-text hover:text-transparent transition-all duration-300">
-                  Game Download Speed Calculator
+                  About & Contact
                 </Link>
               </li>
             </ul>
@@ -62,45 +47,12 @@ function Footer() {
               </li>
             </ul>
           </div>
-
-          {/* Support */}
-          <div>
-            <h3 className="text-white font-bold text-lg mb-4">Support</h3>
-            <ul className="space-y-2">
-              <li>
-                <Link to="/game-download-speed-calculator" className="text-gray-400 hover:bg-gradient-to-r hover:from-accent-pink-400 hover:to-accent-violet-400 hover:bg-clip-text hover:text-transparent transition-all duration-300">
-                  Game Download Speed Calculator
-                </Link>
-              </li>
-              <li>
-                <Link to="/help" className="text-gray-400 hover:bg-gradient-to-r hover:from-accent-pink-400 hover:to-accent-violet-400 hover:bg-clip-text hover:text-transparent transition-all duration-300">
-                  Help Center
-                </Link>
-              </li>
-              <li>
-                <Link to="/faq" className="text-gray-400 hover:bg-gradient-to-r hover:from-accent-pink-400 hover:to-accent-violet-400 hover:bg-clip-text hover:text-transparent transition-all duration-300">
-                  FAQ
-                </Link>
-              </li>
-              <li>
-                <Link to="/community" className="text-gray-400 hover:bg-gradient-to-r hover:from-accent-pink-400 hover:to-accent-violet-400 hover:bg-clip-text hover:text-transparent transition-all duration-300">
-                  Community
-                </Link>
-              </li>
-              <li>
-                <Link to="/feedback" className="text-gray-400 hover:bg-gradient-to-r hover:from-accent-pink-400 hover:to-accent-violet-400 hover:bg-clip-text hover:text-transparent transition-all duration-300">
-                  Feedback
-                </Link>
-              </li>
-            </ul>
-          </div>
-
           {/* Social Media */}
           <div>
             <h3 className="text-white font-bold text-lg mb-4">Socials</h3>
             <ul className="space-y-2">
               <li>
-                <a href="https://twitter.com/elitegamerinsights" target="_blank" rel="noopener noreferrer" className="group flex items-center gap-2 text-gray-400 transition-all duration-300">
+                <a href="https://twitter.com/eliteGinsights" target="_blank" rel="noopener noreferrer" className="group flex items-center gap-2 text-gray-400 transition-all duration-300">
                   <TwitterLogo size={20} weight="regular" className="group-hover:text-accent-violet-400 transition-colors duration-300" />
                   <span className="group-hover:bg-gradient-to-r group-hover:from-accent-pink-400 group-hover:to-accent-violet-400 group-hover:bg-clip-text group-hover:text-transparent transition-all duration-300">Twitter</span>
                 </a>
@@ -139,17 +91,14 @@ function Footer() {
               </p>
             </div>
             <div className="flex flex-wrap gap-4 text-sm">
+                <Link to="/k-d-calculator-calculate-your-kill-death-ratio" className="text-gray-400 hover:bg-gradient-to-r hover:from-accent-pink-400 hover:to-accent-violet-400 hover:bg-clip-text hover:text-transparent transition-all duration-300">
+                  K/D Calculator
+                </Link>
               <Link to="/game-download-speed-calculator" className="text-gray-400 hover:bg-gradient-to-r hover:from-accent-pink-400 hover:to-accent-violet-400 hover:bg-clip-text hover:text-transparent transition-all duration-300">
                 Game Download Speed Calculator
               </Link>
-              <Link to="/sitemap" className="text-gray-400 hover:bg-gradient-to-r hover:from-accent-pink-400 hover:to-accent-violet-400 hover:bg-clip-text hover:text-transparent transition-all duration-300">
+              <Link to="https://api.elitegamerinsights.com/sitemap_index.xml" className="text-gray-400 hover:bg-gradient-to-r hover:from-accent-pink-400 hover:to-accent-violet-400 hover:bg-clip-text hover:text-transparent transition-all duration-300">
                 Sitemap
-              </Link>
-              <Link to="/rss" className="text-gray-400 hover:bg-gradient-to-r hover:from-accent-pink-400 hover:to-accent-violet-400 hover:bg-clip-text hover:text-transparent transition-all duration-300">
-                RSS
-              </Link>
-              <Link to="/newsletter" className="text-gray-400 hover:bg-gradient-to-r hover:from-accent-pink-400 hover:to-accent-violet-400 hover:bg-clip-text hover:text-transparent transition-all duration-300">
-                Newsletter
               </Link>
             </div>
           </div>
