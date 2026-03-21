@@ -1,0 +1,1511 @@
+2026-03-20T00:10:39.435Z [INFO] [SYSTEM] Using native fetch API
+2026-03-20T00:10:39.436Z [DEBUG] [PROXY] System proxy support disabled (USE_SYSTEM_PROXY=false)
+2026-03-20T00:10:39.436Z [INFO] [PROXY] Starting WordPress MCP Proxy with enhanced authentication
+2026-03-20T00:10:39.436Z [INFO] [PROXY] MCP server connected to transport successfully
+2026-03-20T00:14:33.695Z [INFO] [SYSTEM] Using native fetch API
+2026-03-20T00:14:33.695Z [DEBUG] [PROXY] System proxy support disabled (USE_SYSTEM_PROXY=false)
+2026-03-20T00:14:33.695Z [INFO] [PROXY] Starting WordPress MCP Proxy with enhanced authentication
+2026-03-20T00:14:33.696Z [INFO] [PROXY] MCP server connected to transport successfully
+2026-03-20T00:14:33.697Z [INFO] [INIT] 📩 Client Initialize Request received
+2026-03-20T00:14:33.697Z [DEBUG] [INIT] Initialize request details:
+{
+  "method": "initialize",
+  "params": {
+    "protocolVersion": "2025-06-18",
+    "capabilities": {
+      "roots": {
+        "listChanged": true
+      },
+      "elicitation": {
+        "Form": {},
+        "URL": {}
+      }
+    },
+    "clientInfo": {
+      "name": "antigravity-client",
+      "version": "v1.0.0"
+    }
+  }
+}
+2026-03-20T00:14:33.697Z [INFO] [INIT] 🔄 Initializing WordPress connection with client parameters
+2026-03-20T00:14:33.697Z [INFO] [TRANSPORT_DETECT] 🔍 Starting transport detection and WordPress API initialization...
+2026-03-20T00:14:33.697Z [INFO] [TRANSPORT_DETECT] 📋 Added proxy information to clientInfo
+{
+  "originalClient": "antigravity-client",
+  "proxyName": "@automattic/mcp-wordpress-remote",
+  "proxyVersion": "0.2.19"
+}
+2026-03-20T00:14:33.698Z [INFO] [TRANSPORT_DETECT] 📡 Attempting JSON-RPC transport...
+2026-03-20T00:14:33.698Z [DEBUG] [SESSION] MCP JSON-RPC message being sent to WordPress:
+{
+  "jsonrpc": "2.0",
+  "method": "initialize",
+  "id": 1,
+  "original_mcp_id": "none",
+  "session_id": "not-yet-obtained"
+}
+2026-03-20T00:14:33.698Z [INFO] [TRANSPORT_DETECT] Sending initialization message via JSON-RPC:
+{
+  "method": "initialize",
+  "id": 1,
+  "jsonrpc": "2.0",
+  "hasParams": true
+}
+2026-03-20T00:14:33.698Z [DEBUG] [TRANSPORT_DETECT] Complete JSON-RPC init message:
+{
+  "jsonrpc": "2.0",
+  "method": "initialize",
+  "id": 1,
+  "params": {
+    "protocolVersion": "2025-06-18",
+    "capabilities": {
+      "roots": {
+        "listChanged": true
+      },
+      "elicitation": {
+        "Form": {},
+        "URL": {}
+      }
+    },
+    "clientInfo": {
+      "name": "antigravity-client",
+      "version": "v1.0.0",
+      "proxied": {
+        "name": "@automattic/mcp-wordpress-remote",
+        "version": "0.2.19"
+      }
+    },
+    "_proxy_request_id": 1
+  }
+}
+2026-03-20T00:14:33.698Z [INFO] [API] Request method: initialize (JSON-RPC)
+2026-03-20T00:14:33.698Z [DEBUG] [API] JSON-RPC message: {"jsonrpc":"2.0","method":"initialize","id":1,"params":{"protocolVersion":"2025-06-18","capabilities":{"roots":{"listChanged":true},"elicitation":{"Form":{},"URL":{}}},"clientInfo":{"name":"antigravity-client","version":"v1.0.0","proxied":{"name":"@automattic/mcp-wordpress-remote","version":"0.2.19"}},"_proxy_request_id":1}}
+2026-03-20T00:14:33.698Z [INFO] [AUTH] Using WordPress Basic Auth for method: initialize
+2026-03-20T00:14:33.698Z [DEBUG] [AUTH] Username length: 3
+2026-03-20T00:14:33.698Z [DEBUG] [AUTH] Password length: 29
+2026-03-20T00:14:33.698Z [DEBUG] [AUTH] Auth header length: 44
+2026-03-20T00:14:33.698Z [DEBUG] [API] Environment: development
+2026-03-20T00:14:33.698Z [DEBUG] [API] Base API URL: https://api.elitegamerinsights.com/wp-json/mcp/mcp-adapter-default-server
+2026-03-20T00:14:33.698Z [DEBUG] [API] Final requesting URL: https://api.elitegamerinsights.com/wp-json/mcp/mcp-adapter-default-server
+2026-03-20T00:14:33.698Z [DEBUG] [API] Using Authorization header for authentication
+2026-03-20T00:14:33.698Z [INFO] [API] Sending request to WordPress API...
+2026-03-20T00:14:33.698Z [DEBUG] [API] Request URL: https://api.elitegamerinsights.com/wp-json/mcp/mcp-adapter-default-server
+2026-03-20T00:14:33.698Z [DEBUG] [API] Request method: POST
+2026-03-20T00:14:34.136Z [DEBUG] [API] Response status: 200
+2026-03-20T00:14:34.137Z [INFO] [SESSION] Session ID received from WordPress: 7f1295d1-b76d-48a9-97f6-890af3382071
+2026-03-20T00:14:34.137Z [INFO] [API] Response received successfully
+2026-03-20T00:14:34.137Z [DEBUG] [API] Response data: {"jsonrpc":"2.0","id":1,"result":{"protocolVersion":"2025-06-18","serverInfo":{"name":"MCP Adapter Default Server","version":"v1.0.0"},"capabilities":{"tools":{},"resources":{},"prompts":{},"logging":{},"completions":{}},"instructions":"Default MCP server for WordPress abilities discovery and execution"}}
+2026-03-20T00:14:34.138Z [INFO] [TRANSPORT_DETECT] ✅ JSON-RPC transport detected and working
+2026-03-20T00:14:34.138Z [DEBUG] [TRANSPORT_DETECT] JSON-RPC initialization response:
+{
+  "protocolVersion": "2025-06-18",
+  "serverInfo": {
+    "name": "MCP Adapter Default Server",
+    "version": "v1.0.0"
+  },
+  "capabilities": {
+    "tools": {},
+    "resources": {},
+    "prompts": {},
+    "logging": {},
+    "completions": {}
+  },
+  "instructions": "Default MCP server for WordPress abilities discovery and execution"
+}
+2026-03-20T00:14:34.138Z [INFO] [PROXY] Using session ID from WordPress: 7f1295d1-b76d-48a9-97f6-890af3382071
+2026-03-20T00:14:34.138Z [INFO] [PROXY] WordPress connection initialized successfully using jsonrpc transport
+2026-03-20T00:14:34.138Z [INFO] [INIT] ✅ Returning WordPress server initialize response
+2026-03-20T00:14:34.138Z [DEBUG] [INIT] Initialize response:
+{
+  "protocolVersion": "2025-06-18",
+  "serverInfo": {
+    "name": "MCP Adapter Default Server",
+    "version": "v1.0.0"
+  },
+  "capabilities": {
+    "tools": {},
+    "resources": {},
+    "prompts": {},
+    "logging": {},
+    "completions": {}
+  },
+  "instructions": "Default MCP server for WordPress abilities discovery and execution"
+}
+2026-03-20T00:14:34.139Z [INFO] [CLIENT] 📩 Client Message: ListTools
+2026-03-20T00:14:34.139Z [INFO] [CLIENT] Request ID: none | Method: tools/list
+2026-03-20T00:14:34.139Z [INFO] [CLIENT] No request parameters
+2026-03-20T00:14:34.139Z [DEBUG] [CLIENT] Session context - ID: 7f1295d1-b76d-48a9-97f6-890af3382071, Transport: jsonrpc, Counter: 1
+2026-03-20T00:14:34.139Z [DEBUG] [CLIENT] Complete client request object:
+{
+  "method": "tools/list",
+  "params": {}
+}
+2026-03-20T00:14:34.139Z [DEBUG] [MCP] Processing ListToolsRequest
+2026-03-20T00:14:34.139Z [DEBUG] [SESSION] MCP JSON-RPC message being sent to WordPress:
+{
+  "jsonrpc": "2.0",
+  "method": "tools/list",
+  "id": 2,
+  "original_mcp_id": "none",
+  "session_id": "7f1295d1-b76d-48a9-97f6-890af3382071"
+}
+2026-03-20T00:14:34.139Z [INFO] [API] Request method: tools/list (JSON-RPC)
+2026-03-20T00:14:34.139Z [DEBUG] [API] JSON-RPC message: {"jsonrpc":"2.0","method":"tools/list","id":2,"params":{"_proxy_request_id":2}}
+2026-03-20T00:14:34.139Z [INFO] [AUTH] Using WordPress Basic Auth for method: tools/list
+2026-03-20T00:14:34.139Z [DEBUG] [AUTH] Username length: 3
+2026-03-20T00:14:34.139Z [DEBUG] [AUTH] Password length: 29
+2026-03-20T00:14:34.139Z [DEBUG] [AUTH] Auth header length: 44
+2026-03-20T00:14:34.139Z [DEBUG] [API] Environment: development
+2026-03-20T00:14:34.139Z [DEBUG] [API] Base API URL: https://api.elitegamerinsights.com/wp-json/mcp/mcp-adapter-default-server
+2026-03-20T00:14:34.139Z [DEBUG] [API] Final requesting URL: https://api.elitegamerinsights.com/wp-json/mcp/mcp-adapter-default-server
+2026-03-20T00:14:34.139Z [DEBUG] [API] Using Authorization header for authentication
+2026-03-20T00:14:34.139Z [INFO] [API] Sending request to WordPress API...
+2026-03-20T00:14:34.139Z [DEBUG] [API] Request URL: https://api.elitegamerinsights.com/wp-json/mcp/mcp-adapter-default-server
+2026-03-20T00:14:34.139Z [DEBUG] [API] Request method: POST
+2026-03-20T00:14:34.334Z [DEBUG] [API] Response status: 200
+2026-03-20T00:14:34.335Z [INFO] [API] Response received successfully
+2026-03-20T00:14:34.335Z [DEBUG] [API] Response data: {"jsonrpc":"2.0","id":2,"result":{"tools":[{"name":"mcp-adapter-discover-abilities","description":"Discover all available WordPress abilities in the system. Returns a list of all registered abilities with their basic information.","type":"action","inputSchema":{"type":"object","additionalProperties":false},"outputSchema":{"type":"object","properties":{"abilities":{"type":"array","items":{"type":"object","properties":{"name":{"type":"string"},"label":{"type":"string"},"description":{"type":"string"}},"required":["name","label","description"]}}},"required":["abilities"]},"annotations":{"readOnlyHint":true,"destructiveHint":false,"idempotentHint":true,"title":"Discover Abilities"}},{"name":"mcp-adapter-get-ability-info","description":"Get detailed information about a specific WordPress ability including its input/output schema, description, and usage examples.","type":"action","inputSchema":{"type":"object","properties":{"ability_name":{"type":"string","description":"The full name of the ability to get information about"}},"required":["ability_name"],"additionalProperties":false},"outputSchema":{"type":"object","properties":{"name":{"type":"string"},"label":{"type":"string"},"description":{"type":"string"},"input_schema":{"type":"object","description":"JSON Schema for the ability input parameters"},"output_schema":{"type":"object","description":"JSON Schema for the ability output structure"},"meta":{"type":"object","description":"Additional metadata about the ability"}},"required":["name","label","description","input_schema"]},"annotations":{"readOnlyHint":true,"destructiveHint":false,"idempotentHint":true,"title":"Get Ability Info"}},{"name":"mcp-adapter-execute-ability","description":"Execute a WordPress ability with the provided parameters. This is the primary execution layer that can run any registered ability.","type":"action","inputSchema":{"type":"object","properties":{"ability_name":{"type":"string","description":"The full name of the ability to execute"},"parameters":{"type":"object","description":"Parameters to pass to the ability"}},"required":["ability_name","parameters"],"additionalProperties":false},"outputSchema":{"type":"object","properties":{"success":{"type":"boolean"},"data":{"description":"The result data from the ability execution"},"error":{"type":"string","description":"Error message if execution failed"}},"required":["success"]},"annotations":{"readOnlyHint":false,"destructiveHint":true,"idempotentHint":false,"title":"Execute Ability"}}]}}
+2026-03-20T00:14:34.335Z [INFO] [CLIENT] ✅ Client Response: ListTools completed in 196ms
+2026-03-20T00:14:34.335Z [DEBUG] [CLIENT] Response sent to client:
+{
+  "hasResponse": true,
+  "responseKeys": [
+    "tools"
+  ]
+}
+2026-03-20T00:14:44.368Z [INFO] [CLIENT] 📩 Client Message: CallTool
+2026-03-20T00:14:44.369Z [INFO] [CLIENT] Request ID: none | Method: tools/call
+2026-03-20T00:14:44.369Z [INFO] [CLIENT] Request parameters:
+{
+  "paramCount": 3,
+  "paramKeys": [
+    "_meta",
+    "name",
+    "arguments"
+  ]
+}
+2026-03-20T00:14:44.369Z [DEBUG] [CLIENT] Full request parameters:
+{
+  "_meta": {
+    "progressToken": "05e970ad-b151-4619-85c1-af28897ac797:5",
+    "antigravity.google/conversation_id": "316281cc-6cc7-47b5-b30e-88179d694c93"
+  },
+  "name": "mcp-adapter-discover-abilities",
+  "arguments": {}
+}
+2026-03-20T00:14:44.369Z [DEBUG] [CLIENT] Session context - ID: 7f1295d1-b76d-48a9-97f6-890af3382071, Transport: jsonrpc, Counter: 2
+2026-03-20T00:14:44.369Z [DEBUG] [CLIENT] Complete client request object:
+{
+  "method": "tools/call",
+  "params": {
+    "_meta": {
+      "progressToken": "05e970ad-b151-4619-85c1-af28897ac797:5",
+      "antigravity.google/conversation_id": "316281cc-6cc7-47b5-b30e-88179d694c93"
+    },
+    "name": "mcp-adapter-discover-abilities",
+    "arguments": {}
+  }
+}
+2026-03-20T00:14:44.369Z [DEBUG] [MCP] Processing CallToolRequest
+2026-03-20T00:14:44.369Z [DEBUG] [SESSION] MCP JSON-RPC message being sent to WordPress:
+{
+  "jsonrpc": "2.0",
+  "method": "tools/call",
+  "id": 3,
+  "original_mcp_id": "none",
+  "session_id": "7f1295d1-b76d-48a9-97f6-890af3382071"
+}
+2026-03-20T00:14:44.370Z [INFO] [API] Request method: tools/call (JSON-RPC)
+2026-03-20T00:14:44.370Z [DEBUG] [API] JSON-RPC message: {"jsonrpc":"2.0","method":"tools/call","id":3,"params":{"name":"mcp-adapter-discover-abilities","arguments":{},"_proxy_request_id":3}}
+2026-03-20T00:14:44.370Z [INFO] [AUTH] Using WordPress Basic Auth for method: tools/call
+2026-03-20T00:14:44.370Z [DEBUG] [AUTH] Username length: 3
+2026-03-20T00:14:44.370Z [DEBUG] [AUTH] Password length: 29
+2026-03-20T00:14:44.370Z [DEBUG] [AUTH] Auth header length: 44
+2026-03-20T00:14:44.370Z [DEBUG] [API] Environment: development
+2026-03-20T00:14:44.370Z [DEBUG] [API] Base API URL: https://api.elitegamerinsights.com/wp-json/mcp/mcp-adapter-default-server
+2026-03-20T00:14:44.370Z [DEBUG] [API] Final requesting URL: https://api.elitegamerinsights.com/wp-json/mcp/mcp-adapter-default-server
+2026-03-20T00:14:44.370Z [DEBUG] [API] Using Authorization header for authentication
+2026-03-20T00:14:44.370Z [INFO] [API] Sending request to WordPress API...
+2026-03-20T00:14:44.371Z [DEBUG] [API] Request URL: https://api.elitegamerinsights.com/wp-json/mcp/mcp-adapter-default-server
+2026-03-20T00:14:44.371Z [DEBUG] [API] Request method: POST
+2026-03-20T00:14:44.811Z [DEBUG] [API] Response status: 200
+2026-03-20T00:14:44.813Z [INFO] [API] Response received successfully
+2026-03-20T00:14:44.813Z [DEBUG] [API] Response data: {"jsonrpc":"2.0","id":3,"result":{"content":[{"type":"text","text":"{\"abilities\":[]}"}],"structuredContent":{"abilities":[]}}}
+2026-03-20T00:14:44.814Z [INFO] [CLIENT] ✅ Client Response: CallTool completed in 445ms
+2026-03-20T00:14:44.814Z [DEBUG] [CLIENT] Response sent to client:
+{
+  "hasResponse": true,
+  "responseKeys": [
+    "content",
+    "structuredContent"
+  ]
+}
+2026-03-20T00:16:01.250Z [INFO] [CLIENT] 📩 Client Message: CallTool
+2026-03-20T00:16:01.251Z [INFO] [CLIENT] Request ID: none | Method: tools/call
+2026-03-20T00:16:01.251Z [INFO] [CLIENT] Request parameters:
+{
+  "paramCount": 3,
+  "paramKeys": [
+    "_meta",
+    "name",
+    "arguments"
+  ]
+}
+2026-03-20T00:16:01.251Z [DEBUG] [CLIENT] Full request parameters:
+{
+  "_meta": {
+    "progressToken": "05e970ad-b151-4619-85c1-af28897ac797:36",
+    "antigravity.google/conversation_id": "316281cc-6cc7-47b5-b30e-88179d694c93"
+  },
+  "name": "mcp-adapter-get-ability-info",
+  "arguments": {
+    "ability_name": "core/get-site-info"
+  }
+}
+2026-03-20T00:16:01.251Z [DEBUG] [CLIENT] Session context - ID: 7f1295d1-b76d-48a9-97f6-890af3382071, Transport: jsonrpc, Counter: 3
+2026-03-20T00:16:01.251Z [DEBUG] [CLIENT] Complete client request object:
+{
+  "method": "tools/call",
+  "params": {
+    "_meta": {
+      "progressToken": "05e970ad-b151-4619-85c1-af28897ac797:36",
+      "antigravity.google/conversation_id": "316281cc-6cc7-47b5-b30e-88179d694c93"
+    },
+    "name": "mcp-adapter-get-ability-info",
+    "arguments": {
+      "ability_name": "core/get-site-info"
+    }
+  }
+}
+2026-03-20T00:16:01.251Z [DEBUG] [MCP] Processing CallToolRequest
+2026-03-20T00:16:01.252Z [DEBUG] [SESSION] MCP JSON-RPC message being sent to WordPress:
+{
+  "jsonrpc": "2.0",
+  "method": "tools/call",
+  "id": 4,
+  "original_mcp_id": "none",
+  "session_id": "7f1295d1-b76d-48a9-97f6-890af3382071"
+}
+2026-03-20T00:16:01.252Z [INFO] [API] Request method: tools/call (JSON-RPC)
+2026-03-20T00:16:01.252Z [DEBUG] [API] JSON-RPC message: {"jsonrpc":"2.0","method":"tools/call","id":4,"params":{"name":"mcp-adapter-get-ability-info","arguments":{"ability_name":"core/get-site-info"},"_proxy_request_id":4}}
+2026-03-20T00:16:01.252Z [INFO] [AUTH] Using WordPress Basic Auth for method: tools/call
+2026-03-20T00:16:01.252Z [DEBUG] [AUTH] Username length: 3
+2026-03-20T00:16:01.252Z [DEBUG] [AUTH] Password length: 29
+2026-03-20T00:16:01.252Z [DEBUG] [AUTH] Auth header length: 44
+2026-03-20T00:16:01.253Z [DEBUG] [API] Environment: development
+2026-03-20T00:16:01.253Z [DEBUG] [API] Base API URL: https://api.elitegamerinsights.com/wp-json/mcp/mcp-adapter-default-server
+2026-03-20T00:16:01.253Z [DEBUG] [API] Final requesting URL: https://api.elitegamerinsights.com/wp-json/mcp/mcp-adapter-default-server
+2026-03-20T00:16:01.253Z [DEBUG] [API] Using Authorization header for authentication
+2026-03-20T00:16:01.253Z [INFO] [API] Sending request to WordPress API...
+2026-03-20T00:16:01.253Z [DEBUG] [API] Request URL: https://api.elitegamerinsights.com/wp-json/mcp/mcp-adapter-default-server
+2026-03-20T00:16:01.253Z [DEBUG] [API] Request method: POST
+2026-03-20T00:16:01.710Z [DEBUG] [API] Response status: 200
+2026-03-20T00:16:01.712Z [INFO] [API] Response received successfully
+2026-03-20T00:16:01.712Z [DEBUG] [API] Response data: {"jsonrpc":"2.0","id":4,"result":{"content":[{"type":"text","text":"Permission denied: Ability \"core/get-site-info\" is not exposed via MCP (mcp.public!=true)"}],"isError":true}}
+2026-03-20T00:16:01.712Z [INFO] [CLIENT] ✅ Client Response: CallTool completed in 461ms
+2026-03-20T00:16:01.712Z [DEBUG] [CLIENT] Response sent to client:
+{
+  "hasResponse": true,
+  "responseKeys": [
+    "content",
+    "isError"
+  ]
+}
+2026-03-20T00:17:09.989Z [INFO] [CLIENT] 📩 Client Message: CallTool
+2026-03-20T00:17:09.989Z [INFO] [CLIENT] Request ID: none | Method: tools/call
+2026-03-20T00:17:09.989Z [INFO] [CLIENT] Request parameters:
+{
+  "paramCount": 3,
+  "paramKeys": [
+    "_meta",
+    "name",
+    "arguments"
+  ]
+}
+2026-03-20T00:17:09.989Z [DEBUG] [CLIENT] Full request parameters:
+{
+  "_meta": {
+    "progressToken": "05e970ad-b151-4619-85c1-af28897ac797:81",
+    "antigravity.google/conversation_id": "316281cc-6cc7-47b5-b30e-88179d694c93"
+  },
+  "name": "mcp-adapter-execute-ability",
+  "arguments": {
+    "ability_name": "core/get-site-info",
+    "parameters": {}
+  }
+}
+2026-03-20T00:17:09.989Z [DEBUG] [CLIENT] Session context - ID: 7f1295d1-b76d-48a9-97f6-890af3382071, Transport: jsonrpc, Counter: 4
+2026-03-20T00:17:09.989Z [DEBUG] [CLIENT] Complete client request object:
+{
+  "method": "tools/call",
+  "params": {
+    "_meta": {
+      "progressToken": "05e970ad-b151-4619-85c1-af28897ac797:81",
+      "antigravity.google/conversation_id": "316281cc-6cc7-47b5-b30e-88179d694c93"
+    },
+    "name": "mcp-adapter-execute-ability",
+    "arguments": {
+      "ability_name": "core/get-site-info",
+      "parameters": {}
+    }
+  }
+}
+2026-03-20T00:17:09.989Z [DEBUG] [MCP] Processing CallToolRequest
+2026-03-20T00:17:09.990Z [DEBUG] [SESSION] MCP JSON-RPC message being sent to WordPress:
+{
+  "jsonrpc": "2.0",
+  "method": "tools/call",
+  "id": 5,
+  "original_mcp_id": "none",
+  "session_id": "7f1295d1-b76d-48a9-97f6-890af3382071"
+}
+2026-03-20T00:17:09.990Z [INFO] [API] Request method: tools/call (JSON-RPC)
+2026-03-20T00:17:09.990Z [DEBUG] [API] JSON-RPC message: {"jsonrpc":"2.0","method":"tools/call","id":5,"params":{"name":"mcp-adapter-execute-ability","arguments":{"ability_name":"core/get-site-info","parameters":{}},"_proxy_request_id":5}}
+2026-03-20T00:17:09.990Z [INFO] [AUTH] Using WordPress Basic Auth for method: tools/call
+2026-03-20T00:17:09.990Z [DEBUG] [AUTH] Username length: 3
+2026-03-20T00:17:09.990Z [DEBUG] [AUTH] Password length: 29
+2026-03-20T00:17:09.990Z [DEBUG] [AUTH] Auth header length: 44
+2026-03-20T00:17:09.990Z [DEBUG] [API] Environment: development
+2026-03-20T00:17:09.990Z [DEBUG] [API] Base API URL: https://api.elitegamerinsights.com/wp-json/mcp/mcp-adapter-default-server
+2026-03-20T00:17:09.990Z [DEBUG] [API] Final requesting URL: https://api.elitegamerinsights.com/wp-json/mcp/mcp-adapter-default-server
+2026-03-20T00:17:09.990Z [DEBUG] [API] Using Authorization header for authentication
+2026-03-20T00:17:09.990Z [INFO] [API] Sending request to WordPress API...
+2026-03-20T00:17:09.990Z [DEBUG] [API] Request URL: https://api.elitegamerinsights.com/wp-json/mcp/mcp-adapter-default-server
+2026-03-20T00:17:09.990Z [DEBUG] [API] Request method: POST
+2026-03-20T00:17:10.810Z [DEBUG] [API] Response status: 200
+2026-03-20T00:17:10.810Z [INFO] [API] Response received successfully
+2026-03-20T00:17:10.811Z [DEBUG] [API] Response data: {"jsonrpc":"2.0","id":5,"result":{"content":[{"type":"text","text":"Permission denied: Ability \"core/get-site-info\" is not exposed via MCP (mcp.public!=true)"}],"isError":true}}
+2026-03-20T00:17:10.811Z [INFO] [CLIENT] ✅ Client Response: CallTool completed in 822ms
+2026-03-20T00:17:10.811Z [DEBUG] [CLIENT] Response sent to client:
+{
+  "hasResponse": true,
+  "responseKeys": [
+    "content",
+    "isError"
+  ]
+}
+2026-03-20T00:28:41.464Z [INFO] [CLIENT] 📩 Client Message: CallTool
+2026-03-20T00:28:41.465Z [INFO] [CLIENT] Request ID: none | Method: tools/call
+2026-03-20T00:28:41.466Z [INFO] [CLIENT] Request parameters:
+{
+  "paramCount": 3,
+  "paramKeys": [
+    "_meta",
+    "name",
+    "arguments"
+  ]
+}
+2026-03-20T00:28:41.466Z [DEBUG] [CLIENT] Full request parameters:
+{
+  "_meta": {
+    "progressToken": "05e970ad-b151-4619-85c1-af28897ac797:236",
+    "antigravity.google/conversation_id": "316281cc-6cc7-47b5-b30e-88179d694c93"
+  },
+  "name": "mcp-adapter-discover-abilities",
+  "arguments": {}
+}
+2026-03-20T00:28:41.466Z [DEBUG] [CLIENT] Session context - ID: 7f1295d1-b76d-48a9-97f6-890af3382071, Transport: jsonrpc, Counter: 5
+2026-03-20T00:28:41.466Z [DEBUG] [CLIENT] Complete client request object:
+{
+  "method": "tools/call",
+  "params": {
+    "_meta": {
+      "progressToken": "05e970ad-b151-4619-85c1-af28897ac797:236",
+      "antigravity.google/conversation_id": "316281cc-6cc7-47b5-b30e-88179d694c93"
+    },
+    "name": "mcp-adapter-discover-abilities",
+    "arguments": {}
+  }
+}
+2026-03-20T00:28:41.466Z [DEBUG] [MCP] Processing CallToolRequest
+2026-03-20T00:28:41.466Z [DEBUG] [SESSION] MCP JSON-RPC message being sent to WordPress:
+{
+  "jsonrpc": "2.0",
+  "method": "tools/call",
+  "id": 6,
+  "original_mcp_id": "none",
+  "session_id": "7f1295d1-b76d-48a9-97f6-890af3382071"
+}
+2026-03-20T00:28:41.466Z [INFO] [API] Request method: tools/call (JSON-RPC)
+2026-03-20T00:28:41.466Z [DEBUG] [API] JSON-RPC message: {"jsonrpc":"2.0","method":"tools/call","id":6,"params":{"name":"mcp-adapter-discover-abilities","arguments":{},"_proxy_request_id":6}}
+2026-03-20T00:28:41.466Z [INFO] [AUTH] Using WordPress Basic Auth for method: tools/call
+2026-03-20T00:28:41.467Z [DEBUG] [AUTH] Username length: 3
+2026-03-20T00:28:41.467Z [DEBUG] [AUTH] Password length: 29
+2026-03-20T00:28:41.467Z [DEBUG] [AUTH] Auth header length: 44
+2026-03-20T00:28:41.467Z [DEBUG] [API] Environment: development
+2026-03-20T00:28:41.467Z [DEBUG] [API] Base API URL: https://api.elitegamerinsights.com/wp-json/mcp/mcp-adapter-default-server
+2026-03-20T00:28:41.467Z [DEBUG] [API] Final requesting URL: https://api.elitegamerinsights.com/wp-json/mcp/mcp-adapter-default-server
+2026-03-20T00:28:41.467Z [DEBUG] [API] Using Authorization header for authentication
+2026-03-20T00:28:41.467Z [INFO] [API] Sending request to WordPress API...
+2026-03-20T00:28:41.467Z [DEBUG] [API] Request URL: https://api.elitegamerinsights.com/wp-json/mcp/mcp-adapter-default-server
+2026-03-20T00:28:41.467Z [DEBUG] [API] Request method: POST
+2026-03-20T00:28:41.910Z [DEBUG] [API] Response status: 200
+2026-03-20T00:28:41.911Z [INFO] [API] Response received successfully
+2026-03-20T00:28:41.911Z [DEBUG] [API] Response data: {"jsonrpc":"2.0","id":6,"result":{"content":[{"type":"text","text":"{\"abilities\":[]}"}],"structuredContent":{"abilities":[]}}}
+2026-03-20T00:28:41.911Z [INFO] [CLIENT] ✅ Client Response: CallTool completed in 445ms
+2026-03-20T00:28:41.911Z [DEBUG] [CLIENT] Response sent to client:
+{
+  "hasResponse": true,
+  "responseKeys": [
+    "content",
+    "structuredContent"
+  ]
+}
+2026-03-20T00:31:47.495Z [INFO] [CLIENT] 📩 Client Message: CallTool
+2026-03-20T00:31:47.496Z [INFO] [CLIENT] Request ID: none | Method: tools/call
+2026-03-20T00:31:47.496Z [INFO] [CLIENT] Request parameters:
+{
+  "paramCount": 3,
+  "paramKeys": [
+    "_meta",
+    "name",
+    "arguments"
+  ]
+}
+2026-03-20T00:31:47.496Z [DEBUG] [CLIENT] Full request parameters:
+{
+  "_meta": {
+    "progressToken": "05e970ad-b151-4619-85c1-af28897ac797:293",
+    "antigravity.google/conversation_id": "316281cc-6cc7-47b5-b30e-88179d694c93"
+  },
+  "name": "mcp-adapter-discover-abilities",
+  "arguments": {}
+}
+2026-03-20T00:31:47.496Z [DEBUG] [CLIENT] Session context - ID: 7f1295d1-b76d-48a9-97f6-890af3382071, Transport: jsonrpc, Counter: 6
+2026-03-20T00:31:47.496Z [DEBUG] [CLIENT] Complete client request object:
+{
+  "method": "tools/call",
+  "params": {
+    "_meta": {
+      "progressToken": "05e970ad-b151-4619-85c1-af28897ac797:293",
+      "antigravity.google/conversation_id": "316281cc-6cc7-47b5-b30e-88179d694c93"
+    },
+    "name": "mcp-adapter-discover-abilities",
+    "arguments": {}
+  }
+}
+2026-03-20T00:31:47.496Z [DEBUG] [MCP] Processing CallToolRequest
+2026-03-20T00:31:47.496Z [DEBUG] [SESSION] MCP JSON-RPC message being sent to WordPress:
+{
+  "jsonrpc": "2.0",
+  "method": "tools/call",
+  "id": 7,
+  "original_mcp_id": "none",
+  "session_id": "7f1295d1-b76d-48a9-97f6-890af3382071"
+}
+2026-03-20T00:31:47.496Z [INFO] [API] Request method: tools/call (JSON-RPC)
+2026-03-20T00:31:47.497Z [DEBUG] [API] JSON-RPC message: {"jsonrpc":"2.0","method":"tools/call","id":7,"params":{"name":"mcp-adapter-discover-abilities","arguments":{},"_proxy_request_id":7}}
+2026-03-20T00:31:47.497Z [INFO] [AUTH] Using WordPress Basic Auth for method: tools/call
+2026-03-20T00:31:47.497Z [DEBUG] [AUTH] Username length: 3
+2026-03-20T00:31:47.497Z [DEBUG] [AUTH] Password length: 29
+2026-03-20T00:31:47.497Z [DEBUG] [AUTH] Auth header length: 44
+2026-03-20T00:31:47.497Z [DEBUG] [API] Environment: development
+2026-03-20T00:31:47.497Z [DEBUG] [API] Base API URL: https://api.elitegamerinsights.com/wp-json/mcp/mcp-adapter-default-server
+2026-03-20T00:31:47.497Z [DEBUG] [API] Final requesting URL: https://api.elitegamerinsights.com/wp-json/mcp/mcp-adapter-default-server
+2026-03-20T00:31:47.497Z [DEBUG] [API] Using Authorization header for authentication
+2026-03-20T00:31:47.497Z [INFO] [API] Sending request to WordPress API...
+2026-03-20T00:31:47.497Z [DEBUG] [API] Request URL: https://api.elitegamerinsights.com/wp-json/mcp/mcp-adapter-default-server
+2026-03-20T00:31:47.497Z [DEBUG] [API] Request method: POST
+2026-03-20T00:31:48.000Z [DEBUG] [API] Response status: 200
+2026-03-20T00:31:48.001Z [INFO] [API] Response received successfully
+2026-03-20T00:31:48.002Z [DEBUG] [API] Response data: {"jsonrpc":"2.0","id":7,"result":{"content":[{"type":"text","text":"{\"abilities\":[]}"}],"structuredContent":{"abilities":[]}}}
+2026-03-20T00:31:48.002Z [INFO] [CLIENT] ✅ Client Response: CallTool completed in 506ms
+2026-03-20T00:31:48.002Z [DEBUG] [CLIENT] Response sent to client:
+{
+  "hasResponse": true,
+  "responseKeys": [
+    "content",
+    "structuredContent"
+  ]
+}
+2026-03-20T00:32:48.938Z [INFO] [CLIENT] 📩 Client Message: CallTool
+2026-03-20T00:32:48.938Z [INFO] [CLIENT] Request ID: none | Method: tools/call
+2026-03-20T00:32:48.938Z [INFO] [CLIENT] Request parameters:
+{
+  "paramCount": 3,
+  "paramKeys": [
+    "_meta",
+    "name",
+    "arguments"
+  ]
+}
+2026-03-20T00:32:48.938Z [DEBUG] [CLIENT] Full request parameters:
+{
+  "_meta": {
+    "progressToken": "05e970ad-b151-4619-85c1-af28897ac797:330",
+    "antigravity.google/conversation_id": "316281cc-6cc7-47b5-b30e-88179d694c93"
+  },
+  "name": "mcp-adapter-execute-ability",
+  "arguments": {
+    "ability_name": "core/get-site-info",
+    "parameters": {}
+  }
+}
+2026-03-20T00:32:48.938Z [DEBUG] [CLIENT] Session context - ID: 7f1295d1-b76d-48a9-97f6-890af3382071, Transport: jsonrpc, Counter: 7
+2026-03-20T00:32:48.938Z [DEBUG] [CLIENT] Complete client request object:
+{
+  "method": "tools/call",
+  "params": {
+    "_meta": {
+      "progressToken": "05e970ad-b151-4619-85c1-af28897ac797:330",
+      "antigravity.google/conversation_id": "316281cc-6cc7-47b5-b30e-88179d694c93"
+    },
+    "name": "mcp-adapter-execute-ability",
+    "arguments": {
+      "ability_name": "core/get-site-info",
+      "parameters": {}
+    }
+  }
+}
+2026-03-20T00:32:48.938Z [DEBUG] [MCP] Processing CallToolRequest
+2026-03-20T00:32:48.939Z [DEBUG] [SESSION] MCP JSON-RPC message being sent to WordPress:
+{
+  "jsonrpc": "2.0",
+  "method": "tools/call",
+  "id": 8,
+  "original_mcp_id": "none",
+  "session_id": "7f1295d1-b76d-48a9-97f6-890af3382071"
+}
+2026-03-20T00:32:48.939Z [INFO] [API] Request method: tools/call (JSON-RPC)
+2026-03-20T00:32:48.939Z [DEBUG] [API] JSON-RPC message: {"jsonrpc":"2.0","method":"tools/call","id":8,"params":{"name":"mcp-adapter-execute-ability","arguments":{"ability_name":"core/get-site-info","parameters":{}},"_proxy_request_id":8}}
+2026-03-20T00:32:48.939Z [INFO] [AUTH] Using WordPress Basic Auth for method: tools/call
+2026-03-20T00:32:48.939Z [DEBUG] [AUTH] Username length: 3
+2026-03-20T00:32:48.939Z [DEBUG] [AUTH] Password length: 29
+2026-03-20T00:32:48.939Z [DEBUG] [AUTH] Auth header length: 44
+2026-03-20T00:32:48.939Z [DEBUG] [API] Environment: development
+2026-03-20T00:32:48.939Z [DEBUG] [API] Base API URL: https://api.elitegamerinsights.com/wp-json/mcp/mcp-adapter-default-server
+2026-03-20T00:32:48.939Z [DEBUG] [API] Final requesting URL: https://api.elitegamerinsights.com/wp-json/mcp/mcp-adapter-default-server
+2026-03-20T00:32:48.939Z [DEBUG] [API] Using Authorization header for authentication
+2026-03-20T00:32:48.939Z [INFO] [API] Sending request to WordPress API...
+2026-03-20T00:32:48.939Z [DEBUG] [API] Request URL: https://api.elitegamerinsights.com/wp-json/mcp/mcp-adapter-default-server
+2026-03-20T00:32:48.939Z [DEBUG] [API] Request method: POST
+2026-03-20T00:32:49.361Z [DEBUG] [API] Response status: 200
+2026-03-20T00:32:49.362Z [INFO] [API] Response received successfully
+2026-03-20T00:32:49.362Z [DEBUG] [API] Response data: {"jsonrpc":"2.0","id":8,"result":{"content":[{"type":"text","text":"Permission denied: Ability \"core/get-site-info\" is not exposed via MCP (mcp.public!=true)"}],"isError":true}}
+2026-03-20T00:32:49.362Z [INFO] [CLIENT] ✅ Client Response: CallTool completed in 424ms
+2026-03-20T00:32:49.362Z [DEBUG] [CLIENT] Response sent to client:
+{
+  "hasResponse": true,
+  "responseKeys": [
+    "content",
+    "isError"
+  ]
+}
+2026-03-20T00:33:33.072Z [INFO] [CLIENT] 📩 Client Message: CallTool
+2026-03-20T00:33:33.073Z [INFO] [CLIENT] Request ID: none | Method: tools/call
+2026-03-20T00:33:33.073Z [INFO] [CLIENT] Request parameters:
+{
+  "paramCount": 3,
+  "paramKeys": [
+    "_meta",
+    "name",
+    "arguments"
+  ]
+}
+2026-03-20T00:33:33.074Z [DEBUG] [CLIENT] Full request parameters:
+{
+  "_meta": {
+    "progressToken": "05e970ad-b151-4619-85c1-af28897ac797:349",
+    "antigravity.google/conversation_id": "316281cc-6cc7-47b5-b30e-88179d694c93"
+  },
+  "name": "mcp-adapter-get-ability-info",
+  "arguments": {
+    "ability_name": "core/get-site-info"
+  }
+}
+2026-03-20T00:33:33.074Z [DEBUG] [CLIENT] Session context - ID: 7f1295d1-b76d-48a9-97f6-890af3382071, Transport: jsonrpc, Counter: 8
+2026-03-20T00:33:33.074Z [DEBUG] [CLIENT] Complete client request object:
+{
+  "method": "tools/call",
+  "params": {
+    "_meta": {
+      "progressToken": "05e970ad-b151-4619-85c1-af28897ac797:349",
+      "antigravity.google/conversation_id": "316281cc-6cc7-47b5-b30e-88179d694c93"
+    },
+    "name": "mcp-adapter-get-ability-info",
+    "arguments": {
+      "ability_name": "core/get-site-info"
+    }
+  }
+}
+2026-03-20T00:33:33.074Z [DEBUG] [MCP] Processing CallToolRequest
+2026-03-20T00:33:33.074Z [DEBUG] [SESSION] MCP JSON-RPC message being sent to WordPress:
+{
+  "jsonrpc": "2.0",
+  "method": "tools/call",
+  "id": 9,
+  "original_mcp_id": "none",
+  "session_id": "7f1295d1-b76d-48a9-97f6-890af3382071"
+}
+2026-03-20T00:33:33.074Z [INFO] [API] Request method: tools/call (JSON-RPC)
+2026-03-20T00:33:33.074Z [DEBUG] [API] JSON-RPC message: {"jsonrpc":"2.0","method":"tools/call","id":9,"params":{"name":"mcp-adapter-get-ability-info","arguments":{"ability_name":"core/get-site-info"},"_proxy_request_id":9}}
+2026-03-20T00:33:33.074Z [INFO] [AUTH] Using WordPress Basic Auth for method: tools/call
+2026-03-20T00:33:33.074Z [DEBUG] [AUTH] Username length: 3
+2026-03-20T00:33:33.075Z [DEBUG] [AUTH] Password length: 29
+2026-03-20T00:33:33.075Z [DEBUG] [AUTH] Auth header length: 44
+2026-03-20T00:33:33.075Z [DEBUG] [API] Environment: development
+2026-03-20T00:33:33.075Z [DEBUG] [API] Base API URL: https://api.elitegamerinsights.com/wp-json/mcp/mcp-adapter-default-server
+2026-03-20T00:33:33.075Z [DEBUG] [API] Final requesting URL: https://api.elitegamerinsights.com/wp-json/mcp/mcp-adapter-default-server
+2026-03-20T00:33:33.075Z [DEBUG] [API] Using Authorization header for authentication
+2026-03-20T00:33:33.075Z [INFO] [API] Sending request to WordPress API...
+2026-03-20T00:33:33.075Z [DEBUG] [API] Request URL: https://api.elitegamerinsights.com/wp-json/mcp/mcp-adapter-default-server
+2026-03-20T00:33:33.075Z [DEBUG] [API] Request method: POST
+2026-03-20T00:33:33.490Z [DEBUG] [API] Response status: 200
+2026-03-20T00:33:33.491Z [INFO] [API] Response received successfully
+2026-03-20T00:33:33.492Z [DEBUG] [API] Response data: {"jsonrpc":"2.0","id":9,"result":{"content":[{"type":"text","text":"Permission denied: Ability \"core/get-site-info\" is not exposed via MCP (mcp.public!=true)"}],"isError":true}}
+2026-03-20T00:33:33.492Z [INFO] [CLIENT] ✅ Client Response: CallTool completed in 418ms
+2026-03-20T00:33:33.492Z [DEBUG] [CLIENT] Response sent to client:
+{
+  "hasResponse": true,
+  "responseKeys": [
+    "content",
+    "isError"
+  ]
+}
+2026-03-20T00:34:09.927Z [INFO] [CLIENT] 📩 Client Message: CallTool
+2026-03-20T00:34:09.928Z [INFO] [CLIENT] Request ID: none | Method: tools/call
+2026-03-20T00:34:09.928Z [INFO] [CLIENT] Request parameters:
+{
+  "paramCount": 3,
+  "paramKeys": [
+    "_meta",
+    "name",
+    "arguments"
+  ]
+}
+2026-03-20T00:34:09.928Z [DEBUG] [CLIENT] Full request parameters:
+{
+  "_meta": {
+    "progressToken": "05e970ad-b151-4619-85c1-af28897ac797:365",
+    "antigravity.google/conversation_id": "316281cc-6cc7-47b5-b30e-88179d694c93"
+  },
+  "name": "mcp-adapter-discover-abilities",
+  "arguments": {}
+}
+2026-03-20T00:34:09.928Z [DEBUG] [CLIENT] Session context - ID: 7f1295d1-b76d-48a9-97f6-890af3382071, Transport: jsonrpc, Counter: 9
+2026-03-20T00:34:09.928Z [DEBUG] [CLIENT] Complete client request object:
+{
+  "method": "tools/call",
+  "params": {
+    "_meta": {
+      "progressToken": "05e970ad-b151-4619-85c1-af28897ac797:365",
+      "antigravity.google/conversation_id": "316281cc-6cc7-47b5-b30e-88179d694c93"
+    },
+    "name": "mcp-adapter-discover-abilities",
+    "arguments": {}
+  }
+}
+2026-03-20T00:34:09.929Z [DEBUG] [MCP] Processing CallToolRequest
+2026-03-20T00:34:09.929Z [DEBUG] [SESSION] MCP JSON-RPC message being sent to WordPress:
+{
+  "jsonrpc": "2.0",
+  "method": "tools/call",
+  "id": 10,
+  "original_mcp_id": "none",
+  "session_id": "7f1295d1-b76d-48a9-97f6-890af3382071"
+}
+2026-03-20T00:34:09.929Z [INFO] [API] Request method: tools/call (JSON-RPC)
+2026-03-20T00:34:09.929Z [DEBUG] [API] JSON-RPC message: {"jsonrpc":"2.0","method":"tools/call","id":10,"params":{"name":"mcp-adapter-discover-abilities","arguments":{},"_proxy_request_id":10}}
+2026-03-20T00:34:09.929Z [INFO] [AUTH] Using WordPress Basic Auth for method: tools/call
+2026-03-20T00:34:09.929Z [DEBUG] [AUTH] Username length: 3
+2026-03-20T00:34:09.929Z [DEBUG] [AUTH] Password length: 29
+2026-03-20T00:34:09.929Z [DEBUG] [AUTH] Auth header length: 44
+2026-03-20T00:34:09.929Z [DEBUG] [API] Environment: development
+2026-03-20T00:34:09.929Z [DEBUG] [API] Base API URL: https://api.elitegamerinsights.com/wp-json/mcp/mcp-adapter-default-server
+2026-03-20T00:34:09.930Z [DEBUG] [API] Final requesting URL: https://api.elitegamerinsights.com/wp-json/mcp/mcp-adapter-default-server
+2026-03-20T00:34:09.930Z [DEBUG] [API] Using Authorization header for authentication
+2026-03-20T00:34:09.930Z [INFO] [API] Sending request to WordPress API...
+2026-03-20T00:34:09.930Z [DEBUG] [API] Request URL: https://api.elitegamerinsights.com/wp-json/mcp/mcp-adapter-default-server
+2026-03-20T00:34:09.930Z [DEBUG] [API] Request method: POST
+2026-03-20T00:34:10.456Z [DEBUG] [API] Response status: 200
+2026-03-20T00:34:10.458Z [INFO] [API] Response received successfully
+2026-03-20T00:34:10.458Z [DEBUG] [API] Response data: {"jsonrpc":"2.0","id":10,"result":{"content":[{"type":"text","text":"{\"abilities\":[]}"}],"structuredContent":{"abilities":[]}}}
+2026-03-20T00:34:10.458Z [INFO] [CLIENT] ✅ Client Response: CallTool completed in 529ms
+2026-03-20T00:34:10.459Z [DEBUG] [CLIENT] Response sent to client:
+{
+  "hasResponse": true,
+  "responseKeys": [
+    "content",
+    "structuredContent"
+  ]
+}
+2026-03-20T00:34:45.524Z [INFO] [CLIENT] 📩 Client Message: CallTool
+2026-03-20T00:34:45.525Z [INFO] [CLIENT] Request ID: none | Method: tools/call
+2026-03-20T00:34:45.525Z [INFO] [CLIENT] Request parameters:
+{
+  "paramCount": 3,
+  "paramKeys": [
+    "_meta",
+    "name",
+    "arguments"
+  ]
+}
+2026-03-20T00:34:45.525Z [DEBUG] [CLIENT] Full request parameters:
+{
+  "_meta": {
+    "progressToken": "05e970ad-b151-4619-85c1-af28897ac797:385",
+    "antigravity.google/conversation_id": "316281cc-6cc7-47b5-b30e-88179d694c93"
+  },
+  "name": "mcp-adapter-discover-abilities",
+  "arguments": {}
+}
+2026-03-20T00:34:45.526Z [DEBUG] [CLIENT] Session context - ID: 7f1295d1-b76d-48a9-97f6-890af3382071, Transport: jsonrpc, Counter: 10
+2026-03-20T00:34:45.526Z [DEBUG] [CLIENT] Complete client request object:
+{
+  "method": "tools/call",
+  "params": {
+    "_meta": {
+      "progressToken": "05e970ad-b151-4619-85c1-af28897ac797:385",
+      "antigravity.google/conversation_id": "316281cc-6cc7-47b5-b30e-88179d694c93"
+    },
+    "name": "mcp-adapter-discover-abilities",
+    "arguments": {}
+  }
+}
+2026-03-20T00:34:45.526Z [DEBUG] [MCP] Processing CallToolRequest
+2026-03-20T00:34:45.526Z [DEBUG] [SESSION] MCP JSON-RPC message being sent to WordPress:
+{
+  "jsonrpc": "2.0",
+  "method": "tools/call",
+  "id": 11,
+  "original_mcp_id": "none",
+  "session_id": "7f1295d1-b76d-48a9-97f6-890af3382071"
+}
+2026-03-20T00:34:45.526Z [INFO] [API] Request method: tools/call (JSON-RPC)
+2026-03-20T00:34:45.526Z [DEBUG] [API] JSON-RPC message: {"jsonrpc":"2.0","method":"tools/call","id":11,"params":{"name":"mcp-adapter-discover-abilities","arguments":{},"_proxy_request_id":11}}
+2026-03-20T00:34:45.526Z [INFO] [AUTH] Using WordPress Basic Auth for method: tools/call
+2026-03-20T00:34:45.526Z [DEBUG] [AUTH] Username length: 3
+2026-03-20T00:34:45.526Z [DEBUG] [AUTH] Password length: 29
+2026-03-20T00:34:45.526Z [DEBUG] [AUTH] Auth header length: 44
+2026-03-20T00:34:45.526Z [DEBUG] [API] Environment: development
+2026-03-20T00:34:45.526Z [DEBUG] [API] Base API URL: https://api.elitegamerinsights.com/wp-json/mcp/mcp-adapter-default-server
+2026-03-20T00:34:45.526Z [DEBUG] [API] Final requesting URL: https://api.elitegamerinsights.com/wp-json/mcp/mcp-adapter-default-server
+2026-03-20T00:34:45.526Z [DEBUG] [API] Using Authorization header for authentication
+2026-03-20T00:34:45.527Z [INFO] [API] Sending request to WordPress API...
+2026-03-20T00:34:45.527Z [DEBUG] [API] Request URL: https://api.elitegamerinsights.com/wp-json/mcp/mcp-adapter-default-server
+2026-03-20T00:34:45.527Z [DEBUG] [API] Request method: POST
+2026-03-20T00:34:45.972Z [DEBUG] [API] Response status: 200
+2026-03-20T00:34:45.973Z [INFO] [API] Response received successfully
+2026-03-20T00:34:45.974Z [DEBUG] [API] Response data: {"jsonrpc":"2.0","id":11,"result":{"content":[{"type":"text","text":"{\"abilities\":[]}"}],"structuredContent":{"abilities":[]}}}
+2026-03-20T00:34:45.974Z [INFO] [CLIENT] ✅ Client Response: CallTool completed in 448ms
+2026-03-20T00:34:45.974Z [DEBUG] [CLIENT] Response sent to client:
+{
+  "hasResponse": true,
+  "responseKeys": [
+    "content",
+    "structuredContent"
+  ]
+}
+2026-03-20T00:36:29.303Z [INFO] [CLIENT] 📩 Client Message: CallTool
+2026-03-20T00:36:29.304Z [INFO] [CLIENT] Request ID: none | Method: tools/call
+2026-03-20T00:36:29.304Z [INFO] [CLIENT] Request parameters:
+{
+  "paramCount": 3,
+  "paramKeys": [
+    "_meta",
+    "name",
+    "arguments"
+  ]
+}
+2026-03-20T00:36:29.305Z [DEBUG] [CLIENT] Full request parameters:
+{
+  "_meta": {
+    "progressToken": "05e970ad-b151-4619-85c1-af28897ac797:422",
+    "antigravity.google/conversation_id": "316281cc-6cc7-47b5-b30e-88179d694c93"
+  },
+  "name": "mcp-adapter-discover-abilities",
+  "arguments": {}
+}
+2026-03-20T00:36:29.305Z [DEBUG] [CLIENT] Session context - ID: 7f1295d1-b76d-48a9-97f6-890af3382071, Transport: jsonrpc, Counter: 11
+2026-03-20T00:36:29.305Z [DEBUG] [CLIENT] Complete client request object:
+{
+  "method": "tools/call",
+  "params": {
+    "_meta": {
+      "progressToken": "05e970ad-b151-4619-85c1-af28897ac797:422",
+      "antigravity.google/conversation_id": "316281cc-6cc7-47b5-b30e-88179d694c93"
+    },
+    "name": "mcp-adapter-discover-abilities",
+    "arguments": {}
+  }
+}
+2026-03-20T00:36:29.305Z [DEBUG] [MCP] Processing CallToolRequest
+2026-03-20T00:36:29.305Z [DEBUG] [SESSION] MCP JSON-RPC message being sent to WordPress:
+{
+  "jsonrpc": "2.0",
+  "method": "tools/call",
+  "id": 12,
+  "original_mcp_id": "none",
+  "session_id": "7f1295d1-b76d-48a9-97f6-890af3382071"
+}
+2026-03-20T00:36:29.305Z [INFO] [API] Request method: tools/call (JSON-RPC)
+2026-03-20T00:36:29.305Z [DEBUG] [API] JSON-RPC message: {"jsonrpc":"2.0","method":"tools/call","id":12,"params":{"name":"mcp-adapter-discover-abilities","arguments":{},"_proxy_request_id":12}}
+2026-03-20T00:36:29.305Z [INFO] [AUTH] Using WordPress Basic Auth for method: tools/call
+2026-03-20T00:36:29.305Z [DEBUG] [AUTH] Username length: 3
+2026-03-20T00:36:29.305Z [DEBUG] [AUTH] Password length: 29
+2026-03-20T00:36:29.305Z [DEBUG] [AUTH] Auth header length: 44
+2026-03-20T00:36:29.306Z [DEBUG] [API] Environment: development
+2026-03-20T00:36:29.306Z [DEBUG] [API] Base API URL: https://api.elitegamerinsights.com/wp-json/mcp/mcp-adapter-default-server
+2026-03-20T00:36:29.306Z [DEBUG] [API] Final requesting URL: https://api.elitegamerinsights.com/wp-json/mcp/mcp-adapter-default-server
+2026-03-20T00:36:29.306Z [DEBUG] [API] Using Authorization header for authentication
+2026-03-20T00:36:29.306Z [INFO] [API] Sending request to WordPress API...
+2026-03-20T00:36:29.306Z [DEBUG] [API] Request URL: https://api.elitegamerinsights.com/wp-json/mcp/mcp-adapter-default-server
+2026-03-20T00:36:29.306Z [DEBUG] [API] Request method: POST
+2026-03-20T00:36:29.806Z [DEBUG] [API] Response status: 200
+2026-03-20T00:36:29.808Z [INFO] [API] Response received successfully
+2026-03-20T00:36:29.808Z [DEBUG] [API] Response data: {"jsonrpc":"2.0","id":12,"result":{"content":[{"type":"text","text":"{\"abilities\":[]}"}],"structuredContent":{"abilities":[]}}}
+2026-03-20T00:36:29.808Z [INFO] [CLIENT] ✅ Client Response: CallTool completed in 503ms
+2026-03-20T00:36:29.808Z [DEBUG] [CLIENT] Response sent to client:
+{
+  "hasResponse": true,
+  "responseKeys": [
+    "content",
+    "structuredContent"
+  ]
+}
+2026-03-20T00:36:32.876Z [INFO] [CLIENT] 📩 Client Message: CallTool
+2026-03-20T00:36:32.877Z [INFO] [CLIENT] Request ID: none | Method: tools/call
+2026-03-20T00:36:32.877Z [INFO] [CLIENT] Request parameters:
+{
+  "paramCount": 3,
+  "paramKeys": [
+    "_meta",
+    "name",
+    "arguments"
+  ]
+}
+2026-03-20T00:36:32.877Z [DEBUG] [CLIENT] Full request parameters:
+{
+  "_meta": {
+    "progressToken": "05e970ad-b151-4619-85c1-af28897ac797:425",
+    "antigravity.google/conversation_id": "316281cc-6cc7-47b5-b30e-88179d694c93"
+  },
+  "name": "mcp-adapter-execute-ability",
+  "arguments": {
+    "ability_name": "mcp/site-info",
+    "parameters": {}
+  }
+}
+2026-03-20T00:36:32.877Z [DEBUG] [CLIENT] Session context - ID: 7f1295d1-b76d-48a9-97f6-890af3382071, Transport: jsonrpc, Counter: 12
+2026-03-20T00:36:32.877Z [DEBUG] [CLIENT] Complete client request object:
+{
+  "method": "tools/call",
+  "params": {
+    "_meta": {
+      "progressToken": "05e970ad-b151-4619-85c1-af28897ac797:425",
+      "antigravity.google/conversation_id": "316281cc-6cc7-47b5-b30e-88179d694c93"
+    },
+    "name": "mcp-adapter-execute-ability",
+    "arguments": {
+      "ability_name": "mcp/site-info",
+      "parameters": {}
+    }
+  }
+}
+2026-03-20T00:36:32.877Z [DEBUG] [MCP] Processing CallToolRequest
+2026-03-20T00:36:32.877Z [DEBUG] [SESSION] MCP JSON-RPC message being sent to WordPress:
+{
+  "jsonrpc": "2.0",
+  "method": "tools/call",
+  "id": 13,
+  "original_mcp_id": "none",
+  "session_id": "7f1295d1-b76d-48a9-97f6-890af3382071"
+}
+2026-03-20T00:36:32.877Z [INFO] [API] Request method: tools/call (JSON-RPC)
+2026-03-20T00:36:32.877Z [DEBUG] [API] JSON-RPC message: {"jsonrpc":"2.0","method":"tools/call","id":13,"params":{"name":"mcp-adapter-execute-ability","arguments":{"ability_name":"mcp/site-info","parameters":{}},"_proxy_request_id":13}}
+2026-03-20T00:36:32.877Z [INFO] [AUTH] Using WordPress Basic Auth for method: tools/call
+2026-03-20T00:36:32.877Z [DEBUG] [AUTH] Username length: 3
+2026-03-20T00:36:32.877Z [DEBUG] [AUTH] Password length: 29
+2026-03-20T00:36:32.878Z [DEBUG] [AUTH] Auth header length: 44
+2026-03-20T00:36:32.878Z [DEBUG] [API] Environment: development
+2026-03-20T00:36:32.878Z [DEBUG] [API] Base API URL: https://api.elitegamerinsights.com/wp-json/mcp/mcp-adapter-default-server
+2026-03-20T00:36:32.878Z [DEBUG] [API] Final requesting URL: https://api.elitegamerinsights.com/wp-json/mcp/mcp-adapter-default-server
+2026-03-20T00:36:32.878Z [DEBUG] [API] Using Authorization header for authentication
+2026-03-20T00:36:32.878Z [INFO] [API] Sending request to WordPress API...
+2026-03-20T00:36:32.878Z [DEBUG] [API] Request URL: https://api.elitegamerinsights.com/wp-json/mcp/mcp-adapter-default-server
+2026-03-20T00:36:32.878Z [DEBUG] [API] Request method: POST
+2026-03-20T00:36:33.160Z [DEBUG] [API] Response status: 200
+2026-03-20T00:36:33.161Z [INFO] [API] Response received successfully
+2026-03-20T00:36:33.161Z [DEBUG] [API] Response data: {"jsonrpc":"2.0","id":13,"result":{"content":[{"type":"text","text":"Permission denied: Ability 'mcp/site-info' not found"}],"isError":true}}
+2026-03-20T00:36:33.161Z [INFO] [CLIENT] ✅ Client Response: CallTool completed in 284ms
+2026-03-20T00:36:33.161Z [DEBUG] [CLIENT] Response sent to client:
+{
+  "hasResponse": true,
+  "responseKeys": [
+    "content",
+    "isError"
+  ]
+}
+2026-03-20T00:38:41.194Z [INFO] [CLIENT] 📩 Client Message: CallTool
+2026-03-20T00:38:41.195Z [INFO] [CLIENT] Request ID: none | Method: tools/call
+2026-03-20T00:38:41.195Z [INFO] [CLIENT] Request parameters:
+{
+  "paramCount": 3,
+  "paramKeys": [
+    "_meta",
+    "name",
+    "arguments"
+  ]
+}
+2026-03-20T00:38:41.195Z [DEBUG] [CLIENT] Full request parameters:
+{
+  "_meta": {
+    "progressToken": "05e970ad-b151-4619-85c1-af28897ac797:446",
+    "antigravity.google/conversation_id": "316281cc-6cc7-47b5-b30e-88179d694c93"
+  },
+  "name": "mcp-adapter-discover-abilities",
+  "arguments": {}
+}
+2026-03-20T00:38:41.195Z [DEBUG] [CLIENT] Session context - ID: 7f1295d1-b76d-48a9-97f6-890af3382071, Transport: jsonrpc, Counter: 13
+2026-03-20T00:38:41.195Z [DEBUG] [CLIENT] Complete client request object:
+{
+  "method": "tools/call",
+  "params": {
+    "_meta": {
+      "progressToken": "05e970ad-b151-4619-85c1-af28897ac797:446",
+      "antigravity.google/conversation_id": "316281cc-6cc7-47b5-b30e-88179d694c93"
+    },
+    "name": "mcp-adapter-discover-abilities",
+    "arguments": {}
+  }
+}
+2026-03-20T00:38:41.195Z [DEBUG] [MCP] Processing CallToolRequest
+2026-03-20T00:38:41.196Z [DEBUG] [SESSION] MCP JSON-RPC message being sent to WordPress:
+{
+  "jsonrpc": "2.0",
+  "method": "tools/call",
+  "id": 14,
+  "original_mcp_id": "none",
+  "session_id": "7f1295d1-b76d-48a9-97f6-890af3382071"
+}
+2026-03-20T00:38:41.196Z [INFO] [API] Request method: tools/call (JSON-RPC)
+2026-03-20T00:38:41.196Z [DEBUG] [API] JSON-RPC message: {"jsonrpc":"2.0","method":"tools/call","id":14,"params":{"name":"mcp-adapter-discover-abilities","arguments":{},"_proxy_request_id":14}}
+2026-03-20T00:38:41.196Z [INFO] [AUTH] Using WordPress Basic Auth for method: tools/call
+2026-03-20T00:38:41.196Z [DEBUG] [AUTH] Username length: 3
+2026-03-20T00:38:41.196Z [DEBUG] [AUTH] Password length: 29
+2026-03-20T00:38:41.196Z [DEBUG] [AUTH] Auth header length: 44
+2026-03-20T00:38:41.196Z [DEBUG] [API] Environment: development
+2026-03-20T00:38:41.196Z [DEBUG] [API] Base API URL: https://api.elitegamerinsights.com/wp-json/mcp/mcp-adapter-default-server
+2026-03-20T00:38:41.196Z [DEBUG] [API] Final requesting URL: https://api.elitegamerinsights.com/wp-json/mcp/mcp-adapter-default-server
+2026-03-20T00:38:41.197Z [DEBUG] [API] Using Authorization header for authentication
+2026-03-20T00:38:41.197Z [INFO] [API] Sending request to WordPress API...
+2026-03-20T00:38:41.197Z [DEBUG] [API] Request URL: https://api.elitegamerinsights.com/wp-json/mcp/mcp-adapter-default-server
+2026-03-20T00:38:41.197Z [DEBUG] [API] Request method: POST
+2026-03-20T00:38:41.631Z [DEBUG] [API] Response status: 200
+2026-03-20T00:38:41.633Z [INFO] [API] Response received successfully
+2026-03-20T00:38:41.633Z [DEBUG] [API] Response data: {"jsonrpc":"2.0","id":14,"result":{"content":[{"type":"text","text":"{\"abilities\":[]}"}],"structuredContent":{"abilities":[]}}}
+2026-03-20T00:38:41.633Z [INFO] [CLIENT] ✅ Client Response: CallTool completed in 438ms
+2026-03-20T00:38:41.634Z [DEBUG] [CLIENT] Response sent to client:
+{
+  "hasResponse": true,
+  "responseKeys": [
+    "content",
+    "structuredContent"
+  ]
+}
+2026-03-20T00:39:28.983Z [INFO] [CLIENT] 📩 Client Message: CallTool
+2026-03-20T00:39:28.984Z [INFO] [CLIENT] Request ID: none | Method: tools/call
+2026-03-20T00:39:28.984Z [INFO] [CLIENT] Request parameters:
+{
+  "paramCount": 3,
+  "paramKeys": [
+    "_meta",
+    "name",
+    "arguments"
+  ]
+}
+2026-03-20T00:39:28.984Z [DEBUG] [CLIENT] Full request parameters:
+{
+  "_meta": {
+    "progressToken": "05e970ad-b151-4619-85c1-af28897ac797:483",
+    "antigravity.google/conversation_id": "316281cc-6cc7-47b5-b30e-88179d694c93"
+  },
+  "name": "mcp-adapter-discover-abilities",
+  "arguments": {}
+}
+2026-03-20T00:39:28.984Z [DEBUG] [CLIENT] Session context - ID: 7f1295d1-b76d-48a9-97f6-890af3382071, Transport: jsonrpc, Counter: 14
+2026-03-20T00:39:28.984Z [DEBUG] [CLIENT] Complete client request object:
+{
+  "method": "tools/call",
+  "params": {
+    "_meta": {
+      "progressToken": "05e970ad-b151-4619-85c1-af28897ac797:483",
+      "antigravity.google/conversation_id": "316281cc-6cc7-47b5-b30e-88179d694c93"
+    },
+    "name": "mcp-adapter-discover-abilities",
+    "arguments": {}
+  }
+}
+2026-03-20T00:39:28.984Z [DEBUG] [MCP] Processing CallToolRequest
+2026-03-20T00:39:28.984Z [DEBUG] [SESSION] MCP JSON-RPC message being sent to WordPress:
+{
+  "jsonrpc": "2.0",
+  "method": "tools/call",
+  "id": 15,
+  "original_mcp_id": "none",
+  "session_id": "7f1295d1-b76d-48a9-97f6-890af3382071"
+}
+2026-03-20T00:39:28.984Z [INFO] [API] Request method: tools/call (JSON-RPC)
+2026-03-20T00:39:28.984Z [DEBUG] [API] JSON-RPC message: {"jsonrpc":"2.0","method":"tools/call","id":15,"params":{"name":"mcp-adapter-discover-abilities","arguments":{},"_proxy_request_id":15}}
+2026-03-20T00:39:28.985Z [INFO] [AUTH] Using WordPress Basic Auth for method: tools/call
+2026-03-20T00:39:28.985Z [DEBUG] [AUTH] Username length: 3
+2026-03-20T00:39:28.985Z [DEBUG] [AUTH] Password length: 29
+2026-03-20T00:39:28.985Z [DEBUG] [AUTH] Auth header length: 44
+2026-03-20T00:39:28.985Z [DEBUG] [API] Environment: development
+2026-03-20T00:39:28.985Z [DEBUG] [API] Base API URL: https://api.elitegamerinsights.com/wp-json/mcp/mcp-adapter-default-server
+2026-03-20T00:39:28.985Z [DEBUG] [API] Final requesting URL: https://api.elitegamerinsights.com/wp-json/mcp/mcp-adapter-default-server
+2026-03-20T00:39:28.985Z [DEBUG] [API] Using Authorization header for authentication
+2026-03-20T00:39:28.985Z [INFO] [API] Sending request to WordPress API...
+2026-03-20T00:39:28.985Z [DEBUG] [API] Request URL: https://api.elitegamerinsights.com/wp-json/mcp/mcp-adapter-default-server
+2026-03-20T00:39:28.986Z [DEBUG] [API] Request method: POST
+2026-03-20T00:39:29.393Z [DEBUG] [API] Response status: 200
+2026-03-20T00:39:29.396Z [INFO] [API] Response received successfully
+2026-03-20T00:39:29.396Z [DEBUG] [API] Response data: {"jsonrpc":"2.0","id":15,"result":{"content":[{"type":"text","text":"{\"abilities\":[]}"}],"structuredContent":{"abilities":[]}}}
+2026-03-20T00:39:29.396Z [INFO] [CLIENT] ✅ Client Response: CallTool completed in 412ms
+2026-03-20T00:39:29.396Z [DEBUG] [CLIENT] Response sent to client:
+{
+  "hasResponse": true,
+  "responseKeys": [
+    "content",
+    "structuredContent"
+  ]
+}
+2026-03-20T00:41:17.339Z [INFO] [CLIENT] 📩 Client Message: CallTool
+2026-03-20T00:41:17.340Z [INFO] [CLIENT] Request ID: none | Method: tools/call
+2026-03-20T00:41:17.340Z [INFO] [CLIENT] Request parameters:
+{
+  "paramCount": 3,
+  "paramKeys": [
+    "_meta",
+    "name",
+    "arguments"
+  ]
+}
+2026-03-20T00:41:17.340Z [DEBUG] [CLIENT] Full request parameters:
+{
+  "_meta": {
+    "progressToken": "05e970ad-b151-4619-85c1-af28897ac797:505",
+    "antigravity.google/conversation_id": "316281cc-6cc7-47b5-b30e-88179d694c93"
+  },
+  "name": "mcp-adapter-discover-abilities",
+  "arguments": {}
+}
+2026-03-20T00:41:17.341Z [DEBUG] [CLIENT] Session context - ID: 7f1295d1-b76d-48a9-97f6-890af3382071, Transport: jsonrpc, Counter: 15
+2026-03-20T00:41:17.341Z [DEBUG] [CLIENT] Complete client request object:
+{
+  "method": "tools/call",
+  "params": {
+    "_meta": {
+      "progressToken": "05e970ad-b151-4619-85c1-af28897ac797:505",
+      "antigravity.google/conversation_id": "316281cc-6cc7-47b5-b30e-88179d694c93"
+    },
+    "name": "mcp-adapter-discover-abilities",
+    "arguments": {}
+  }
+}
+2026-03-20T00:41:17.341Z [DEBUG] [MCP] Processing CallToolRequest
+2026-03-20T00:41:17.341Z [DEBUG] [SESSION] MCP JSON-RPC message being sent to WordPress:
+{
+  "jsonrpc": "2.0",
+  "method": "tools/call",
+  "id": 16,
+  "original_mcp_id": "none",
+  "session_id": "7f1295d1-b76d-48a9-97f6-890af3382071"
+}
+2026-03-20T00:41:17.341Z [INFO] [API] Request method: tools/call (JSON-RPC)
+2026-03-20T00:41:17.341Z [DEBUG] [API] JSON-RPC message: {"jsonrpc":"2.0","method":"tools/call","id":16,"params":{"name":"mcp-adapter-discover-abilities","arguments":{},"_proxy_request_id":16}}
+2026-03-20T00:41:17.341Z [INFO] [AUTH] Using WordPress Basic Auth for method: tools/call
+2026-03-20T00:41:17.341Z [DEBUG] [AUTH] Username length: 3
+2026-03-20T00:41:17.341Z [DEBUG] [AUTH] Password length: 29
+2026-03-20T00:41:17.341Z [DEBUG] [AUTH] Auth header length: 44
+2026-03-20T00:41:17.341Z [DEBUG] [API] Environment: development
+2026-03-20T00:41:17.341Z [DEBUG] [API] Base API URL: https://api.elitegamerinsights.com/wp-json/mcp/mcp-adapter-default-server
+2026-03-20T00:41:17.341Z [DEBUG] [API] Final requesting URL: https://api.elitegamerinsights.com/wp-json/mcp/mcp-adapter-default-server
+2026-03-20T00:41:17.341Z [DEBUG] [API] Using Authorization header for authentication
+2026-03-20T00:41:17.341Z [INFO] [API] Sending request to WordPress API...
+2026-03-20T00:41:17.342Z [DEBUG] [API] Request URL: https://api.elitegamerinsights.com/wp-json/mcp/mcp-adapter-default-server
+2026-03-20T00:41:17.342Z [DEBUG] [API] Request method: POST
+2026-03-20T00:41:17.861Z [DEBUG] [API] Response status: 200
+2026-03-20T00:41:17.862Z [INFO] [API] Response received successfully
+2026-03-20T00:41:17.863Z [DEBUG] [API] Response data: {"jsonrpc":"2.0","id":16,"result":{"content":[{"type":"text","text":"{\"abilities\":[]}"}],"structuredContent":{"abilities":[]}}}
+2026-03-20T00:41:17.863Z [INFO] [CLIENT] ✅ Client Response: CallTool completed in 522ms
+2026-03-20T00:41:17.863Z [DEBUG] [CLIENT] Response sent to client:
+{
+  "hasResponse": true,
+  "responseKeys": [
+    "content",
+    "structuredContent"
+  ]
+}
+2026-03-20T00:41:58.002Z [INFO] [CLIENT] 📩 Client Message: CallTool
+2026-03-20T00:41:58.002Z [INFO] [CLIENT] Request ID: none | Method: tools/call
+2026-03-20T00:41:58.003Z [INFO] [CLIENT] Request parameters:
+{
+  "paramCount": 3,
+  "paramKeys": [
+    "_meta",
+    "name",
+    "arguments"
+  ]
+}
+2026-03-20T00:41:58.003Z [DEBUG] [CLIENT] Full request parameters:
+{
+  "_meta": {
+    "progressToken": "05e970ad-b151-4619-85c1-af28897ac797:535",
+    "antigravity.google/conversation_id": "316281cc-6cc7-47b5-b30e-88179d694c93"
+  },
+  "name": "mcp-adapter-discover-abilities",
+  "arguments": {}
+}
+2026-03-20T00:41:58.003Z [DEBUG] [CLIENT] Session context - ID: 7f1295d1-b76d-48a9-97f6-890af3382071, Transport: jsonrpc, Counter: 16
+2026-03-20T00:41:58.003Z [DEBUG] [CLIENT] Complete client request object:
+{
+  "method": "tools/call",
+  "params": {
+    "_meta": {
+      "progressToken": "05e970ad-b151-4619-85c1-af28897ac797:535",
+      "antigravity.google/conversation_id": "316281cc-6cc7-47b5-b30e-88179d694c93"
+    },
+    "name": "mcp-adapter-discover-abilities",
+    "arguments": {}
+  }
+}
+2026-03-20T00:41:58.003Z [DEBUG] [MCP] Processing CallToolRequest
+2026-03-20T00:41:58.003Z [DEBUG] [SESSION] MCP JSON-RPC message being sent to WordPress:
+{
+  "jsonrpc": "2.0",
+  "method": "tools/call",
+  "id": 17,
+  "original_mcp_id": "none",
+  "session_id": "7f1295d1-b76d-48a9-97f6-890af3382071"
+}
+2026-03-20T00:41:58.003Z [INFO] [API] Request method: tools/call (JSON-RPC)
+2026-03-20T00:41:58.003Z [DEBUG] [API] JSON-RPC message: {"jsonrpc":"2.0","method":"tools/call","id":17,"params":{"name":"mcp-adapter-discover-abilities","arguments":{},"_proxy_request_id":17}}
+2026-03-20T00:41:58.004Z [INFO] [AUTH] Using WordPress Basic Auth for method: tools/call
+2026-03-20T00:41:58.004Z [DEBUG] [AUTH] Username length: 3
+2026-03-20T00:41:58.004Z [DEBUG] [AUTH] Password length: 29
+2026-03-20T00:41:58.004Z [DEBUG] [AUTH] Auth header length: 44
+2026-03-20T00:41:58.004Z [DEBUG] [API] Environment: development
+2026-03-20T00:41:58.004Z [DEBUG] [API] Base API URL: https://api.elitegamerinsights.com/wp-json/mcp/mcp-adapter-default-server
+2026-03-20T00:41:58.004Z [DEBUG] [API] Final requesting URL: https://api.elitegamerinsights.com/wp-json/mcp/mcp-adapter-default-server
+2026-03-20T00:41:58.004Z [DEBUG] [API] Using Authorization header for authentication
+2026-03-20T00:41:58.004Z [INFO] [API] Sending request to WordPress API...
+2026-03-20T00:41:58.004Z [DEBUG] [API] Request URL: https://api.elitegamerinsights.com/wp-json/mcp/mcp-adapter-default-server
+2026-03-20T00:41:58.004Z [DEBUG] [API] Request method: POST
+2026-03-20T00:41:58.514Z [DEBUG] [API] Response status: 200
+2026-03-20T00:41:58.515Z [INFO] [API] Response received successfully
+2026-03-20T00:41:58.516Z [DEBUG] [API] Response data: {"jsonrpc":"2.0","id":17,"result":{"content":[{"type":"text","text":"{\"abilities\":[]}"}],"structuredContent":{"abilities":[]}}}
+2026-03-20T00:41:58.516Z [INFO] [CLIENT] ✅ Client Response: CallTool completed in 513ms
+2026-03-20T00:41:58.516Z [DEBUG] [CLIENT] Response sent to client:
+{
+  "hasResponse": true,
+  "responseKeys": [
+    "content",
+    "structuredContent"
+  ]
+}
+2026-03-20T00:43:42.026Z [INFO] [CLIENT] 📩 Client Message: CallTool
+2026-03-20T00:43:42.027Z [INFO] [CLIENT] Request ID: none | Method: tools/call
+2026-03-20T00:43:42.027Z [INFO] [CLIENT] Request parameters:
+{
+  "paramCount": 3,
+  "paramKeys": [
+    "_meta",
+    "name",
+    "arguments"
+  ]
+}
+2026-03-20T00:43:42.027Z [DEBUG] [CLIENT] Full request parameters:
+{
+  "_meta": {
+    "progressToken": "05e970ad-b151-4619-85c1-af28897ac797:553",
+    "antigravity.google/conversation_id": "316281cc-6cc7-47b5-b30e-88179d694c93"
+  },
+  "name": "mcp-adapter-discover-abilities",
+  "arguments": {}
+}
+2026-03-20T00:43:42.027Z [DEBUG] [CLIENT] Session context - ID: 7f1295d1-b76d-48a9-97f6-890af3382071, Transport: jsonrpc, Counter: 17
+2026-03-20T00:43:42.027Z [DEBUG] [CLIENT] Complete client request object:
+{
+  "method": "tools/call",
+  "params": {
+    "_meta": {
+      "progressToken": "05e970ad-b151-4619-85c1-af28897ac797:553",
+      "antigravity.google/conversation_id": "316281cc-6cc7-47b5-b30e-88179d694c93"
+    },
+    "name": "mcp-adapter-discover-abilities",
+    "arguments": {}
+  }
+}
+2026-03-20T00:43:42.027Z [DEBUG] [MCP] Processing CallToolRequest
+2026-03-20T00:43:42.027Z [DEBUG] [SESSION] MCP JSON-RPC message being sent to WordPress:
+{
+  "jsonrpc": "2.0",
+  "method": "tools/call",
+  "id": 18,
+  "original_mcp_id": "none",
+  "session_id": "7f1295d1-b76d-48a9-97f6-890af3382071"
+}
+2026-03-20T00:43:42.027Z [INFO] [API] Request method: tools/call (JSON-RPC)
+2026-03-20T00:43:42.028Z [DEBUG] [API] JSON-RPC message: {"jsonrpc":"2.0","method":"tools/call","id":18,"params":{"name":"mcp-adapter-discover-abilities","arguments":{},"_proxy_request_id":18}}
+2026-03-20T00:43:42.028Z [INFO] [AUTH] Using WordPress Basic Auth for method: tools/call
+2026-03-20T00:43:42.028Z [DEBUG] [AUTH] Username length: 3
+2026-03-20T00:43:42.028Z [DEBUG] [AUTH] Password length: 29
+2026-03-20T00:43:42.028Z [DEBUG] [AUTH] Auth header length: 44
+2026-03-20T00:43:42.028Z [DEBUG] [API] Environment: development
+2026-03-20T00:43:42.028Z [DEBUG] [API] Base API URL: https://api.elitegamerinsights.com/wp-json/mcp/mcp-adapter-default-server
+2026-03-20T00:43:42.028Z [DEBUG] [API] Final requesting URL: https://api.elitegamerinsights.com/wp-json/mcp/mcp-adapter-default-server
+2026-03-20T00:43:42.028Z [DEBUG] [API] Using Authorization header for authentication
+2026-03-20T00:43:42.028Z [INFO] [API] Sending request to WordPress API...
+2026-03-20T00:43:42.028Z [DEBUG] [API] Request URL: https://api.elitegamerinsights.com/wp-json/mcp/mcp-adapter-default-server
+2026-03-20T00:43:42.029Z [DEBUG] [API] Request method: POST
+2026-03-20T00:43:42.546Z [DEBUG] [API] Response status: 200
+2026-03-20T00:43:42.548Z [INFO] [API] Response received successfully
+2026-03-20T00:43:42.549Z [DEBUG] [API] Response data: {"jsonrpc":"2.0","id":18,"result":{"content":[{"type":"text","text":"{\"abilities\":[]}"}],"structuredContent":{"abilities":[]}}}
+2026-03-20T00:43:42.549Z [INFO] [CLIENT] ✅ Client Response: CallTool completed in 522ms
+2026-03-20T00:43:42.550Z [DEBUG] [CLIENT] Response sent to client:
+{
+  "hasResponse": true,
+  "responseKeys": [
+    "content",
+    "structuredContent"
+  ]
+}
+2026-03-20T00:49:41.793Z [INFO] [CLIENT] 📩 Client Message: CallTool
+2026-03-20T00:49:41.794Z [INFO] [CLIENT] Request ID: none | Method: tools/call
+2026-03-20T00:49:41.794Z [INFO] [CLIENT] Request parameters:
+{
+  "paramCount": 3,
+  "paramKeys": [
+    "_meta",
+    "name",
+    "arguments"
+  ]
+}
+2026-03-20T00:49:41.795Z [DEBUG] [CLIENT] Full request parameters:
+{
+  "_meta": {
+    "progressToken": "05e970ad-b151-4619-85c1-af28897ac797:596",
+    "antigravity.google/conversation_id": "316281cc-6cc7-47b5-b30e-88179d694c93"
+  },
+  "name": "mcp-adapter-discover-abilities",
+  "arguments": {}
+}
+2026-03-20T00:49:41.795Z [DEBUG] [CLIENT] Session context - ID: 7f1295d1-b76d-48a9-97f6-890af3382071, Transport: jsonrpc, Counter: 18
+2026-03-20T00:49:41.795Z [DEBUG] [CLIENT] Complete client request object:
+{
+  "method": "tools/call",
+  "params": {
+    "_meta": {
+      "progressToken": "05e970ad-b151-4619-85c1-af28897ac797:596",
+      "antigravity.google/conversation_id": "316281cc-6cc7-47b5-b30e-88179d694c93"
+    },
+    "name": "mcp-adapter-discover-abilities",
+    "arguments": {}
+  }
+}
+2026-03-20T00:49:41.795Z [DEBUG] [MCP] Processing CallToolRequest
+2026-03-20T00:49:41.795Z [DEBUG] [SESSION] MCP JSON-RPC message being sent to WordPress:
+{
+  "jsonrpc": "2.0",
+  "method": "tools/call",
+  "id": 19,
+  "original_mcp_id": "none",
+  "session_id": "7f1295d1-b76d-48a9-97f6-890af3382071"
+}
+2026-03-20T00:49:41.795Z [INFO] [API] Request method: tools/call (JSON-RPC)
+2026-03-20T00:49:41.795Z [DEBUG] [API] JSON-RPC message: {"jsonrpc":"2.0","method":"tools/call","id":19,"params":{"name":"mcp-adapter-discover-abilities","arguments":{},"_proxy_request_id":19}}
+2026-03-20T00:49:41.795Z [INFO] [AUTH] Using WordPress Basic Auth for method: tools/call
+2026-03-20T00:49:41.795Z [DEBUG] [AUTH] Username length: 3
+2026-03-20T00:49:41.795Z [DEBUG] [AUTH] Password length: 29
+2026-03-20T00:49:41.795Z [DEBUG] [AUTH] Auth header length: 44
+2026-03-20T00:49:41.795Z [DEBUG] [API] Environment: development
+2026-03-20T00:49:41.795Z [DEBUG] [API] Base API URL: https://api.elitegamerinsights.com/wp-json/mcp/mcp-adapter-default-server
+2026-03-20T00:49:41.795Z [DEBUG] [API] Final requesting URL: https://api.elitegamerinsights.com/wp-json/mcp/mcp-adapter-default-server
+2026-03-20T00:49:41.795Z [DEBUG] [API] Using Authorization header for authentication
+2026-03-20T00:49:41.795Z [INFO] [API] Sending request to WordPress API...
+2026-03-20T00:49:41.795Z [DEBUG] [API] Request URL: https://api.elitegamerinsights.com/wp-json/mcp/mcp-adapter-default-server
+2026-03-20T00:49:41.795Z [DEBUG] [API] Request method: POST
+2026-03-20T00:49:42.525Z [DEBUG] [API] Response status: 200
+2026-03-20T00:49:42.527Z [INFO] [API] Response received successfully
+2026-03-20T00:49:42.527Z [DEBUG] [API] Response data: {"jsonrpc":"2.0","id":19,"result":{"content":[{"type":"text","text":"{\"abilities\":[]}"}],"structuredContent":{"abilities":[]}}}
+2026-03-20T00:49:42.527Z [INFO] [CLIENT] ✅ Client Response: CallTool completed in 732ms
+2026-03-20T00:49:42.527Z [DEBUG] [CLIENT] Response sent to client:
+{
+  "hasResponse": true,
+  "responseKeys": [
+    "content",
+    "structuredContent"
+  ]
+}
+2026-03-20T15:45:28.118Z [INFO] [SYSTEM] Using native fetch API
+2026-03-20T15:45:28.119Z [DEBUG] [PROXY] System proxy support disabled (USE_SYSTEM_PROXY=false)
+2026-03-20T15:45:28.119Z [INFO] [PROXY] Starting WordPress MCP Proxy with enhanced authentication
+2026-03-20T15:45:28.120Z [INFO] [PROXY] MCP server connected to transport successfully
+2026-03-20T15:45:28.122Z [INFO] [INIT] 📩 Client Initialize Request received
+2026-03-20T15:45:28.122Z [DEBUG] [INIT] Initialize request details:
+{
+  "method": "initialize",
+  "params": {
+    "protocolVersion": "2025-06-18",
+    "capabilities": {
+      "roots": {
+        "listChanged": true
+      },
+      "elicitation": {
+        "Form": {},
+        "URL": {}
+      }
+    },
+    "clientInfo": {
+      "name": "antigravity-client",
+      "version": "v1.0.0"
+    }
+  }
+}
+2026-03-20T15:45:28.122Z [INFO] [INIT] 🔄 Initializing WordPress connection with client parameters
+2026-03-20T15:45:28.122Z [INFO] [TRANSPORT_DETECT] 🔍 Starting transport detection and WordPress API initialization...
+2026-03-20T15:45:28.122Z [INFO] [TRANSPORT_DETECT] 📋 Added proxy information to clientInfo
+{
+  "originalClient": "antigravity-client",
+  "proxyName": "@automattic/mcp-wordpress-remote",
+  "proxyVersion": "0.2.19"
+}
+2026-03-20T15:45:28.122Z [INFO] [TRANSPORT_DETECT] 📡 Attempting JSON-RPC transport...
+2026-03-20T15:45:28.122Z [DEBUG] [SESSION] MCP JSON-RPC message being sent to WordPress:
+{
+  "jsonrpc": "2.0",
+  "method": "initialize",
+  "id": 1,
+  "original_mcp_id": "none",
+  "session_id": "not-yet-obtained"
+}
+2026-03-20T15:45:28.122Z [INFO] [TRANSPORT_DETECT] Sending initialization message via JSON-RPC:
+{
+  "method": "initialize",
+  "id": 1,
+  "jsonrpc": "2.0",
+  "hasParams": true
+}
+2026-03-20T15:45:28.122Z [DEBUG] [TRANSPORT_DETECT] Complete JSON-RPC init message:
+{
+  "jsonrpc": "2.0",
+  "method": "initialize",
+  "id": 1,
+  "params": {
+    "protocolVersion": "2025-06-18",
+    "capabilities": {
+      "roots": {
+        "listChanged": true
+      },
+      "elicitation": {
+        "Form": {},
+        "URL": {}
+      }
+    },
+    "clientInfo": {
+      "name": "antigravity-client",
+      "version": "v1.0.0",
+      "proxied": {
+        "name": "@automattic/mcp-wordpress-remote",
+        "version": "0.2.19"
+      }
+    },
+    "_proxy_request_id": 1
+  }
+}
+2026-03-20T15:45:28.123Z [INFO] [API] Request method: initialize (JSON-RPC)
+2026-03-20T15:45:28.123Z [DEBUG] [API] JSON-RPC message: {"jsonrpc":"2.0","method":"initialize","id":1,"params":{"protocolVersion":"2025-06-18","capabilities":{"roots":{"listChanged":true},"elicitation":{"Form":{},"URL":{}}},"clientInfo":{"name":"antigravity-client","version":"v1.0.0","proxied":{"name":"@automattic/mcp-wordpress-remote","version":"0.2.19"}},"_proxy_request_id":1}}
+2026-03-20T15:45:28.123Z [INFO] [AUTH] Using WordPress Basic Auth for method: initialize
+2026-03-20T15:45:28.123Z [DEBUG] [AUTH] Username length: 3
+2026-03-20T15:45:28.123Z [DEBUG] [AUTH] Password length: 29
+2026-03-20T15:45:28.123Z [DEBUG] [AUTH] Auth header length: 44
+2026-03-20T15:45:28.123Z [DEBUG] [API] Environment: development
+2026-03-20T15:45:28.123Z [DEBUG] [API] Base API URL: https://api.elitegamerinsights.com/wp-json/mcp/mcp-adapter-default-server
+2026-03-20T15:45:28.123Z [DEBUG] [API] Final requesting URL: https://api.elitegamerinsights.com/wp-json/mcp/mcp-adapter-default-server
+2026-03-20T15:45:28.123Z [DEBUG] [API] Using Authorization header for authentication
+2026-03-20T15:45:28.123Z [INFO] [API] Sending request to WordPress API...
+2026-03-20T15:45:28.123Z [DEBUG] [API] Request URL: https://api.elitegamerinsights.com/wp-json/mcp/mcp-adapter-default-server
+2026-03-20T15:45:28.123Z [DEBUG] [API] Request method: POST
+2026-03-20T15:45:28.769Z [DEBUG] [API] Response status: 200
+2026-03-20T15:45:28.772Z [INFO] [SESSION] Session ID received from WordPress: 2517caf5-826a-46c0-8d75-b740b3e16104
+2026-03-20T15:45:28.772Z [INFO] [API] Response received successfully
+2026-03-20T15:45:28.772Z [DEBUG] [API] Response data: {"jsonrpc":"2.0","id":1,"result":{"protocolVersion":"2025-06-18","serverInfo":{"name":"MCP Adapter Default Server","version":"v1.0.0"},"capabilities":{"tools":{},"resources":{},"prompts":{},"logging":{},"completions":{}},"instructions":"Default MCP server for WordPress abilities discovery and execution"}}
+2026-03-20T15:45:28.772Z [INFO] [TRANSPORT_DETECT] ✅ JSON-RPC transport detected and working
+2026-03-20T15:45:28.772Z [DEBUG] [TRANSPORT_DETECT] JSON-RPC initialization response:
+{
+  "protocolVersion": "2025-06-18",
+  "serverInfo": {
+    "name": "MCP Adapter Default Server",
+    "version": "v1.0.0"
+  },
+  "capabilities": {
+    "tools": {},
+    "resources": {},
+    "prompts": {},
+    "logging": {},
+    "completions": {}
+  },
+  "instructions": "Default MCP server for WordPress abilities discovery and execution"
+}
+2026-03-20T15:45:28.772Z [INFO] [PROXY] Using session ID from WordPress: 2517caf5-826a-46c0-8d75-b740b3e16104
+2026-03-20T15:45:28.772Z [INFO] [PROXY] WordPress connection initialized successfully using jsonrpc transport
+2026-03-20T15:45:28.772Z [INFO] [INIT] ✅ Returning WordPress server initialize response
+2026-03-20T15:45:28.772Z [DEBUG] [INIT] Initialize response:
+{
+  "protocolVersion": "2025-06-18",
+  "serverInfo": {
+    "name": "MCP Adapter Default Server",
+    "version": "v1.0.0"
+  },
+  "capabilities": {
+    "tools": {},
+    "resources": {},
+    "prompts": {},
+    "logging": {},
+    "completions": {}
+  },
+  "instructions": "Default MCP server for WordPress abilities discovery and execution"
+}
+2026-03-20T15:45:28.774Z [INFO] [CLIENT] 📩 Client Message: ListTools
+2026-03-20T15:45:28.774Z [INFO] [CLIENT] Request ID: none | Method: tools/list
+2026-03-20T15:45:28.774Z [INFO] [CLIENT] No request parameters
+2026-03-20T15:45:28.774Z [DEBUG] [CLIENT] Session context - ID: 2517caf5-826a-46c0-8d75-b740b3e16104, Transport: jsonrpc, Counter: 1
+2026-03-20T15:45:28.774Z [DEBUG] [CLIENT] Complete client request object:
+{
+  "method": "tools/list",
+  "params": {}
+}
+2026-03-20T15:45:28.775Z [DEBUG] [MCP] Processing ListToolsRequest
+2026-03-20T15:45:28.775Z [DEBUG] [SESSION] MCP JSON-RPC message being sent to WordPress:
+{
+  "jsonrpc": "2.0",
+  "method": "tools/list",
+  "id": 2,
+  "original_mcp_id": "none",
+  "session_id": "2517caf5-826a-46c0-8d75-b740b3e16104"
+}
+2026-03-20T15:45:28.775Z [INFO] [API] Request method: tools/list (JSON-RPC)
+2026-03-20T15:45:28.775Z [DEBUG] [API] JSON-RPC message: {"jsonrpc":"2.0","method":"tools/list","id":2,"params":{"_proxy_request_id":2}}
+2026-03-20T15:45:28.775Z [INFO] [AUTH] Using WordPress Basic Auth for method: tools/list
+2026-03-20T15:45:28.775Z [DEBUG] [AUTH] Username length: 3
+2026-03-20T15:45:28.775Z [DEBUG] [AUTH] Password length: 29
+2026-03-20T15:45:28.775Z [DEBUG] [AUTH] Auth header length: 44
+2026-03-20T15:45:28.775Z [DEBUG] [API] Environment: development
+2026-03-20T15:45:28.775Z [DEBUG] [API] Base API URL: https://api.elitegamerinsights.com/wp-json/mcp/mcp-adapter-default-server
+2026-03-20T15:45:28.775Z [DEBUG] [API] Final requesting URL: https://api.elitegamerinsights.com/wp-json/mcp/mcp-adapter-default-server
+2026-03-20T15:45:28.775Z [DEBUG] [API] Using Authorization header for authentication
+2026-03-20T15:45:28.776Z [INFO] [API] Sending request to WordPress API...
+2026-03-20T15:45:28.776Z [DEBUG] [API] Request URL: https://api.elitegamerinsights.com/wp-json/mcp/mcp-adapter-default-server
+2026-03-20T15:45:28.776Z [DEBUG] [API] Request method: POST
+2026-03-20T15:45:28.966Z [DEBUG] [API] Response status: 200
+2026-03-20T15:45:28.967Z [INFO] [API] Response received successfully
+2026-03-20T15:45:28.967Z [DEBUG] [API] Response data: {"jsonrpc":"2.0","id":2,"result":{"tools":[{"name":"mcp-adapter-discover-abilities","description":"Discover all available WordPress abilities in the system. Returns a list of all registered abilities with their basic information.","type":"action","inputSchema":{"type":"object","additionalProperties":false},"outputSchema":{"type":"object","properties":{"abilities":{"type":"array","items":{"type":"object","properties":{"name":{"type":"string"},"label":{"type":"string"},"description":{"type":"string"}},"required":["name","label","description"]}}},"required":["abilities"]},"annotations":{"readOnlyHint":true,"destructiveHint":false,"idempotentHint":true,"title":"Discover Abilities"}},{"name":"mcp-adapter-get-ability-info","description":"Get detailed information about a specific WordPress ability including its input/output schema, description, and usage examples.","type":"action","inputSchema":{"type":"object","properties":{"ability_name":{"type":"string","description":"The full name of the ability to get information about"}},"required":["ability_name"],"additionalProperties":false},"outputSchema":{"type":"object","properties":{"name":{"type":"string"},"label":{"type":"string"},"description":{"type":"string"},"input_schema":{"type":"object","description":"JSON Schema for the ability input parameters"},"output_schema":{"type":"object","description":"JSON Schema for the ability output structure"},"meta":{"type":"object","description":"Additional metadata about the ability"}},"required":["name","label","description","input_schema"]},"annotations":{"readOnlyHint":true,"destructiveHint":false,"idempotentHint":true,"title":"Get Ability Info"}},{"name":"mcp-adapter-execute-ability","description":"Execute a WordPress ability with the provided parameters. This is the primary execution layer that can run any registered ability.","type":"action","inputSchema":{"type":"object","properties":{"ability_name":{"type":"string","description":"The full name of the ability to execute"},"parameters":{"type":"object","description":"Parameters to pass to the ability"}},"required":["ability_name","parameters"],"additionalProperties":false},"outputSchema":{"type":"object","properties":{"success":{"type":"boolean"},"data":{"description":"The result data from the ability execution"},"error":{"type":"string","description":"Error message if execution failed"}},"required":["success"]},"annotations":{"readOnlyHint":false,"destructiveHint":true,"idempotentHint":false,"title":"Execute Ability"}}]}}
+2026-03-20T15:45:28.967Z [INFO] [CLIENT] ✅ Client Response: ListTools completed in 193ms
+2026-03-20T15:45:28.967Z [DEBUG] [CLIENT] Response sent to client:
+{
+  "hasResponse": true,
+  "responseKeys": [
+    "tools"
+  ]
+}

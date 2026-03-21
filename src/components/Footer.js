@@ -20,6 +20,22 @@ function Footer() {
               </li>
             </ul>
           </div>
+          {/* Company Info */}
+          <div>
+            <h3 className="text-white font-bold text-lg mb-4">Tools for Gamers</h3>
+            <ul className="space-y-2">
+              <li>
+                <Link to="https://game-checklists.com/" className="text-gray-400 hover:bg-gradient-to-r hover:from-accent-pink-400 hover:to-accent-violet-400 hover:bg-clip-text hover:text-transparent transition-all duration-300">
+                  Completionist Resources - Game Checklists
+                </Link>
+              </li>
+              <li>
+                <Link to="/k-d-calculator-calculate-your-kill-death-ratio" className="text-gray-400 hover:bg-gradient-to-r hover:from-accent-pink-400 hover:to-accent-violet-400 hover:bg-clip-text hover:text-transparent transition-all duration-300">
+                  K/D Calculator
+                </Link>
+              </li>
+            </ul>
+          </div>
 
           {/* Legal */}
           <div>
@@ -91,9 +107,6 @@ function Footer() {
               </p>
             </div>
             <div className="flex flex-wrap gap-4 text-sm">
-                <Link to="/k-d-calculator-calculate-your-kill-death-ratio" className="text-gray-400 hover:bg-gradient-to-r hover:from-accent-pink-400 hover:to-accent-violet-400 hover:bg-clip-text hover:text-transparent transition-all duration-300">
-                  K/D Calculator
-                </Link>
               <Link to="/game-download-speed-calculator" className="text-gray-400 hover:bg-gradient-to-r hover:from-accent-pink-400 hover:to-accent-violet-400 hover:bg-clip-text hover:text-transparent transition-all duration-300">
                 Game Download Speed Calculator
               </Link>
