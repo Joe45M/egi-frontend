@@ -9,6 +9,7 @@ import { useInitialData } from "../initialDataContext";
 import StructuredSchema, { generateArticleSchema, generateBreadcrumbSchema } from "./StructuredSchema";
 import AuthorBox from "./AuthorBox";
 import { replaceAdShortcodes } from "../utils/ads";
+import TableOfContents from "./TableOfContents";
 
 // Lazy load RelatedPosts component
 const RelatedPosts = lazy(() => import("./RelatedPosts"));
@@ -300,6 +301,9 @@ function PostDetail({ postType = 'games', basePath = '/games' }) {
                             {post.image && (
                                 <Image url={post.image} alt={post.title} />
                             )}
+                            <div className="my-8">
+                                <TableOfContents />
+                            </div>
                             <div
                                 ref={contentRef}
                                 className="wp-content"
