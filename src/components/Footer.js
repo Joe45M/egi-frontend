@@ -30,6 +30,11 @@ function Footer() {
                 </Link>
               </li>
               <li>
+                <Link to="https://unblockedgame.app" className="text-gray-400 hover:bg-gradient-to-r hover:from-accent-pink-400 hover:to-accent-violet-400 hover:bg-clip-text hover:text-transparent transition-all duration-300">
+                  Unblocked Browser Games
+                </Link>
+              </li>
+              <li>
                 <Link to="/k-d-calculator-calculate-your-kill-death-ratio" className="text-gray-400 hover:bg-gradient-to-r hover:from-accent-pink-400 hover:to-accent-violet-400 hover:bg-clip-text hover:text-transparent transition-all duration-300">
                   K/D Calculator
                 </Link>
