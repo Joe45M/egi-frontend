@@ -25,7 +25,7 @@ const stripHtml = (html) => {
 /**
  * Helper function to create excerpt from content
  */
-const createExcerpt = (content, maxLength = 160) => {
+const createExcerpt = (content, maxLength = 142) => {
   if (!content) return DEFAULT_DESCRIPTION;
   const text = stripHtml(content);
   if (text.length <= maxLength) return text;
@@ -111,7 +111,12 @@ function PageMetadata({
     : SITE_NAME;
 
   // Use provided description or fallback
-  const metaDescription = description || DEFAULT_DESCRIPTION;
+  let metaDescription = description || DEFAULT_DESCRIPTION;
+  
+  // Enforce a hard limit of 145 characters for search engines (Bing Webmaster tools fix)
+  if (metaDescription.length > 145) {
+    metaDescription = metaDescription.substring(0, 142).trim() + '...';
+  }
 
   // Build canonical URL
   const fullUrl = canonicalUrl || `${SITE_URL}${location.pathname}${location.search}`;
