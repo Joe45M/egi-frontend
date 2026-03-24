@@ -13,6 +13,7 @@ if (
     integrations: [
       Sentry.browserTracingIntegration(),
       Sentry.replayIntegration(),
+      Sentry.captureConsoleIntegration({ levels: ['error', 'warn'] }),
     ],
     // Performance Monitoring
     tracesSampleRate: 1.0, // Capture 100% of the transactions
@@ -38,7 +39,9 @@ if (rootElement.hasChildNodes()) {
   hydrateRoot(
     rootElement,
     <React.StrictMode>
-      <App />
+      <Sentry.ErrorBoundary fallback={null}>
+        <App />
+      </Sentry.ErrorBoundary>
     </React.StrictMode>
   );
 } else {
@@ -46,10 +49,13 @@ if (rootElement.hasChildNodes()) {
   const root = createRoot(rootElement);
   root.render(
     <React.StrictMode>
-      <App />
+      <Sentry.ErrorBoundary fallback={null}>
+        <App />
+      </Sentry.ErrorBoundary>
     </React.StrictMode>
   );
 }
+
 
 // Load web vitals reporting after initial render
 if (process.env.NODE_ENV === 'production') {
