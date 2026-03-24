@@ -169,3 +169,7 @@
     "tools"
   ]
 }
+2026-03-24T19:30:59.529Z [INFO] [SYSTEM] Using native fetch API
+2026-03-24T19:30:59.530Z [DEBUG] [PROXY] System proxy support disabled (USE_SYSTEM_PROXY=false)
+2026-03-24T19:30:59.530Z [INFO] [PROXY] Starting WordPress MCP Proxy with enhanced authentication
+2026-03-24T19:30:59.531Z [INFO] [PROXY] MCP server connected to transport successfully

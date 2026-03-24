@@ -32,7 +32,7 @@ function Privacy() {
         
         <div className="text-gray-300 leading-relaxed space-y-6 wp-content">
           <p className="text-gray-400 text-sm mb-8">
-            Last updated: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+            Last updated: {new Date().toLocaleDateString('en-US', { timeZone: 'UTC', year: 'numeric', month: 'long', day: 'numeric' })}
           </p>
 
           <section>
