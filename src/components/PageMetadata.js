@@ -101,11 +101,14 @@ function PageMetadata({
   tags,
   noindex = false,
   nofollow = false,
+  hideSiteNameInTitle = false,
 }) {
   const location = useLocation();
   const headContext = useHead();
   // Compute core metadata once so we can use it for both SSR and CSR
-  const pageTitle = title ? `${title} | ${SITE_NAME}` : SITE_NAME;
+  const pageTitle = title 
+    ? (hideSiteNameInTitle ? title : `${title} | ${SITE_NAME}`) 
+    : SITE_NAME;
 
   // Use provided description or fallback
   const metaDescription = description || DEFAULT_DESCRIPTION;

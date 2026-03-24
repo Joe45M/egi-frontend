@@ -278,6 +278,7 @@ function PostDetail({ postType = 'games', basePath = '/games' }) {
                 keywords={`${postType}, gaming, ${articleTitle}`}
                 section={articleSection}
                 tags={articleTags.length > 0 ? articleTags : [postType, 'gaming']}
+                hideSiteNameInTitle={true}
             />
             <StructuredSchema schemas={schemas} />
             <div className="pt-[200px] p-4 container mx-auto">
