@@ -5,7 +5,6 @@ import './index.css';
 import App from './App';
 
 if (
-  process.env.NODE_ENV === 'production' &&
   window.location.hostname === 'elitegamerinsights.com'
 ) {
   Sentry.init({
