@@ -1,23 +1,20 @@
-# https://www.robotstxt.org/robotstxt.html
 # Robots.txt for EliteGamerInsights
 
-# Allow all search engines
-User-agent: *
+# Explicitly allow major search engines
+User-agent: Googlebot
+User-agent: Bingbot
+User-agent: Slurp
+User-agent: DuckDuckBot
+User-agent: Baiduspider
+User-agent: YandexBot
 Allow: /
-
-# Disallow admin and private areas (if any)
 Disallow: /admin/
 Disallow: /api/
-Disallow: /_next/
-Disallow: /static/
 
-# Allow important resources
-Allow: /static/css/
-Allow: /static/js/
-Allow: /static/images/
+# Catch-all for any other bots
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /api/
 
-# Sitemap location
-Sitemap: https://elitegamerinsights.com/sitemap.xml
-
-# Crawl-delay (optional, adjust as needed)
-Crawl-delay: 1
+Sitemap: https://api.elitegamerinsights.com/games-sitemap.xml
