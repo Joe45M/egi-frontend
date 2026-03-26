@@ -1,6 +1,7 @@
 import { Outlet } from 'react-router-dom';
 import Navigation from './Navigation';
 import Footer from './Footer';
+import LatestArticleRibbon from './LatestArticleRibbon';
 import ScrollToTop from './ScrollToTop';
 import StructuredSchema, { generateOrganizationSchema, generateWebSiteSchema } from './StructuredSchema';
 
@@ -19,6 +20,7 @@ function Layout() {
       <main className="flex-grow">
         <Outlet />
       </main>
+      <LatestArticleRibbon />
       <Footer />
     </div>
   );
