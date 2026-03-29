@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, lazy, Suspense } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Image } from './Editor';
 import SavePost from "./SavePost";
+import GooglePreferredSourceButton from "./GooglePreferredSourceButton";
 import wordpressApi from "../services/wordpressApi";
 import NotFound from "../pages/NotFound";
 import PageMetadata, { stripHtml, createExcerpt, SITE_URL } from "./PageMetadata";
@@ -292,7 +293,8 @@ function PostDetail({ postType = 'games', basePath = '/games' }) {
                         Posted by <Link to="/profile" className="w-full ">{post.authorName || 'Author'}</Link> on {formatDate(post.date)}
                     </div>
 
-                    <div>
+                    <div className="flex items-center gap-4 mb-5">
+                        <GooglePreferredSourceButton />
                         <SavePost slug={post.slug} postType={postType} />
                     </div>
                 </div>
