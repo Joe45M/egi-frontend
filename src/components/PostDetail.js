@@ -293,7 +293,7 @@ function PostDetail({ postType = 'games', basePath = '/games' }) {
                         Posted by <Link to="/profile" className="w-full ">{post.authorName || 'Author'}</Link> on {formatDate(post.date)}
                     </div>
 
-                    <div className="flex items-center gap-4 mb-5">
+                    <div className="flex flex-wrap mt-5 lg:mt-0 items-center gap-4 mb-5">
                         <GooglePreferredSourceButton />
                         <SavePost slug={post.slug} postType={postType} />
                     </div>
