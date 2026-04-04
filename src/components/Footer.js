@@ -18,6 +18,11 @@ function Footer() {
                   About & Contact
                 </Link>
               </li>
+              <li>
+                <Link to="/games" className="text-gray-400 hover:bg-gradient-to-r hover:from-accent-pink-400 hover:to-accent-violet-400 hover:bg-clip-text hover:text-transparent transition-all duration-300">
+                  Games
+                </Link>
+              </li>
             </ul>
           </div>
           {/* Company Info */}

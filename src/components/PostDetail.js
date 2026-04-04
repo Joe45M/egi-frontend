@@ -283,7 +283,25 @@ function PostDetail({ postType = 'games', basePath = '/games' }) {
                 hideSiteNameInTitle={true}
             />
             <StructuredSchema schemas={schemas} />
-            <div className="pt-[200px] p-4 container mx-auto">
+            <div className="pt-[150px] p-4 container mx-auto">
+                {postType === 'games' && (
+                    <div className="mb-6">
+                        <Link
+                            to={basePath}
+                            className="group inline-flex items-center gap-2 text-gray-400 hover:text-white transition-all duration-300"
+                        >
+                            <svg
+                                className="w-4 h-4 group-hover:-translate-x-1 transition-transform duration-300"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                            >
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                            </svg>
+                            <span className="text-sm font-medium">Back to all posts</span>
+                        </Link>
+                    </div>
+                )}
                 <h1 className="text-4xl font-bold mb-4 text-white" dangerouslySetInnerHTML={{ __html: post.title }}></h1>
 
                 <hr className="border-t border-t-gray-60 mb-4" />
