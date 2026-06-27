@@ -118,8 +118,22 @@ function PageMetadata({
     metaDescription = metaDescription.substring(0, 142).trim() + '...';
   }
 
-  // Build canonical URL
-  const fullUrl = canonicalUrl || `${SITE_URL}${location.pathname}${location.search}`;
+  // Build canonical URL - only keep valid query parameters (page, game)
+  let cleanSearch = '';
+  if (location.search) {
+    const params = new URLSearchParams(location.search);
+    const cleanParams = new URLSearchParams();
+    
+    // Only keep 'page' and 'game' if they exist
+    if (params.has('page')) cleanParams.set('page', params.get('page'));
+    if (params.has('game')) cleanParams.set('game', params.get('game'));
+    
+    const cleanString = cleanParams.toString();
+    if (cleanString) {
+      cleanSearch = `?${cleanString}`;
+    }
+  }
+  const fullUrl = canonicalUrl || `${SITE_URL}${location.pathname}${cleanSearch}`;
 
   // Handle image URL (support relative and absolute)
   let fullImageUrl = image;
