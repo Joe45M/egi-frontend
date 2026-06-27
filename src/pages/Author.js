@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Navigate } from 'react-router-dom';
 import wordpressApi from '../services/wordpressApi';
-import NotFound from './NotFound';
 import PostCard from '../components/PostCard';
 import PageMetadata from '../components/PageMetadata';
 
@@ -75,7 +74,7 @@ function Author() {
 
     // 404 handling
     if (notFound || !author) {
-        return <NotFound />;
+        return <Navigate to="/404" replace />;
     }
 
     return (

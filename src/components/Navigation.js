@@ -84,10 +84,16 @@ function Navigation() {
                 Gaming news
               </Link>
               <Link
-                  to="/culture"
+                  to="/games?game=rust"
                   className="text-white tracking-wider"
               >
-                Culture
+                Rust
+              </Link>
+              <Link
+                  to="/games?game=rimworld"
+                  className="text-white tracking-wider"
+              >
+                Rimworld
               </Link>
             </div>
 
@@ -189,8 +195,9 @@ function Navigation() {
           {[
             { to: '/', label: 'Home', delay: 0 },
             { to: '/games', label: 'Gaming news', delay: 100 },
-            { to: '/culture', label: 'Culture', delay: 200 },
-            { to: '/readlist', label: 'Read list', delay: 300 }
+            { to: '/games?game=rust', label: 'Rust', delay: 150 },
+            { to: '/games?game=rimworld', label: 'Rimworld', delay: 200 },
+            { to: '/readlist', label: 'Read list', delay: 250 }
           ].map((item, index) => (
             <Link
               key={item.to}

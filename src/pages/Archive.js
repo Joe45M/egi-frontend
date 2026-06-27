@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
-import { useParams, useSearchParams, Link } from "react-router-dom";
+import { useParams, useSearchParams, Link, Navigate } from "react-router-dom";
 import wordpressApi from "../services/wordpressApi";
 import Pagination from "../components/Pagination";
-import NotFound from "./NotFound";
 import PageMetadata, { SITE_URL } from "../components/PageMetadata";
 import StructuredSchema, { generateCollectionPageSchema, generateBreadcrumbSchema, generateWebPageSchema } from "../components/StructuredSchema";
 import PostCard from "../components/PostCard";
-function Archive() {
-  const { type } = useParams();
+function Archive({ type: propType }) {
+  const { type: paramType } = useParams();
+  const type = propType || paramType;
   const [searchParams] = useSearchParams();
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -195,7 +195,7 @@ function Archive() {
 
   // 404 handling
   if (notFound) {
-    return <NotFound />;
+    return <Navigate to="/404" replace />;
   }
 
   // Error state

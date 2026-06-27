@@ -1,4 +1,4 @@
-import { createRoutesFromElements, Route } from 'react-router-dom';
+import { createRoutesFromElements, Route, Navigate } from 'react-router-dom';
 import Layout from './components/Layout';
 
 // Direct imports for server-side rendering (no lazy loading)
@@ -37,8 +37,11 @@ export function getRouteElements() {
                 <Route path="cookies" element={<Cookies />} />
                 <Route path="accessibility" element={<Accessibility />} />
                 <Route path="contact" element={<Contact />} />
-                <Route path=":type" element={<Archive />} />
-                <Route path="*" element={<NotFound />} />
+                <Route path="games" element={<Archive type="games" />} />
+                <Route path="culture" element={<Archive type="culture" />} />
+                <Route path="game-reviews" element={<Archive type="game-reviews" />} />
+                <Route path="404" element={<NotFound />} />
+                <Route path="*" element={<Navigate to="/404" replace />} />
             </Route>
         </>
     );

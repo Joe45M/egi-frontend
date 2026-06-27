@@ -63,7 +63,20 @@ exports.handler = async (event) => {
       throw new Error('Server bundle not available');
     }
 
-    const { html, status, head } = await serverModule.render(url);
+    const { html, status, head, redirect } = await serverModule.render(url);
+
+    if (redirect || status === 301 || status === 302) {
+      const redirectUrl = redirect || '/404';
+      console.log(`SSR Redirecting from ${url} to ${redirectUrl} with status ${status || 302}`);
+      return {
+        statusCode: status || 302,
+        headers: {
+          'Location': redirectUrl,
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+        },
+        body: '',
+      };
+    }
 
     // Debug logging - check if head has values
     console.log('SSR Debug - URL:', url);

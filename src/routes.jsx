@@ -1,4 +1,4 @@
-import { createRoutesFromElements, createBrowserRouter, Route } from 'react-router-dom';
+import { createRoutesFromElements, createBrowserRouter, Route, Navigate } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
 import Layout from './components/Layout';
 
@@ -51,8 +51,11 @@ export function getRouteElements() {
                 <Route path="cookies" element={<Suspense fallback={<RouteLoadingFallback />}><Cookies /></Suspense>} />
                 <Route path="accessibility" element={<Suspense fallback={<RouteLoadingFallback />}><Accessibility /></Suspense>} />
                 <Route path="contact" element={<Suspense fallback={<RouteLoadingFallback />}><Contact /></Suspense>} />
-                <Route path=":type" element={<Suspense fallback={<RouteLoadingFallback />}><Archive /></Suspense>} />
-                <Route path="*" element={<Suspense fallback={<RouteLoadingFallback />}><NotFound /></Suspense>} />
+                <Route path="games" element={<Suspense fallback={<RouteLoadingFallback />}><Archive type="games" /></Suspense>} />
+                <Route path="culture" element={<Suspense fallback={<RouteLoadingFallback />}><Archive type="culture" /></Suspense>} />
+                <Route path="game-reviews" element={<Suspense fallback={<RouteLoadingFallback />}><Archive type="game-reviews" /></Suspense>} />
+                <Route path="404" element={<Suspense fallback={<RouteLoadingFallback />}><NotFound /></Suspense>} />
+                <Route path="*" element={<Navigate to="/404" replace />} />
             </Route>
         </>
     );

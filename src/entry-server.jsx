@@ -50,7 +50,7 @@ async function preloadRouteData(url) {
           return { post, postType: 'games', basePath: '/games' };
         } catch (error) {
           console.error('Error preloading game post:', error);
-          return null;
+          return { redirect: '/404' };
         }
       }
     }
@@ -65,7 +65,7 @@ async function preloadRouteData(url) {
           return { post, postType: 'culture', basePath: '/culture' };
         } catch (error) {
           console.error('Error preloading culture post:', error);
-          return null;
+          return { redirect: '/404' };
         }
       }
     }
@@ -80,7 +80,7 @@ async function preloadRouteData(url) {
           return { post, postType: 'game-reviews', basePath: '/game-reviews' };
         } catch (error) {
           console.error('Error preloading game-reviews post:', error);
-          return null;
+          return { redirect: '/404' };
         }
       }
     }
@@ -95,15 +95,38 @@ async function preloadRouteData(url) {
 export async function render(url) {
   console.log('entry-server: render called with URL:', url);
 
+  const head = createEmptyHead();
+
   // Pre-fetch data for routes that need it
   const initialData = await preloadRouteData(url);
-  console.log('entry-server: initialData:', initialData ? `postType=${initialData.postType}, slug=${initialData.post?.slug}` : 'null');
+  console.log('entry-server: initialData:', initialData ? (initialData.redirect ? `redirect=${initialData.redirect}` : `postType=${initialData.postType}, slug=${initialData.post?.slug}`) : 'null');
+
+  if (initialData && initialData.redirect) {
+    return {
+      html: '',
+      status: 302,
+      redirect: initialData.redirect,
+      head,
+    };
+  }
 
   const router = createMemoryRouter(routes, {
     initialEntries: [url],
   });
 
-  const head = createEmptyHead();
+  const matches = router.state.matches;
+  const is404 = matches && matches.some(match => match.route.path === '*');
+  if (is404) {
+    return {
+      html: '',
+      status: 302,
+      redirect: '/404',
+      head,
+    };
+  }
+
+  const isDedicated404 = matches && matches.some(match => match.route.path === '404');
+  const status = isDedicated404 ? 404 : 200;
 
   const html = renderToString(
     <React.StrictMode>
@@ -122,7 +145,7 @@ export async function render(url) {
 
   return {
     html,
-    status: 200,
+    status,
     head,
   };
 }
