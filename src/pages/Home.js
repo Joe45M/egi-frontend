@@ -1,18 +1,8 @@
-import { lazy, Suspense } from "react";
 import PageMetadata, { SITE_URL } from "../components/PageMetadata";
 import StructuredSchema, { generateWebPageSchema, generateBreadcrumbSchema } from "../components/StructuredSchema";
-
-// Lazy load heavy components
-const Slider = lazy(() => import("../components/Slider"));
-const Posts = lazy(() => import("../components/Posts"));
-const GameList = lazy(() => import("../components/GameList"));
-
-// Loading fallback for components
-const ComponentLoadingFallback = () => (
-  <div className="animate-pulse">
-    <div className="h-[500px] bg-accent-violet-950/10"></div>
-  </div>
-);
+import Slider from "../components/Slider";
+import Posts from "../components/Posts";
+import GameList from "../components/GameList";
 
 function Home() {
   const schemas = [
@@ -39,24 +29,12 @@ function Home() {
       <div>
           {/* Visually hidden H1 for SEO - screen reader accessible */}
           <h1 className="sr-only">EliteGamerInsights - Gaming News, Tutorials & Culture Coverage</h1>
-          <Suspense fallback={<ComponentLoadingFallback />}>
-            <Slider />
-          </Suspense>
-          <Suspense fallback={<div className="bg-accent-violet-950/10 py-3 h-12 animate-pulse"></div>}>
-            <GameList />
-          </Suspense>
+          <Slider />
+          <GameList />
 
           <div className="container mx-auto px-4 py-4">
               <h3 className="text-accent-pink-500 text-2xl font-bold mb-5">All gaming news</h3>
-              <Suspense fallback={
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {[1, 2, 3, 4, 5, 6].map((i) => (
-                    <div key={i} className="relative h-64 bg-accent-violet-950/10 animate-pulse rounded-lg"></div>
-                  ))}
-                </div>
-              }>
-                <Posts />
-              </Suspense>
+              <Posts />
 
               <div className="mt-16 mb-8 border-t border-base-800 pt-8">
                 <h2 className="text-accent-pink-500 text-2xl font-bold mb-4">Your Source for Gaming News & Culture</h2>

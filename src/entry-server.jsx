@@ -15,6 +15,35 @@ async function preloadRouteData(url) {
     // Parse URL to extract pathname (remove query string and hash)
     const pathname = url.split('?')[0].split('#')[0];
 
+    // Check if this is the Home page route
+    if (pathname === '/' || pathname === '') {
+      try {
+        const sliderPostsResult = await wordpressApi.posts.getByPostType('games', {
+          perPage: 3,
+          includeImages: true,
+          orderBy: 'date',
+          order: 'desc'
+        });
+        const sliderPosts = Array.isArray(sliderPostsResult) ? sliderPostsResult : (sliderPostsResult?.posts || []);
+
+        const postsResult = await wordpressApi.posts.getByPostType('games', {
+          perPage: 36,
+          includeImages: true,
+          orderBy: 'date',
+          order: 'desc'
+        });
+        const allPosts = Array.isArray(postsResult) ? postsResult : (postsResult?.posts || []);
+
+        return {
+          sliderPosts,
+          allPosts,
+          postType: 'home'
+        };
+      } catch (error) {
+        console.error('Error preloading home data:', error);
+      }
+    }
+
     /**
      * Extract slug from pathname, handling malformed URLs
      * Some bots/crawlers append junk to URLs like:
@@ -147,6 +176,7 @@ export async function render(url) {
     html,
     status,
     head,
+    initialData,
   };
 }
 

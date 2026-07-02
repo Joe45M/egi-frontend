@@ -1,10 +1,14 @@
 import { useState, useEffect } from "react";
 import PostCard from "./PostCard";
 import wordpressApi from "../services/wordpressApi";
+import { useInitialData } from "../initialDataContext";
 
 function Posts({ posts: propPosts = null }) {
-  const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const initialData = useInitialData();
+  const hasInitialData = initialData && initialData.postType === 'home' && Array.isArray(initialData.allPosts);
+
+  const [posts, setPosts] = useState(propPosts !== null ? propPosts : (hasInitialData ? initialData.allPosts : []));
+  const [loading, setLoading] = useState(propPosts !== null ? false : !hasInitialData);
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -12,6 +16,10 @@ function Posts({ posts: propPosts = null }) {
     if (propPosts !== null) {
       setPosts(propPosts);
       setLoading(false);
+      return;
+    }
+
+    if (hasInitialData) {
       return;
     }
 
@@ -46,7 +54,7 @@ function Posts({ posts: propPosts = null }) {
     };
 
     fetchGames();
-  }, [propPosts]);
+  }, [propPosts, hasInitialData]);
 
   const postsToDisplay = posts;
 
@@ -57,8 +65,14 @@ function Posts({ posts: propPosts = null }) {
         {[1, 2, 3, 4, 5, 6].map((i) => (
           <div
             key={i}
-            className="relative h-64 bg-accent-violet-950/10 animate-pulse rounded-lg"
-          ></div>
+            className="bg-gradient-to-br from-accent-violet-950/20 to-base-800/30 rounded-xl overflow-hidden border border-accent-violet-900/10 animate-pulse block h-full"
+          >
+            <div className="aspect-video bg-base-900/50"></div>
+            <div className="p-5">
+              <div className="h-6 bg-accent-violet-900/30 rounded mb-2 w-5/6"></div>
+              <div className="h-4 bg-accent-violet-900/30 rounded w-1/4"></div>
+            </div>
+          </div>
         ))}
       </div>
     );

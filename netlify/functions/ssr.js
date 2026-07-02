@@ -63,7 +63,7 @@ exports.handler = async (event) => {
       throw new Error('Server bundle not available');
     }
 
-    const { html, status, head, redirect } = await serverModule.render(url);
+    const { html, status, head, redirect, initialData } = await serverModule.render(url);
 
     if (redirect || status === 301 || status === 302) {
       const redirectUrl = redirect || '/404';
@@ -88,6 +88,12 @@ exports.handler = async (event) => {
     // Read the HTML template
     const htmlPath = path.join(__dirname, '../../build/index.html');
     let template = fs.readFileSync(htmlPath, 'utf8');
+
+    // Inject initialData for client-side hydration
+    if (initialData) {
+      const dataScript = `<script>window.__INITIAL_DATA__ = ${JSON.stringify(initialData).replace(/</g, '\\u003c')};</script>`;
+      template = template.replace('</head>', `${dataScript}</head>`);
+    }
 
     // Inject dynamic <title> if we have one from SSR
     if (head && head.title) {
@@ -116,20 +122,20 @@ exports.handler = async (event) => {
       }
     }
 
-    // Inject canonical URL if present
-    if (head && head.canonicalUrl) {
-      const escapedUrl = head.canonicalUrl.replace(/"/g, '&quot;');
-      if (template.match(/<link\s+rel="canonical"[^>]*>/i)) {
-        template = template.replace(
-          /<link\s+rel="canonical"[^>]*>/i,
-          `<link rel="canonical" href="${escapedUrl}">`
-        );
-      } else {
-        template = template.replace(
-          '</head>',
-          `<link rel="canonical" href="${escapedUrl}"></head>`
-        );
-      }
+    // Inject canonical URL (either from SEO head data or request path)
+    const siteUrl = 'https://elitegamerinsights.com';
+    const finalCanonicalUrl = head?.canonicalUrl || `${siteUrl}${url}`;
+    const escapedUrl = finalCanonicalUrl.replace(/"/g, '&quot;');
+    if (template.match(/<link\s+rel="canonical"[^>]*>/i)) {
+      template = template.replace(
+        /<link\s+rel="canonical"[^>]*>/i,
+        `<link rel="canonical" href="${escapedUrl}">`
+      );
+    } else {
+      template = template.replace(
+        '</head>',
+        `<link rel="canonical" href="${escapedUrl}"></head>`
+      );
     }
 
     // Open Graph meta tags

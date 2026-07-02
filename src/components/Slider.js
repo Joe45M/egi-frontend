@@ -2,14 +2,23 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import useEmblaCarousel from "embla-carousel-react";
 import wordpressApi from "../services/wordpressApi";
+import { useInitialData } from "../initialDataContext";
 
 function Slider() {
     const [emblaRef] = useEmblaCarousel();
-    const [posts, setPosts] = useState([]);
-    const [loading, setLoading] = useState(true);
+    
+    const initialData = useInitialData();
+    const hasInitialData = initialData && initialData.postType === 'home' && Array.isArray(initialData.sliderPosts);
+
+    const [posts, setPosts] = useState(hasInitialData ? initialData.sliderPosts : []);
+    const [loading, setLoading] = useState(!hasInitialData);
     const [error, setError] = useState(null);
 
     useEffect(() => {
+        if (hasInitialData) {
+            return;
+        }
+
         const fetchLatestPosts = async () => {
             try {
                 setLoading(true);
@@ -41,7 +50,7 @@ function Slider() {
         };
 
         fetchLatestPosts();
-    }, []);
+    }, [hasInitialData]);
 
     const formatDate = (dateString) => {
         if (!dateString) return '';
@@ -87,6 +96,8 @@ function Slider() {
                                 loading="eager"
                                 fetchPriority="high"
                                 decoding="async"
+                                width="1470"
+                                height="600"
                             />
                             <div className="absolute left-0 top-0 w-full h-full z-0 bg-gradient-to-t from-black/80 to-black/10"></div>
                             <div className="container mx-auto mb-10 relative z-10">
@@ -122,6 +133,8 @@ function Slider() {
                                         loading={isFirstSlide ? "eager" : "lazy"}
                                         fetchPriority={isFirstSlide ? "high" : "auto"}
                                         decoding="async"
+                                        width="1200"
+                                        height="500"
                                     />
                                     <div className="absolute left-0 top-0 w-full h-full z-0 bg-gradient-to-t from-black/80 to-black/10"></div>
                                     <div className="container mx-auto mb-10 px-5 lg:px-0 relative z-10">

@@ -27,6 +27,8 @@ function PostCard({ post, link }) {
                     alt={post.title || 'Post image'}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     loading="lazy"
+                    width="800"
+                    height="450"
                 />
             </div>
 
