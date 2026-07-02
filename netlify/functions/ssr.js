@@ -4,6 +4,22 @@
 const fs = require('fs');
 const path = require('path');
 
+// Helper to resolve build asset paths in different environments (local development vs Netlify serverless deployment)
+function resolveAssetPath(targetFile) {
+  const paths = [
+    path.join(__dirname, '../..', targetFile),
+    path.join(__dirname, '..', targetFile),
+    path.join(__dirname, '.', targetFile),
+    path.join(process.cwd(), targetFile)
+  ];
+  for (const p of paths) {
+    if (fs.existsSync(p)) {
+      return p;
+    }
+  }
+  return null;
+}
+
 // Cache the server bundle
 let serverRender;
 
@@ -13,12 +29,14 @@ function loadServerBundle() {
   }
 
   try {
-    const serverPath = path.join(__dirname, '../../build/server.js');
-    if (fs.existsSync(serverPath)) {
+    const serverPath = resolveAssetPath('build/server.js');
+    if (serverPath) {
       // Clear require cache to allow hot reloading in development
       delete require.cache[require.resolve(serverPath)];
       serverRender = require(serverPath);
       return serverRender;
+    } else {
+      console.error('Server bundle build/server.js not found in search paths.');
     }
   } catch (error) {
     console.error('Error loading server bundle:', error);
@@ -86,7 +104,10 @@ exports.handler = async (event) => {
     console.log('SSR Debug - Has ogImage:', !!head?.ogImage);
 
     // Read the HTML template
-    const htmlPath = path.join(__dirname, '../../build/index.html');
+    const htmlPath = resolveAssetPath('build/index.html');
+    if (!htmlPath) {
+      throw new Error('HTML template build/index.html not found');
+    }
     let template = fs.readFileSync(htmlPath, 'utf8');
 
     // Inject initialData for client-side hydration
@@ -247,8 +268,27 @@ exports.handler = async (event) => {
 
     // Fallback to static HTML if SSR fails
     try {
-      const htmlPath = path.join(__dirname, '../../build/index.html');
-      const template = fs.readFileSync(htmlPath, 'utf8');
+      const htmlPath = resolveAssetPath('build/index.html');
+      if (!htmlPath) {
+        throw new Error('HTML template build/index.html not found in fallback path');
+      }
+      let template = fs.readFileSync(htmlPath, 'utf8');
+
+      // Always inject canonical URL even in fallback mode for SEO safety
+      const siteUrl = 'https://elitegamerinsights.com';
+      const finalCanonicalUrl = `${siteUrl}${url}`;
+      const escapedUrl = finalCanonicalUrl.replace(/"/g, '&quot;');
+      if (template.match(/<link\s+rel="canonical"[^>]*>/i)) {
+        template = template.replace(
+          /<link\s+rel="canonical"[^>]*>/i,
+          `<link rel="canonical" href="${escapedUrl}">`
+        );
+      } else {
+        template = template.replace(
+          '</head>',
+          `<link rel="canonical" href="${escapedUrl}"></head>`
+        );
+      }
 
       return {
         statusCode: 200,
