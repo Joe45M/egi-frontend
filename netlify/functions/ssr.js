@@ -240,6 +240,21 @@ exports.handler = async (event) => {
       ensureTwitterMeta('twitter:image:alt', head.twitterImageAlt || head.ogImageAlt);
     }
 
+    // Inject JSON-LD structured schemas
+    if (head && head.schemas && Array.isArray(head.schemas) && head.schemas.length > 0) {
+      const schemaScripts = head.schemas
+        .map((schema, index) => {
+          if (!schema) return '';
+          // Safely stringify and escape '<' to prevent XSS/broken HTML tags
+          const jsonString = JSON.stringify(schema).replace(/</g, '\\u003c');
+          return `<script type="application/ld+json" id="ssr-structured-schema-${index}">${jsonString}</script>`;
+        })
+        .filter(Boolean)
+        .join('\n');
+      
+      template = template.replace('</head>', `${schemaScripts}\n</head>`);
+    }
+
     // Inject the server-rendered HTML
     // Handle both minified and non-minified HTML
     const rootDivPattern = /<div\s+id="root"\s*><\/div>/gi;

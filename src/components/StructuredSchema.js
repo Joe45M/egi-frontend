@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { SITE_URL, SITE_NAME } from './PageMetadata';
+import { useHead } from '../headContext';
 
 /**
  * StructuredSchema Component
@@ -8,6 +9,12 @@ import { SITE_URL, SITE_NAME } from './PageMetadata';
  */
 function StructuredSchema({ schemas = [] }) {
   const location = useLocation();
+  const headContext = useHead();
+
+  // If on the server, record the schemas in the head context
+  if (typeof document === 'undefined' && headContext && headContext.setHead) {
+    headContext.setHead({ schemas });
+  }
 
   useEffect(() => {
     // Remove existing schema scripts

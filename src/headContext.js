@@ -25,6 +25,7 @@ export function createEmptyHead() {
     articleModifiedTime: null,
     articleAuthor: null,
     articleSection: null,
+    schemas: [],
   };
 }
 
