@@ -343,27 +343,38 @@ function PostDetail({ postType = 'games', basePath = '/games' }) {
 
                             {/* Game Related Posts */}
                             {associatedGame && (
-                                <Suspense fallback={<div className="h-40 bg-accent-violet-950/10 animate-pulse rounded-lg mb-8"></div>}>
+                                <Suspense fallback={
+                                    <div className="mb-8">
+                                        <h3 className="text-xl font-bold mb-4 text-white">More from {associatedGame.name}</h3>
+                                        <div className="space-y-2 pr-2">
+                                            {[1, 2, 3, 4, 5].map((i) => (
+                                                <div key={i} className="bg-accent-violet-950/10 animate-pulse rounded-lg h-11 border border-accent-violet-900/10"></div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                }>
                                     <GameRelatedPosts
                                         gameId={associatedGame.id}
                                         gameName={associatedGame.name}
                                         postType={postType}
                                         currentPostId={post.id}
-                                        limit={5}
+                                        limit={20}
                                     />
                                 </Suspense>
                             )}
 
                             {/* Related Posts */}
                             <Suspense fallback={
-                                <div>
-                                    <h2 className="text-2xl font-bold mb-4">Related Posts</h2>
-                                    {[1, 2, 3, 4].map((i) => (
-                                        <div key={i} className="flex-1 bg-accent-violet-950/10 animate-pulse rounded-lg h-16 mb-5"></div>
-                                    ))}
+                                <div className="mb-8">
+                                    <h2 className="text-xl font-bold mb-4 text-white">Related Posts</h2>
+                                    <div className="space-y-2 pr-2">
+                                        {[1, 2, 3, 4, 5].map((i) => (
+                                            <div key={i} className="bg-accent-violet-950/10 animate-pulse rounded-lg h-11 border border-accent-violet-900/10"></div>
+                                        ))}
+                                    </div>
                                 </div>
                             }>
-                                <RelatedPosts postId={post.id} postType={postType} basePath={basePath} limit={6} />
+                                <RelatedPosts postId={post.id} postType={postType} basePath={basePath} limit={20} />
                             </Suspense>
                         </div>
                     </div>

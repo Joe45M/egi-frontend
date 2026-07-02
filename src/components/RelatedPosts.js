@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import wordpressApi from '../services/wordpressApi';
 
-function RelatedPosts({ postId, postType = 'games', basePath = '/games', limit = 4 }) {
+function RelatedPosts({ postId, postType = 'games', basePath = '/games', limit = 20 }) {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -24,7 +24,6 @@ function RelatedPosts({ postId, postType = 'games', basePath = '/games', limit =
 
         // Exclude the current post from the results (compare as strings to be safe)
         const filtered = (relatedPosts || []).filter((p) => String(p.id) !== String(postId));
-        // Keep the same max count (4)
         setPosts(filtered.slice(0, limit));
       } catch (err) {
         setError('Failed to load related posts');
@@ -40,11 +39,13 @@ function RelatedPosts({ postId, postType = 'games', basePath = '/games', limit =
 
   if (loading) {
     return (
-      <div>
-        <h2 className="text-2xl font-bold mb-4">Related Posts</h2>
-        {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="flex-1 bg-accent-violet-950/10 animate-pulse rounded-lg h-16 mb-5"></div>
-        ))}
+      <div className="mb-8">
+        <h2 className="text-xl font-bold mb-4 text-white">Related Posts</h2>
+        <div className="space-y-2 pr-2">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div key={i} className="bg-accent-violet-950/10 animate-pulse rounded-lg h-11 border border-accent-violet-900/10"></div>
+          ))}
+        </div>
       </div>
     );
   }
@@ -58,30 +59,25 @@ function RelatedPosts({ postId, postType = 'games', basePath = '/games', limit =
   }
 
   return (
-    <div className="w-full">
-      <h2 className="text-2xl font-bold mb-4">Related Posts</h2>
-      <div className="gap-5 flex-col flex">
+    <div className="w-full mb-8">
+      <h2 className="text-xl font-bold mb-4 text-white">Related Posts</h2>
+      <div className="max-h-[350px] overflow-y-auto pr-2 space-y-2 scroll-smooth" style={{ scrollbarWidth: 'thin' }}>
         {posts.length > 0 ? (
           posts.map((post) => (
             <Link
               to={post.slug ? `${basePath}/${post.slug}` : basePath}
               key={post.id}
-              className="flex-shrink-0 bg-accent-violet-950/10 group overflow-hidden transition-shadow duration-300 rounded-lg"
+              className="group block p-3 bg-accent-violet-950/10 hover:bg-accent-violet-950/20 rounded-lg transition-colors border border-accent-violet-900/10 hover:border-accent-violet-500/20"
             >
-              <div className="relative flex bg-cover items-center bg-center">
-                {post.image && (
-                  <img src={post.image} className="w-20 mr-5 object object-cover" alt={post.title || ''} loading="lazy" decoding="async" />
-                )}
-                <h3
-                  className="text-lg font-bold group-hover:text-accent-violet-300 transition-colors duration-300"
-                  dangerouslySetInnerHTML={{ __html: post.title || '' }}
-                />
-              </div>
+              <h3
+                className="text-sm font-semibold text-gray-200 group-hover:text-accent-pink-400 transition-colors duration-200 leading-snug line-clamp-2"
+                dangerouslySetInnerHTML={{ __html: post.title || '' }}
+              />
             </Link>
           ))
         ) : (
           !loading && (
-            <p className="text-gray-400">No related posts found.</p>
+            <p className="text-gray-400 text-sm">No related posts found.</p>
           )
         )}
       </div>
