@@ -175,6 +175,33 @@ async function extractAuthorData(post) {
 }
 
 /**
+ * Extract terms of a specific taxonomy from WordPress post embedded data
+ * @param {Object} post - WordPress post object
+ * @param {string} taxonomy - Taxonomy name (e.g. 'category', 'post_tag', 'games')
+ * @returns {Array} Array of term objects { id, name, slug }
+ */
+function extractEmbeddedTerms(post, taxonomy) {
+    const terms = [];
+    if (post._embedded?.['wp:term']) {
+        const termGroups = post._embedded['wp:term'];
+        for (const group of termGroups) {
+            if (Array.isArray(group)) {
+                for (const term of group) {
+                    if (term.taxonomy === taxonomy) {
+                        terms.push({
+                            id: term.id,
+                            name: decodeHtmlEntities(term.name),
+                            slug: term.slug,
+                        });
+                    }
+                }
+            }
+        }
+    }
+    return terms;
+}
+
+/**
  * Transform WordPress post data to match component expectations
  */
 function transformPost(post) {
@@ -195,6 +222,8 @@ function transformPost(post) {
         game_taxonomy: post.game_taxonomy || [],
         author: post.author || null,
         image: null, // Will be populated by getFeaturedImageUrl
+        tagsDetails: extractEmbeddedTerms(post, 'post_tag'),
+        categoriesDetails: extractEmbeddedTerms(post, 'category'),
     };
 }
 
@@ -700,11 +729,82 @@ export const categoriesApi = {
  */
 export const tagsApi = {
     /**
-     * Get all tags
+     * Get all tags with optional filters
+     * @param {Object} params - Query parameters
+     * @param {number} params.page - Page number (default: 1)
+     * @param {number} params.perPage - Tags per page (default: 100)
+     * @param {string} params.orderby - Field to order by (name, count, slug, id) (default: 'name')
+     * @param {string} params.order - Order direction (asc, desc) (default: 'asc')
+     * @param {boolean} params.hideEmpty - Whether to hide tags with 0 posts (default: true)
+     * @param {boolean} params.includeHeaders - Whether to return pagination headers (default: false)
      */
-    async getAll() {
+    async getAll(params = {}) {
+        const {
+            page = 1,
+            perPage = 100,
+            orderby = 'name',
+            order = 'asc',
+            hideEmpty = true,
+            includeHeaders = false,
+            fetchAll = false,
+            include = null,
+        } = params;
+
+        if (fetchAll) {
+            let allTags = [];
+            let currentPage = 1;
+            let totalPages = 1;
+
+            try {
+                do {
+                    const result = await this.getAll({
+                        page: currentPage,
+                        perPage: 100,
+                        orderby,
+                        order,
+                        hideEmpty,
+                        includeHeaders: true,
+                    });
+                    
+                    allTags = allTags.concat(result.tags);
+                    totalPages = result.pagination.totalPages;
+                    currentPage++;
+                } while (currentPage <= totalPages);
+
+                return allTags;
+            } catch (error) {
+                console.error('Error fetching all tags recursively:', error);
+                // Fallback to fetch single page on failure
+            }
+        }
+
+        const queryParams = new URLSearchParams({
+            page: page.toString(),
+            per_page: perPage.toString(),
+            orderby: orderby,
+            order: order,
+            hide_empty: hideEmpty ? 'true' : 'false',
+        });
+
+        if (include) {
+            const includeStr = Array.isArray(include) ? include.join(',') : include.toString();
+            queryParams.append('include', includeStr);
+        }
+
         try {
-            return await fetchFromAPI('/tags?per_page=100');
+            if (includeHeaders) {
+                const result = await fetchFromAPI(`/tags?${queryParams.toString()}`, { includeHeaders: true });
+                return {
+                    tags: result.data || [],
+                    pagination: {
+                        total: result.headers?.total || 0,
+                        totalPages: result.headers?.totalPages || 0,
+                        currentPage: page,
+                        perPage: perPage,
+                    }
+                };
+            }
+            return await fetchFromAPI(`/tags?${queryParams.toString()}`);
         } catch (error) {
             console.error('Error fetching tags:', error);
             throw error;
@@ -719,6 +819,23 @@ export const tagsApi = {
             return await fetchFromAPI(`/tags/${tagId}`);
         } catch (error) {
             console.error(`Error fetching tag ${tagId}:`, error);
+            throw error;
+        }
+    },
+
+    /**
+     * Get a single tag by slug
+     */
+    async getBySlug(slug) {
+        try {
+            const encodedSlug = encodeURIComponent(slug);
+            const tags = await fetchFromAPI(`/tags?slug=${encodedSlug}`);
+            if (!tags || tags.length === 0) {
+                throw new Error(`Tag with slug "${slug}" not found`);
+            }
+            return tags[0];
+        } catch (error) {
+            console.error(`Error fetching tag by slug "${slug}":`, error);
             throw error;
         }
     },

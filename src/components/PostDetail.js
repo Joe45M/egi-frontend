@@ -44,6 +44,7 @@ function PostDetail({ postType = 'games', basePath = '/games' }) {
     const [loading, setLoading] = useState(!hasInitialData);
     const [notFound, setNotFound] = useState(false);
     const [associatedGame, setAssociatedGame] = useState(null);
+    const [tagsList, setTagsList] = useState([]);
     const contentRef = useRef(null);
 
     useEffect(() => {
@@ -66,6 +67,39 @@ function PostDetail({ postType = 'games', basePath = '/games' }) {
         };
 
         fetchGameDetails();
+    }, [post]);
+
+    useEffect(() => {
+        if (!post) {
+            setTagsList([]);
+            return;
+        }
+
+        if (post.tagsDetails && post.tagsDetails.length > 0) {
+            setTagsList(post.tagsDetails);
+            return;
+        }
+
+        if (post.tags && post.tags.length > 0) {
+            const fetchTags = async () => {
+                try {
+                    const data = await wordpressApi.tags.getAll({
+                        include: post.tags,
+                        hideEmpty: false
+                    });
+                    setTagsList(data.map(t => ({
+                        id: t.id,
+                        name: t.name,
+                        slug: t.slug
+                    })));
+                } catch (e) {
+                    console.error("Failed to fetch tags by IDs:", e);
+                }
+            };
+            fetchTags();
+        } else {
+            setTagsList([]);
+        }
     }, [post]);
 
     useEffect(() => {
@@ -330,6 +364,23 @@ function PostDetail({ postType = 'games', basePath = '/games' }) {
                                 className="wp-content"
                                 dangerouslySetInnerHTML={{ __html: replaceAdShortcodes(post.content) }}
                             />
+                            {/* Tags list */}
+                            {tagsList && tagsList.length > 0 && (
+                                <div className="mt-8 pt-6 border-t border-base-800">
+                                    <h4 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">Tags</h4>
+                                    <div className="flex flex-wrap gap-2">
+                                        {tagsList.map(tag => (
+                                            <Link
+                                                key={tag.id}
+                                                to={`/tags/${tag.slug}`}
+                                                className="bg-base-800 hover:bg-accent-violet-950/40 text-base-300 hover:text-accent-violet-300 px-3 py-1.5 rounded-full text-xs font-semibold border border-base-700 hover:border-accent-violet-500/30 transition-all duration-300"
+                                            >
+                                                #{tag.name}
+                                            </Link>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
                         </div>
 
                         <div className="lg:col-span-2">

@@ -23,6 +23,11 @@ function Footer() {
                   Games
                 </Link>
               </li>
+              <li>
+                <Link to="/tags" className="text-gray-400 hover:bg-gradient-to-r hover:from-accent-pink-400 hover:to-accent-violet-400 hover:bg-clip-text hover:text-transparent transition-all duration-300">
+                  Tags
+                </Link>
+              </li>
             </ul>
           </div>
           {/* Company Info */}

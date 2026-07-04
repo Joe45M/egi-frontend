@@ -20,6 +20,8 @@ const Accessibility = lazy(() => import('./pages/Accessibility'));
 const Contact = lazy(() => import('./pages/Contact'));
 const Author = lazy(() => import('./pages/Author'));
 const NotFound = lazy(() => import('./pages/NotFound'));
+const Tags = lazy(() => import('./pages/Tags'));
+const TagArchive = lazy(() => import('./pages/TagArchive'));
 
 // Loading fallback component
 const RouteLoadingFallback = () => (
@@ -54,6 +56,8 @@ export function getRouteElements() {
                 <Route path="games" element={<Suspense fallback={<RouteLoadingFallback />}><Archive type="games" /></Suspense>} />
                 <Route path="culture" element={<Suspense fallback={<RouteLoadingFallback />}><Archive type="culture" /></Suspense>} />
                 <Route path="game-reviews" element={<Suspense fallback={<RouteLoadingFallback />}><Archive type="game-reviews" /></Suspense>} />
+                <Route path="tags" element={<Suspense fallback={<RouteLoadingFallback />}><Tags /></Suspense>} />
+                <Route path="tags/:slug" element={<Suspense fallback={<RouteLoadingFallback />}><TagArchive /></Suspense>} />
                 <Route path="404" element={<Suspense fallback={<RouteLoadingFallback />}><NotFound /></Suspense>} />
                 <Route path="*" element={<Navigate to="/404" replace />} />
             </Route>

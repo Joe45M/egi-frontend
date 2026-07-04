@@ -18,6 +18,8 @@ import Cookies from './pages/Cookies';
 import Accessibility from './pages/Accessibility';
 import Contact from './pages/Contact';
 import NotFound from './pages/NotFound';
+import Tags from './pages/Tags';
+import TagArchive from './pages/TagArchive';
 
 export function getRouteElements() {
     return (
@@ -40,6 +42,8 @@ export function getRouteElements() {
                 <Route path="games" element={<Archive type="games" />} />
                 <Route path="culture" element={<Archive type="culture" />} />
                 <Route path="game-reviews" element={<Archive type="game-reviews" />} />
+                <Route path="tags" element={<Tags />} />
+                <Route path="tags/:slug" element={<TagArchive />} />
                 <Route path="404" element={<NotFound />} />
                 <Route path="*" element={<Navigate to="/404" replace />} />
             </Route>
