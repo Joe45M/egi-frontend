@@ -21,12 +21,12 @@ function PostDetail({ postType = 'games', basePath = '/games' }) {
     const initialData = useInitialData();
 
     // Check if we have initial data from SSR that matches this route
-    // Compare slugs after decoding to handle URL encoding
-    const normalizedSlug = slug ? decodeURIComponent(slug) : '';
+    // Compare slugs case-insensitively after decoding to handle URL encoding
+    const normalizedSlug = slug ? decodeURIComponent(slug).toLowerCase() : '';
     const hasInitialData = initialData &&
         initialData.postType === postType &&
         initialData.post &&
-        initialData.post.slug === normalizedSlug;
+        (typeof window === 'undefined' || initialData.post.slug.toLowerCase() === normalizedSlug);
 
     // Debug logging for SSR
     if (typeof window === 'undefined') {

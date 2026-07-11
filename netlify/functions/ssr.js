@@ -305,6 +305,147 @@ exports.handler = async (event) => {
         );
       }
 
+      // Check if this is a post detail route and fetch/inject post content as fallback
+      let pathname = url.split('?')[0].split('#')[0];
+      pathname = pathname.replace(/\/$/, '');
+
+      const gamesMatch = pathname.match(/^\/games\/(.+)$/);
+      const cultureMatch = pathname.match(/^\/culture\/(.+)$/);
+      const gameReviewsMatch = pathname.match(/^\/game-reviews\/(.+)$/);
+
+      let postType = null;
+      let rawSlug = null;
+
+      if (gamesMatch) {
+        postType = 'games';
+        rawSlug = gamesMatch[1];
+      } else if (cultureMatch) {
+        postType = 'culture';
+        rawSlug = cultureMatch[1];
+      } else if (gameReviewsMatch) {
+        postType = 'game-reviews';
+        rawSlug = gameReviewsMatch[1];
+      }
+
+      if (postType && rawSlug) {
+        let slug = rawSlug;
+        if (slug.includes('/')) {
+          slug = slug.split('/')[0];
+        }
+        try {
+          slug = decodeURIComponent(slug);
+        } catch (e) {}
+
+        try {
+          const apiResponse = await fetch(`https://api.elitegamerinsights.com/wp-json/wp/v2/${postType}?slug=${encodeURIComponent(slug)}&_embed=1`);
+          if (apiResponse.ok) {
+            const posts = await apiResponse.json();
+            if (posts && posts.length > 0) {
+              const post = posts[0];
+              const postTitle = post.title?.rendered || '';
+              const postContent = post.content?.rendered || '';
+              const rawExcerpt = post.excerpt?.rendered || '';
+              const postExcerpt = rawExcerpt ? rawExcerpt.replace(/<[^>]*>/g, '').trim().substring(0, 142) + '...' : '';
+
+              let postImage = null;
+              if (post._embedded && post._embedded['wp:featuredmedia'] && post._embedded['wp:featuredmedia'][0]) {
+                postImage = post._embedded['wp:featuredmedia'][0].source_url;
+              }
+
+              // 1. Inject title
+              if (postTitle) {
+                const escapedTitle = postTitle.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                if (template.includes('<title>')) {
+                  template = template.replace(/<title>.*?<\/title>/i, `<title>${escapedTitle}</title>`);
+                } else {
+                  template = template.replace('</head>', `<title>${escapedTitle}</title></head>`);
+                }
+              }
+
+              // 2. Inject meta description
+              if (postExcerpt) {
+                const escapedDesc = postExcerpt.replace(/"/g, '&quot;');
+                if (template.match(/<meta\s+name="description"[^>]*>/i)) {
+                  template = template.replace(
+                    /<meta\s+name="description"[^>]*>/i,
+                    `<meta name="description" content="${escapedDesc}">`
+                  );
+                } else {
+                  template = template.replace(
+                    '</head>',
+                    `<meta name="description" content="${escapedDesc}"></head>`
+                  );
+                }
+              }
+
+              // 3. Inject Open Graph and Twitter tags
+              const ensureOgMeta = (property, content) => {
+                if (!content) return;
+                const escaped = content.replace(/"/g, '&quot;');
+                const pattern = new RegExp(`<meta\\s+property="${property}"[^>]*>`, 'i');
+                const tag = `<meta property="${property}" content="${escaped}">`;
+                if (pattern.test(template)) {
+                  template = template.replace(pattern, tag);
+                } else {
+                  template = template.replace('</head>', `${tag}</head>`);
+                }
+              };
+
+              const ensureTwitterMeta = (name, content) => {
+                if (!content) return;
+                const escaped = content.replace(/"/g, '&quot;');
+                const pattern = new RegExp(`<meta\\s+name="${name}"[^>]*>`, 'i');
+                const tag = `<meta name="${name}" content="${escaped}">`;
+                if (pattern.test(template)) {
+                  template = template.replace(pattern, tag);
+                } else {
+                  template = template.replace('</head>', `${tag}</head>`);
+                }
+              };
+
+              ensureOgMeta('og:title', postTitle);
+              ensureOgMeta('og:description', postExcerpt);
+              if (postImage) {
+                ensureOgMeta('og:image', postImage);
+                ensureTwitterMeta('twitter:image', postImage);
+              }
+              ensureOgMeta('og:type', 'article');
+              ensureOgMeta('og:url', finalCanonicalUrl);
+
+              ensureTwitterMeta('twitter:card', 'summary_large_image');
+              ensureTwitterMeta('twitter:title', postTitle);
+              ensureTwitterMeta('twitter:description', postExcerpt);
+              ensureTwitterMeta('twitter:url', finalCanonicalUrl);
+
+              // 4. Inject post content into <div id="root">
+              const fallbackHtml = `
+<div class="pt-[150px] p-4 container mx-auto">
+  <h1 class="text-4xl font-bold mb-4 text-white">${postTitle}</h1>
+  <hr class="border-t border-t-gray-60 mb-4" />
+  <div class="grid gap-5 lg:grid-cols-5">
+    <div class="lg:col-span-3">
+      ${postImage ? `<img src="${postImage}" alt="${postTitle}" class="my-8 rounded-lg shadow-lg max-w-full h-auto" />` : ''}
+      <div class="wp-content">
+        ${postContent}
+      </div>
+    </div>
+  </div>
+</div>
+              `;
+
+              const rootDivPattern = /<div\s+id="root"\s*><\/div>/gi;
+              if (rootDivPattern.test(template)) {
+                template = template.replace(rootDivPattern, `<div id="root">${fallbackHtml}</div>`);
+              } else {
+                template = template.replace(/<div id="root"><\/div>/g, `<div id="root">${fallbackHtml}</div>`);
+              }
+            }
+          }
+        } catch (fetchError) {
+          console.error('Error fetching fallback data in SSR catch block:', fetchError);
+        }
+      }
+
       return {
         statusCode: 200,
         headers: {
