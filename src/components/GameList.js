@@ -47,9 +47,22 @@ function GameList() {
           {games.flatMap((game, index) => {
             const dims = IMAGE_DIMENSIONS[game.slug] || { width: 400, height: 300 };
             return [
-              <Link to={`/games?game=${game.slug || game.id}`} key={game.id} className="text-gray-300 bg-accent-pink-500/10 rounded-md p-3 text-center hover:text-accent-violet-300 transition-colors duration-300 flex-shrink-0 whitespace-nowrap">
-                <img class="rounded-md h-32 md:h-44 object-cover w-full" src={'/assets/images/home/' + game.slug + '.png'} alt={'image of ' + game.name} loading="lazy" width={dims.width} height={dims.height} />
-                <div className="mt-2 font-bold">{game.name}</div>
+              <Link
+                to={`/games?game=${game.slug || game.id}`}
+                key={game.id}
+                className="relative block rounded-2xl overflow-hidden group flex-shrink-0 shadow-md hover:shadow-lg border border-base-800/50 hover:border-accent-pink-500/40 transition-all duration-300"
+              >
+                <img
+                  className="w-full h-32 md:h-44 object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+                  src={'/assets/images/home/' + game.slug + '.png'}
+                  alt={'image of ' + game.name}
+                  loading="lazy"
+                  width={dims.width}
+                  height={dims.height}
+                />
+                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-base-950/85 backdrop-blur-md px-3 py-1.5 rounded-full text-xs md:text-sm font-bold text-base-100 border border-base-700/50 shadow-md whitespace-nowrap group-hover:border-accent-pink-500/40 group-hover:text-accent-pink-300 transition-all duration-300 z-10">
+                  {game.name}
+                </div>
               </Link>
             ];
           }).filter(Boolean)}
