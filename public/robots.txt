@@ -1,20 +1,7 @@
 # Robots.txt for EliteGamerInsights
 
-# Explicitly allow major search engines
-User-agent: Googlebot
-User-agent: Bingbot
-User-agent: Slurp
-User-agent: DuckDuckBot
-User-agent: Baiduspider
-User-agent: YandexBot
-Allow: /
-Disallow: /admin/
-Disallow: /api/
-
-# Catch-all for any other bots
 User-agent: *
 Allow: /
-Disallow: /admin/
 Disallow: /api/
 
 Sitemap: https://api.elitegamerinsights.com/games-sitemap.xml
