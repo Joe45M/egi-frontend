@@ -1,10 +1,15 @@
 import PageMetadata, { SITE_URL } from "../components/PageMetadata";
 import StructuredSchema, { generateWebPageSchema, generateBreadcrumbSchema } from "../components/StructuredSchema";
 import Slider from "../components/Slider";
+import GridHeader from "../components/GridHeader";
 import Posts from "../components/Posts";
 import GameList from "../components/GameList";
+import { useStringVariation } from "@launchdarkly/react-sdk";
 
 function Home() {
+  const header = useStringVariation('header', 'old');
+  const showGridHeader = header === 'new';
+
   const schemas = [
     generateWebPageSchema({
       name: "Gaming News, Tutorials & Culture Coverage",
@@ -29,7 +34,7 @@ function Home() {
       <div>
           {/* Visually hidden H1 for SEO - screen reader accessible */}
           <h1 className="sr-only">EliteGamerInsights - Gaming News, Tutorials & Culture Coverage</h1>
-          <Slider />
+          {showGridHeader ? <GridHeader /> : <Slider />}
           <GameList />
 
           <div className="container mx-auto px-4 py-4">
