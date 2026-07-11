@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, lazy, Suspense } from "react";
 import { useParams, Link, Navigate } from "react-router-dom";
+import { TwitterLogo, FacebookLogo, RedditLogo, LinkSimple, ShareNetwork } from 'phosphor-react';
 import { Image } from './Editor';
 import SavePost from "./SavePost";
 import GooglePreferredSourceButton from "./GooglePreferredSourceButton";
@@ -45,6 +46,7 @@ function PostDetail({ postType = 'games', basePath = '/games' }) {
     const [notFound, setNotFound] = useState(false);
     const [associatedGame, setAssociatedGame] = useState(null);
     const [tagsList, setTagsList] = useState([]);
+    const [copied, setCopied] = useState(false);
     const contentRef = useRef(null);
 
     useEffect(() => {
@@ -253,6 +255,12 @@ function PostDetail({ postType = 'games', basePath = '/games' }) {
     const publishedDate = post.date ? new Date(post.date).toISOString() : null;
     const modifiedDate = post.modified ? new Date(post.modified).toISOString() : publishedDate;
 
+    const handleCopyLink = () => {
+        navigator.clipboard.writeText(articleUrl);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    };
+
     // Prepare section (capitalize first letter of post type)
     const articleSection = postType.charAt(0).toUpperCase() + postType.slice(1);
 
@@ -347,6 +355,52 @@ function PostDetail({ postType = 'games', basePath = '/games' }) {
                     <div className="flex flex-wrap mt-5 lg:mt-0 items-center gap-4 mb-5">
                         <GooglePreferredSourceButton />
                         <SavePost slug={post.slug} postType={postType} />
+
+                        {/* Social Share Buttons */}
+                        <div className="flex items-center gap-3 bg-base-800/40 px-3 py-1.5 rounded-full border border-base-800 text-sm">
+                            <span className="text-gray-400 font-semibold flex items-center gap-1">
+                                <ShareNetwork size={14} className="text-accent-pink-500" /> Share:
+                            </span>
+                            <a 
+                                href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(articleUrl)}&text=${encodeURIComponent(articleTitle)}`}
+                                target="_blank" 
+                                rel="noopener noreferrer" 
+                                className="text-gray-400 hover:text-accent-pink-500 transition-colors flex items-center"
+                                title="Share on Twitter"
+                            >
+                                <TwitterLogo size={18} />
+                            </a>
+                            <a 
+                                href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(articleUrl)}`}
+                                target="_blank" 
+                                rel="noopener noreferrer" 
+                                className="text-gray-400 hover:text-accent-pink-500 transition-colors flex items-center"
+                                title="Share on Facebook"
+                            >
+                                <FacebookLogo size={18} />
+                            </a>
+                            <a 
+                                href={`https://www.reddit.com/submit?url=${encodeURIComponent(articleUrl)}&title=${encodeURIComponent(articleTitle)}`}
+                                target="_blank" 
+                                rel="noopener noreferrer" 
+                                className="text-gray-400 hover:text-accent-pink-500 transition-colors flex items-center"
+                                title="Share on Reddit"
+                            >
+                                <RedditLogo size={18} />
+                            </a>
+                            <button 
+                                onClick={handleCopyLink} 
+                                className="text-gray-400 hover:text-accent-pink-500 transition-colors relative flex items-center justify-center"
+                                title="Copy post link"
+                            >
+                                <LinkSimple size={18} />
+                                {copied && (
+                                    <span className="absolute -top-9 left-1/2 -translate-x-1/2 bg-base-950 text-white text-xs px-2 py-1 rounded shadow-lg border border-base-800 font-semibold z-40 whitespace-nowrap">
+                                        Copied!
+                                    </span>
+                                )}
+                            </button>
+                        </div>
                     </div>
                 </div>
 

@@ -5,9 +5,21 @@ import { createLDReactProvider } from '@launchdarkly/react-sdk';
 
 const router = createAppRouter();
 
+function getAnonymousUserId() {
+  if (typeof window === 'undefined') {
+    return 'anonymous-user';
+  }
+  let id = localStorage.getItem('egi_anonymous_id');
+  if (!id) {
+    id = 'anon-' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    localStorage.setItem('egi_anonymous_id', id);
+  }
+  return id;
+}
+
 const LDProvider = createLDReactProvider('6a525a8ccd87b60ba57d0fd3', {
   kind: 'user',
-  key: 'anonymous-user',
+  key: getAnonymousUserId(),
   name: 'Anonymous User'
 });
 

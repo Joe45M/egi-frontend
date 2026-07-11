@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { TwitterLogo, FacebookLogo, RedditLogo, LinkSimple } from "phosphor-react";
 import wordpressApi from "../services/wordpressApi";
 import { useInitialData } from "../initialDataContext";
+import { SITE_URL } from "./PageMetadata";
 
 function GridHeader() {
     const initialData = useInitialData();
@@ -10,6 +12,16 @@ function GridHeader() {
     const [posts, setPosts] = useState(hasInitialData ? initialData.sliderPosts : []);
     const [loading, setLoading] = useState(!hasInitialData);
     const [error, setError] = useState(null);
+    const [copiedId, setCopiedId] = useState(null);
+
+    const handleCopyLink = (e, post) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const postUrl = `${SITE_URL}${postLink(post)}`;
+        navigator.clipboard.writeText(postUrl);
+        setCopiedId(post.id);
+        setTimeout(() => setCopiedId(null), 2000);
+    };
 
     useEffect(() => {
         if (hasInitialData) {
@@ -60,9 +72,9 @@ function GridHeader() {
         });
     };
 
-    const postLink = (post) => {
+    function postLink(post) {
         return post.slug ? `/games/${post.slug}` : `/games?id=${post.id}`;
-    };
+    }
 
     const fallbackImg = 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1470&h=600&fit=crop';
 
@@ -126,6 +138,47 @@ function GridHeader() {
                 {/* Main Large Post */}
                 {mainPost && (
                     <div className="lg:col-span-2 h-[300px] sm:h-[400px] lg:h-full relative overflow-hidden rounded-2xl group border border-base-800/50 hover:border-accent-pink-500/40 transition-all duration-500 shadow-2xl">
+                        {/* Share Links Overlay */}
+                        <div 
+                            className="absolute top-4 right-4 z-30 flex items-center gap-3 bg-base-950/85 backdrop-blur-md px-3 py-2 rounded-full border border-base-800/80 opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-lg"
+                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                        >
+                            <a 
+                                href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(`${SITE_URL}${postLink(mainPost)}`)}&text=${encodeURIComponent(mainPost.title || '')}`}
+                                target="_blank" 
+                                rel="noopener noreferrer" 
+                                className="text-gray-400 hover:text-accent-pink-500 transition-colors"
+                            >
+                                <TwitterLogo size={18} />
+                            </a>
+                            <a 
+                                href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(`${SITE_URL}${postLink(mainPost)}`)}`}
+                                target="_blank" 
+                                rel="noopener noreferrer" 
+                                className="text-gray-400 hover:text-accent-pink-500 transition-colors"
+                            >
+                                <FacebookLogo size={18} />
+                            </a>
+                            <a 
+                                href={`https://www.reddit.com/submit?url=${encodeURIComponent(`${SITE_URL}${postLink(mainPost)}`)}&title=${encodeURIComponent(mainPost.title || '')}`}
+                                target="_blank" 
+                                rel="noopener noreferrer" 
+                                className="text-gray-400 hover:text-accent-pink-500 transition-colors"
+                            >
+                                <RedditLogo size={18} />
+                            </a>
+                            <button 
+                                onClick={(e) => handleCopyLink(e, mainPost)} 
+                                className="text-gray-400 hover:text-accent-pink-500 transition-colors relative flex items-center justify-center"
+                            >
+                                <LinkSimple size={18} />
+                                {copiedId === mainPost.id && (
+                                    <span className="absolute -top-9 left-1/2 -translate-x-1/2 bg-base-950 text-white text-xs px-2 py-1 rounded shadow-lg border border-base-800 font-semibold z-40 whitespace-nowrap">
+                                        Copied!
+                                    </span>
+                                )}
+                            </button>
+                        </div>
                         <Link to={postLink(mainPost)} className="block w-full h-full">
                             <img 
                                 src={mainPost.image || fallbackImg} 
@@ -163,6 +216,47 @@ function GridHeader() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 lg:grid-rows-2 gap-6 lg:h-full">
                     {sidePosts.map((post) => (
                         <div key={post.id} className="h-[200px] lg:h-full relative overflow-hidden rounded-2xl group border border-base-800/50 hover:border-accent-violet-500/40 transition-all duration-500 shadow-xl">
+                            {/* Share Links Overlay */}
+                            <div 
+                                className="absolute top-4 right-4 z-30 flex items-center gap-3 bg-base-950/85 backdrop-blur-md px-3 py-2 rounded-full border border-base-800/80 opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-lg"
+                                onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                            >
+                                <a 
+                                    href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(`${SITE_URL}${postLink(post)}`)}&text=${encodeURIComponent(post.title || '')}`}
+                                    target="_blank" 
+                                    rel="noopener noreferrer" 
+                                    className="text-gray-400 hover:text-accent-pink-500 transition-colors"
+                                >
+                                    <TwitterLogo size={18} />
+                                </a>
+                                <a 
+                                    href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(`${SITE_URL}${postLink(post)}`)}`}
+                                    target="_blank" 
+                                    rel="noopener noreferrer" 
+                                    className="text-gray-400 hover:text-accent-pink-500 transition-colors"
+                                >
+                                    <FacebookLogo size={18} />
+                                </a>
+                                <a 
+                                    href={`https://www.reddit.com/submit?url=${encodeURIComponent(`${SITE_URL}${postLink(post)}`)}&title=${encodeURIComponent(post.title || '')}`}
+                                    target="_blank" 
+                                    rel="noopener noreferrer" 
+                                    className="text-gray-400 hover:text-accent-pink-500 transition-colors"
+                                >
+                                    <RedditLogo size={18} />
+                                </a>
+                                <button 
+                                    onClick={(e) => handleCopyLink(e, post)} 
+                                    className="text-gray-400 hover:text-accent-pink-500 transition-colors relative flex items-center justify-center"
+                                >
+                                    <LinkSimple size={18} />
+                                    {copiedId === post.id && (
+                                        <span className="absolute -top-9 left-1/2 -translate-x-1/2 bg-base-950 text-white text-xs px-2 py-1 rounded shadow-lg border border-base-800 font-semibold z-40 whitespace-nowrap">
+                                            Copied!
+                                        </span>
+                                    )}
+                                </button>
+                            </div>
                             <Link to={postLink(post)} className="block w-full h-full">
                                 <img 
                                     src={post.image || fallbackImg} 
