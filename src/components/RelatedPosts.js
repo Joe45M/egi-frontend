@@ -2,14 +2,20 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import wordpressApi from '../services/wordpressApi';
 
-function RelatedPosts({ postId, postType = 'games', basePath = '/games', limit = 20 }) {
-  const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
+function RelatedPosts({ postId, postType = 'games', basePath = '/games', limit = 20, initialPosts }) {
+  const [posts, setPosts] = useState(initialPosts || []);
+  const [loading, setLoading] = useState(!initialPosts);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     // Only fetch if postId is provided
     if (!postId) {
+      setLoading(false);
+      return;
+    }
+
+    // Skip fetch if initialPosts is provided
+    if (initialPosts) {
       setLoading(false);
       return;
     }
@@ -35,7 +41,7 @@ function RelatedPosts({ postId, postType = 'games', basePath = '/games', limit =
     };
 
     fetchRelatedPosts();
-  }, [postId, postType, limit]);
+  }, [postId, postType, limit, initialPosts]);
 
   if (loading) {
     return (

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, lazy, Suspense } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, Link, Navigate } from "react-router-dom";
 import { TwitterLogo, FacebookLogo, RedditLogo, LinkSimple, ShareNetwork } from 'phosphor-react';
 import { Image } from './Editor';
@@ -12,9 +12,8 @@ import AuthorBox from "./AuthorBox";
 import { replaceAdShortcodes } from "../utils/ads";
 import TableOfContents from "./TableOfContents";
 
-// Lazy load RelatedPosts component
-const RelatedPosts = lazy(() => import("./RelatedPosts"));
-const GameRelatedPosts = lazy(() => import("./GameRelatedPosts"));
+import RelatedPosts from "./RelatedPosts";
+import GameRelatedPosts from "./GameRelatedPosts";
 
 function PostDetail({ postType = 'games', basePath = '/games' }) {
     const { slug } = useParams();
@@ -44,23 +43,26 @@ function PostDetail({ postType = 'games', basePath = '/games' }) {
     const [wpSchema, setWpSchema] = useState(null);
     const [loading, setLoading] = useState(!hasInitialData);
     const [notFound, setNotFound] = useState(false);
-    const [associatedGame, setAssociatedGame] = useState(null);
-    const [tagsList, setTagsList] = useState([]);
+    const [associatedGame, setAssociatedGame] = useState(hasInitialData ? (initialData.post.associatedGame || null) : null);
+    const [tagsList, setTagsList] = useState(hasInitialData ? (initialData.post.tagsDetails || []) : []);
     const [copied, setCopied] = useState(false);
     const contentRef = useRef(null);
 
     useEffect(() => {
         if (!post) return;
+        if (hasInitialData && post.associatedGame) {
+            return;
+        }
 
         // Try to find associated game
         const fetchGameDetails = async () => {
             // Check common taxonomy fields
-            const gameIds = post.games || post.game || post.game_taxonomy;
+            const gameIds = [post.games, post.game, post.game_taxonomy].find(arr => arr && arr.length > 0) || [];
             if (gameIds && gameIds.length > 0) {
                 const gameId = gameIds[0];
                 try {
-                    // Start with 'games' taxonomy
-                    const term = await wordpressApi.taxonomies.getById('games', gameId);
+                    // Start with 'game' taxonomy
+                    const term = await wordpressApi.taxonomies.getById('game', gameId);
                     setAssociatedGame(term);
                 } catch (e) {
                     console.log('Failed to fetch game details', e);
@@ -69,11 +71,15 @@ function PostDetail({ postType = 'games', basePath = '/games' }) {
         };
 
         fetchGameDetails();
-    }, [post]);
+    }, [post, hasInitialData]);
 
     useEffect(() => {
         if (!post) {
             setTagsList([]);
+            return;
+        }
+
+        if (hasInitialData && post.tagsDetails) {
             return;
         }
 
@@ -102,7 +108,7 @@ function PostDetail({ postType = 'games', basePath = '/games' }) {
         } else {
             setTagsList([]);
         }
-    }, [post]);
+    }, [post, hasInitialData]);
 
     useEffect(() => {
         if (!post?.id) return;
@@ -446,41 +452,28 @@ function PostDetail({ postType = 'games', basePath = '/games' }) {
                                 slug={post.authorSlug}
                             />
 
-                            {/* Game Related Posts */}
-                            {associatedGame && (
-                                <Suspense fallback={
-                                    <div className="mb-8">
-                                        <h3 className="text-xl font-bold mb-4 text-white">More from {associatedGame.name}</h3>
-                                        <div className="space-y-2 pr-2">
-                                            {[1, 2, 3, 4, 5].map((i) => (
-                                                <div key={i} className="bg-accent-violet-950/10 animate-pulse rounded-lg h-11 border border-accent-violet-900/10"></div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                }>
-                                    <GameRelatedPosts
-                                        gameId={associatedGame.id}
-                                        gameName={associatedGame.name}
-                                        postType={postType}
-                                        currentPostId={post.id}
-                                        limit={20}
-                                    />
-                                </Suspense>
-                            )}
+                             {/* Game Related Posts */}
+                             {associatedGame && (
+                                 <GameRelatedPosts
+                                     key={`${post.id}-game`}
+                                     gameId={associatedGame.id}
+                                     gameName={associatedGame.name}
+                                     postType={postType}
+                                     currentPostId={post.id}
+                                     limit={20}
+                                     initialPosts={post.gameRelatedPosts}
+                                 />
+                             )}
 
-                            {/* Related Posts */}
-                            <Suspense fallback={
-                                <div className="mb-8">
-                                    <h2 className="text-xl font-bold mb-4 text-white">Related Posts</h2>
-                                    <div className="space-y-2 pr-2">
-                                        {[1, 2, 3, 4, 5].map((i) => (
-                                            <div key={i} className="bg-accent-violet-950/10 animate-pulse rounded-lg h-11 border border-accent-violet-900/10"></div>
-                                        ))}
-                                    </div>
-                                </div>
-                            }>
-                                <RelatedPosts postId={post.id} postType={postType} basePath={basePath} limit={20} />
-                            </Suspense>
+                             {/* Related Posts */}
+                             <RelatedPosts
+                                 key={`${post.id}-related`}
+                                 postId={post.id}
+                                 postType={postType}
+                                 basePath={basePath}
+                                 limit={20}
+                                 initialPosts={post.relatedPosts}
+                             />
                         </div>
                     </div>
                 </div>

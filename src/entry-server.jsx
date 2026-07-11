@@ -7,6 +7,48 @@ import { InitialDataProvider } from './initialDataContext';
 import wordpressApi from './services/wordpressApi';
 
 /**
+ * Fetch related posts and game taxonomy details in parallel to fully SSR the page
+ */
+async function enrichPostWithSidebarData(post, postType) {
+  if (!post) return post;
+  
+  const relatedPromise = wordpressApi.posts.getRelatedByPostType(postType, post.id, 20)
+    .catch(e => {
+      console.error(`Error preloading related posts for ${postType} ${post.id}:`, e);
+      return [];
+    });
+    
+  let gamePromise = Promise.resolve({ associatedGame: null, gameRelatedPosts: [] });
+  const gameIds = [post.games, post.game, post.game_taxonomy].find(arr => arr && arr.length > 0) || [];
+  if (gameIds && gameIds.length > 0) {
+    const gameId = gameIds[0];
+    gamePromise = (async () => {
+      try {
+        const associatedGame = await wordpressApi.taxonomies.getById('game', gameId);
+        const result = await wordpressApi.posts.getByPostType(postType, {
+          perPage: 21,
+          taxonomyFilter: { game: gameId }
+        });
+        const fetched = Array.isArray(result) ? result : (result.posts || []);
+        const gameRelatedPosts = fetched.filter(p => String(p.id) !== String(post.id)).slice(0, 20);
+        return { associatedGame, gameRelatedPosts };
+      } catch (e) {
+        console.error(`Error preloading game posts for gameId ${gameId}:`, e);
+        return { associatedGame: null, gameRelatedPosts: [] };
+      }
+    })();
+  }
+  
+  const [relatedPosts, gameData] = await Promise.all([relatedPromise, gamePromise]);
+  
+  post.relatedPosts = relatedPosts;
+  post.associatedGame = gameData.associatedGame;
+  post.gameRelatedPosts = gameData.gameRelatedPosts;
+  
+  return post;
+}
+
+/**
  * Pre-fetch data for routes that need it
  * Parses the URL to determine if we need to fetch post data
  */
@@ -75,7 +117,8 @@ async function preloadRouteData(url) {
       const slug = extractSlug(gamesMatch[1]);
       if (slug) {
         try {
-          const post = await wordpressApi.posts.getByPostTypeAndSlug('games', slug, true);
+          let post = await wordpressApi.posts.getByPostTypeAndSlug('games', slug, true);
+          post = await enrichPostWithSidebarData(post, 'games');
           return { post, postType: 'games', basePath: '/games' };
         } catch (error) {
           console.error('Error preloading game post:', error);
@@ -90,7 +133,8 @@ async function preloadRouteData(url) {
       const slug = extractSlug(cultureMatch[1]);
       if (slug) {
         try {
-          const post = await wordpressApi.posts.getByPostTypeAndSlug('culture', slug, true);
+          let post = await wordpressApi.posts.getByPostTypeAndSlug('culture', slug, true);
+          post = await enrichPostWithSidebarData(post, 'culture');
           return { post, postType: 'culture', basePath: '/culture' };
         } catch (error) {
           console.error('Error preloading culture post:', error);
@@ -105,7 +149,8 @@ async function preloadRouteData(url) {
       const slug = extractSlug(gameReviewsMatch[1]);
       if (slug) {
         try {
-          const post = await wordpressApi.posts.getByPostTypeAndSlug('game-reviews', slug, true);
+          let post = await wordpressApi.posts.getByPostTypeAndSlug('game-reviews', slug, true);
+          post = await enrichPostWithSidebarData(post, 'game-reviews');
           return { post, postType: 'game-reviews', basePath: '/game-reviews' };
         } catch (error) {
           console.error('Error preloading game-reviews post:', error);
@@ -116,7 +161,6 @@ async function preloadRouteData(url) {
   } catch (error) {
     console.error('Error in preloadRouteData:', error);
   }
-
 
   return null;
 }

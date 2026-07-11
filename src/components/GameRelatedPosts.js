@@ -2,19 +2,25 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import wordpressApi from '../services/wordpressApi';
 
-function GameRelatedPosts({ gameId, gameName, postType = 'games', limit = 20, currentPostId }) {
-    const [posts, setPosts] = useState([]);
-    const [loading, setLoading] = useState(true);
+function GameRelatedPosts({ gameId, gameName, postType = 'games', limit = 20, currentPostId, initialPosts }) {
+    const [posts, setPosts] = useState(initialPosts || []);
+    const [loading, setLoading] = useState(!initialPosts);
 
     useEffect(() => {
         if (!gameId) return;
+
+        // Skip fetch if initialPosts is provided
+        if (initialPosts) {
+            setLoading(false);
+            return;
+        }
 
         const fetchPosts = async () => {
             try {
                 setLoading(true);
                 // Fetch posts for this game
                 // We try common taxonomy names for games
-                const taxFilter = { games: gameId };
+                const taxFilter = { game: gameId };
 
                 const params = {
                     perPage: limit + 1, // Fetch extra to handle current post exclusion
@@ -42,7 +48,7 @@ function GameRelatedPosts({ gameId, gameName, postType = 'games', limit = 20, cu
         };
 
         fetchPosts();
-    }, [gameId, postType, limit, currentPostId]);
+    }, [gameId, postType, limit, currentPostId, initialPosts]);
 
     if (loading) {
         return (
