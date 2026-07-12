@@ -274,7 +274,9 @@ exports.handler = async (event) => {
       statusCode: status,
       headers: {
         'Content-Type': 'text/html; charset=utf-8',
-        'Cache-Control': 'public, max-age=0, must-revalidate',
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0',
       },
       body: template,
     };
@@ -450,6 +452,9 @@ exports.handler = async (event) => {
         statusCode: 200,
         headers: {
           'Content-Type': 'text/html; charset=utf-8',
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0',
         },
         body: template,
       };
