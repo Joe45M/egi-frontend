@@ -431,7 +431,7 @@ function Pals() {
                   {pals.map((pal) => (
                     <Link
                       key={pal.id}
-                      to={`/palworld/pals/${pal.id}`}
+                      to={`/palworld/pals/${encodeURIComponent(pal.name)}`}
                       className="group bg-base-800/40 hover:bg-base-800/80 border border-base-800 hover:border-accent-violet-500/40 rounded-2xl p-3.5 md:p-5 transition-all duration-300 flex flex-col hover:-translate-y-1 hover:shadow-xl hover:shadow-accent-violet-500/5"
                     >
                       {/* Image Frame */}

@@ -64,23 +64,31 @@ export const palworldApi = {
     },
 
     /**
-     * Get a single Pal by ID or internal ID / name
+     * Get a single Pal by name slug or numeric ID.
+     * The /pals/{id} endpoint does not exist, so we use the search param.
      */
-    async getPalById(id) {
-        try {
-            // Attempt standard single item fetch
-            return await fetchFromAPI(`/pals/${id}`);
-        } catch (error) {
-            console.warn(`Direct fetch for Pal ID ${id} failed, trying search fallback...`, error);
-            // Fallback: search/filter pals list
-            const response = await this.getPals({ limit: 100 });
+    async getPalById(idOrName) {
+        const isNumericId = /^\d+$/.test(String(idOrName));
+
+        if (!isNumericId) {
+            // Slug-based lookup: search by name
+            const nameDecoded = decodeURIComponent(String(idOrName)).replace(/-/g, ' ');
+            const response = await this.getPals({ search: nameDecoded, limit: 10 });
             const pals = response.data || [];
-            const pal = pals.find(p => p.id === parseInt(id, 10) || p.name.toLowerCase() === id.toString().toLowerCase());
-            if (pal) {
-                return pal;
-            }
-            throw new Error(`Pal not found with ID/Name: ${id}`);
+            const pal = pals.find(
+                p => p.name.toLowerCase() === nameDecoded.toLowerCase()
+            ) || pals[0];
+            if (pal) return pal;
+            throw new Error(`Pal not found with name: ${idOrName}`);
         }
+
+        // Legacy numeric ID fallback: search across all pals
+        // (the /pals/{id} REST endpoint does not exist)
+        const response = await this.getPals({ limit: 500 });
+        const pals = response.data || [];
+        const pal = pals.find(p => p.id === parseInt(idOrName, 10));
+        if (pal) return pal;
+        throw new Error(`Pal not found with ID: ${idOrName}`);
     },
 
     /**
