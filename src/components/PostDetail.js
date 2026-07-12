@@ -5,6 +5,7 @@ import { Image } from './Editor';
 import SavePost from "./SavePost";
 import GooglePreferredSourceButton from "./GooglePreferredSourceButton";
 import wordpressApi from "../services/wordpressApi";
+import { palworldApi } from "../services/palworldApi";
 import PageMetadata, { stripHtml, createExcerpt, SITE_URL } from "./PageMetadata";
 import { useInitialData } from "../initialDataContext";
 import StructuredSchema, { generateArticleSchema, generateBreadcrumbSchema } from "./StructuredSchema";
@@ -46,6 +47,7 @@ function PostDetail({ postType = 'games', basePath = '/games' }) {
     const [associatedGame, setAssociatedGame] = useState(hasInitialData ? (initialData.post.associatedGame || null) : null);
     const [tagsList, setTagsList] = useState(hasInitialData ? (initialData.post.tagsDetails || []) : []);
     const [copied, setCopied] = useState(false);
+    const [matchedPal, setMatchedPal] = useState(null);
     const contentRef = useRef(null);
 
     useEffect(() => {
@@ -109,6 +111,29 @@ function PostDetail({ postType = 'games', basePath = '/games' }) {
             setTagsList([]);
         }
     }, [post, hasInitialData]);
+
+    // Check if any tag on this post matches a Palworld Pal name
+    useEffect(() => {
+        if (!tagsList || tagsList.length === 0) return;
+        let cancelled = false;
+        const findMatchingPal = async () => {
+            for (const tag of tagsList) {
+                // Skip generic tags that are definitely not pal names
+                if (['palworld', 'gaming', 'guide', 'tips', 'news'].includes(tag.slug)) continue;
+                try {
+                    const pal = await palworldApi.getPalById(tag.slug);
+                    if (!cancelled && pal) {
+                        setMatchedPal(pal);
+                        return;
+                    }
+                } catch {
+                    // Tag doesn't match a pal — try next
+                }
+            }
+        };
+        findMatchingPal();
+        return () => { cancelled = true; };
+    }, [tagsList]);
 
     useEffect(() => {
         if (!post?.id) return;
@@ -471,6 +496,37 @@ function PostDetail({ postType = 'games', basePath = '/games' }) {
                                         ))}
                                     </div>
                                 </div>
+                            )}
+
+                            {/* Pal Directory prompt */}
+                            {matchedPal && (
+                                <Link
+                                    to={`/palworld/pals/${matchedPal.name.toLowerCase().replace(/\s+/g, '-')}/`}
+                                    className="group mt-6 flex items-center gap-4 p-4 bg-gradient-to-r from-accent-pink-950/30 to-accent-violet-950/30 border border-accent-violet-500/20 hover:border-accent-violet-400/50 rounded-2xl transition-all duration-300 hover:shadow-lg hover:shadow-accent-violet-500/10"
+                                >
+                                    {/* Pal image or icon */}
+                                    <div className="w-14 h-14 rounded-xl overflow-hidden bg-base-800/60 border border-base-700/50 flex-shrink-0 flex items-center justify-center">
+                                        {matchedPal.image_url ? (
+                                            <img
+                                                src={matchedPal.image_url}
+                                                alt={matchedPal.name}
+                                                className="w-full h-full object-contain p-1"
+                                            />
+                                        ) : (
+                                            <span className="text-2xl">🎮</span>
+                                        )}
+                                    </div>
+                                    {/* Text */}
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-[11px] font-bold uppercase tracking-widest text-accent-pink-400 mb-0.5">Palworld Database</p>
+                                        <p className="text-white font-bold text-sm group-hover:text-accent-violet-300 transition-colors">
+                                            View <span className="text-accent-violet-300">{matchedPal.name}</span> in the Pal Directory
+                                        </p>
+                                        <p className="text-[11px] text-base-400 mt-0.5">
+                                            Stats, work suitabilities &amp; more →
+                                        </p>
+                                    </div>
+                                </Link>
                             )}
                         </div>
 

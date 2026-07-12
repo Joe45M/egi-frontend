@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { palworldApi } from "../services/palworldApi";
+import wordpressApi from "../services/wordpressApi";
 import PageMetadata, { SITE_URL } from "../components/PageMetadata";
 import StructuredSchema, { generateWebPageSchema, generateBreadcrumbSchema } from "../components/StructuredSchema";
 
@@ -17,6 +18,7 @@ function PalDetails() {
   const [pal, setPal] = useState(hasInitialData ? initialData.pal : null);
   const [loading, setLoading] = useState(!hasInitialData);
   const [error, setError] = useState(null);
+  const [palGuides, setPalGuides] = useState([]);
 
   useEffect(() => {
     if (hasInitialData) {
@@ -38,6 +40,29 @@ function PalDetails() {
     };
     fetchPal();
   }, [id, hasInitialData]);
+
+  // Fetch guides (posts) tagged with this pal's name
+  useEffect(() => {
+    if (!pal?.name) return;
+    const fetchGuides = async () => {
+      try {
+        // Slug-ify the pal name to match WP tag slugs (e.g. "Boltmane" -> "boltmane")
+        const palSlug = pal.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+        const tag = await wordpressApi.tags.getBySlug(palSlug);
+        if (!tag?.id) return;
+        const result = await wordpressApi.posts.getByPostType('games', {
+          tag: tag.id,
+          perPage: 6,
+          includeImages: true,
+        });
+        const posts = Array.isArray(result) ? result : (result?.posts || []);
+        setPalGuides(posts);
+      } catch {
+        // Silently ignore — no tag or no posts is fine
+      }
+    };
+    fetchGuides();
+  }, [pal?.name]);
 
   const getPageTitle = () => (pal ? `${pal.name} Stats & Details - Palworld Database` : "Pal Details - Palworld Database");
   const getPageDescription = () =>
@@ -248,6 +273,48 @@ function PalDetails() {
                   <p className="text-xs text-base-400 italic">This Pal has no specific work suitabilities.</p>
                 )}
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* Guides section */}
+        {palGuides.length > 0 && (
+          <div className="mt-12">
+            <h2 className="text-2xl font-black text-white mb-6">
+              Guides about <span className="text-accent-pink-400">{pal?.name}</span>
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {palGuides.map(guide => (
+                <Link
+                  key={guide.id}
+                  to={`/games/${guide.slug}/`}
+                  className="group bg-base-800/40 border border-base-700/50 hover:border-accent-violet-500/40 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-accent-violet-500/10 flex flex-col"
+                >
+                  {guide.image ? (
+                    <div className="aspect-video overflow-hidden bg-base-900">
+                      <img
+                        src={guide.image}
+                        alt={guide.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        loading="lazy"
+                      />
+                    </div>
+                  ) : (
+                    <div className="aspect-video bg-gradient-to-br from-base-800 to-base-900 flex items-center justify-center">
+                      <span className="text-3xl">🎮</span>
+                    </div>
+                  )}
+                  <div className="p-4 flex-1 flex flex-col justify-between">
+                    <h3
+                      className="text-sm font-bold text-white group-hover:text-accent-violet-300 transition-colors line-clamp-2"
+                      dangerouslySetInnerHTML={{ __html: guide.title }}
+                    />
+                    <span className="mt-3 text-[11px] font-semibold text-accent-pink-400 uppercase tracking-wider">
+                      Read Guide →
+                    </span>
+                  </div>
+                </Link>
+              ))}
             </div>
           </div>
         )}
