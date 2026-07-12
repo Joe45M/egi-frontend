@@ -7,6 +7,36 @@ const timestamp = Date.now();
 const jsDir = path.join(buildDir, 'static/js');
 const cssDir = path.join(buildDir, 'static/css');
 
+const chunkFilesMap = new Map();
+
+function renameChunks() {
+  if (!fs.existsSync(jsDir)) return;
+  const files = fs.readdirSync(jsDir);
+  const chunkFiles = files.filter(f => f.endsWith('.chunk.js') && !f.endsWith('.map'));
+  
+  chunkFiles.forEach(file => {
+    const oldPath = path.join(jsDir, file);
+    const newName = file.replace('.chunk.js', `.${timestamp}.chunk.js`);
+    const newPath = path.join(jsDir, newName);
+    
+    fs.renameSync(oldPath, newPath);
+    console.log(`Renamed chunk: ${file} -> ${newName}`);
+    chunkFilesMap.set(`/static/js/${file}`, `/static/js/${newName}`);
+    
+    const mapFile = file + '.map';
+    if (files.includes(mapFile)) {
+      const oldMapPath = path.join(jsDir, mapFile);
+      const newMapName = newName + '.map';
+      const newMapPath = path.join(jsDir, newMapName);
+      fs.renameSync(oldMapPath, newMapPath);
+      console.log(`Renamed chunk map: ${mapFile} -> ${newMapName}`);
+      chunkFilesMap.set(`/static/js/${mapFile}`, `/static/js/${newMapName}`);
+    }
+  });
+}
+
+renameChunks();
+
 function renameMainFiles(dir, ext) {
   if (!fs.existsSync(dir)) return null;
   const files = fs.readdirSync(dir);
@@ -19,15 +49,17 @@ function renameMainFiles(dir, ext) {
   const newPath = path.join(dir, newName);
 
   fs.renameSync(oldPath, newPath);
-  console.log(`Renamed ${mainFile} -> ${newName}`);
+  console.log(`Renamed main file: ${mainFile} -> ${newName}`);
 
-  // Prepend bundle date logging to the main JS file
   if (ext === 'js') {
     const bundleDate = new Date(timestamp).toUTCString();
     const logStatement = `console.log("Bundle Date: ${bundleDate}");\n`;
-    const jsContent = fs.readFileSync(newPath, 'utf8');
+    let jsContent = fs.readFileSync(newPath, 'utf8');
+    
+    jsContent = jsContent.replace('".chunk.js"', `".${timestamp}.chunk.js"`);
+    
     fs.writeFileSync(newPath, logStatement + jsContent, 'utf8');
-    console.log(`Injected bundle date log to ${newName}`);
+    console.log(`Injected bundle date log & updated chunk loading in ${newName}`);
   }
 
   const mapFile = mainFile + '.map';
@@ -36,7 +68,7 @@ function renameMainFiles(dir, ext) {
     const newMapName = newName + '.map';
     const newMapPath = path.join(dir, newMapName);
     fs.renameSync(oldMapPath, newMapPath);
-    console.log(`Renamed ${mapFile} -> ${newMapName}`);
+    console.log(`Renamed main map: ${mapFile} -> ${newMapName}`);
   }
 
   return { oldName: `/static/${ext}/${mainFile}`, newName: `/static/${ext}/${newName}` };
@@ -64,22 +96,29 @@ if (fs.existsSync(manifestPath)) {
   let manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
   
   if (manifest.files) {
-    if (manifest.files['main.js'] === jsResult.oldName) {
-      manifest.files['main.js'] = jsResult.newName;
-    }
-    if (manifest.files['main.css'] === cssResult.oldName) {
-      manifest.files['main.css'] = cssResult.newName;
-    }
-    const oldJsMap = jsResult.oldName + '.map';
-    const newJsMap = jsResult.newName + '.map';
-    const oldCssMap = cssResult.oldName + '.map';
-    const newCssMap = cssResult.newName + '.map';
-    if (manifest.files['main.js.map'] === oldJsMap) {
-      manifest.files['main.js.map'] = newJsMap;
-    }
-    if (manifest.files['main.css.map'] === oldCssMap) {
-      manifest.files['main.css.map'] = newCssMap;
-    }
+    const updatedFiles = {};
+    Object.keys(manifest.files).forEach(key => {
+      let newKey = key;
+      let newVal = manifest.files[key];
+
+      if (newVal === jsResult.oldName) newVal = jsResult.newName;
+      else if (newVal === cssResult.oldName) newVal = cssResult.newName;
+      else if (newVal === jsResult.oldName + '.map') newVal = jsResult.newName + '.map';
+      else if (newVal === cssResult.oldName + '.map') newVal = cssResult.newName + '.map';
+      
+      if (chunkFilesMap.has(newVal)) {
+        newVal = chunkFilesMap.get(newVal);
+      }
+
+      if (key.includes('main.js')) newKey = key.replace(path.basename(jsResult.oldName), path.basename(jsResult.newName));
+      else if (key.includes('main.css')) newKey = key.replace(path.basename(cssResult.oldName), path.basename(cssResult.newName));
+      else if (key.includes('.chunk.js')) {
+        newKey = key.replace('.chunk.js', `.${timestamp}.chunk.js`);
+      }
+
+      updatedFiles[newKey] = newVal;
+    });
+    manifest.files = updatedFiles;
   }
   
   if (Array.isArray(manifest.entrypoints)) {
