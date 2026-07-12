@@ -189,7 +189,19 @@
 }
 
 .wp-content .wp-block-columns {
-  @apply my-8;
+  @apply flex flex-col md:flex-row gap-6 my-8 w-full;
+}
+
+.wp-content .wp-block-column {
+  @apply flex-1 min-w-0;
+}
+
+.wp-content .wp-block-column > *:first-child {
+  margin-top: 0;
+}
+
+.wp-content .wp-block-column > *:last-child {
+  margin-bottom: 0;
 }
 
 /* Ensure proper spacing between block elements */
