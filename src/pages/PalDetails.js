@@ -116,7 +116,10 @@ function PalDetails() {
                     className="w-full h-full object-contain max-h-64 relative z-10 filter drop-shadow-2xl"
                   />
                 ) : (
-                  <div className="text-7xl">🥚</div>
+                  <div className="w-full h-full flex flex-col items-center justify-center gap-3">
+                    <span className="text-6xl">🎮</span>
+                    <span className="text-base-400 text-sm font-medium tracking-wide">{pal.name}</span>
+                  </div>
                 )}
 
                 {/* Internal ID badge */}

@@ -444,7 +444,10 @@ function Pals() {
                             loading="lazy"
                           />
                         ) : (
-                          <div className="text-base-600 text-5xl">🥚</div>
+                          <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-base-800 to-base-900 gap-1">
+                            <span className="text-3xl">🎮</span>
+                            <span className="text-[10px] text-base-500 font-medium text-center px-1 leading-tight line-clamp-2">{pal.name}</span>
+                          </div>
                         )}
                         {/* Size tag */}
                         <div className="absolute top-2 right-2 bg-base-900 border border-base-700 text-[10px] font-bold text-white px-2 py-0.5 rounded-md">
