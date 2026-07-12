@@ -154,7 +154,7 @@ function Pals() {
         title={getPageTitle()}
         description={getPageDescription()}
         keywords="palworld, pals directory, pals statistics, palworld elemental, work suitability, palworld database"
-        image="https://api.elitegamerinsights.com/wp-content/uploads/2026/07/pals-paldex-banner.png"
+        image={`${SITE_URL}/pal-directory-og.png`}
       />
       <StructuredSchema schemas={schemas} />
 
