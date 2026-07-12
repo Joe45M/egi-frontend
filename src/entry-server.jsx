@@ -1,10 +1,18 @@
 import React from 'react';
 import { renderToString } from 'react-dom/server';
 import { createMemoryRouter, RouterProvider } from 'react-router-dom';
+import { createLDReactProvider } from '@launchdarkly/react-sdk';
 import { routes } from './routes-server';
 import { HeadProvider, createEmptyHead } from './headContext';
 import { InitialDataProvider } from './initialDataContext';
 import wordpressApi from './services/wordpressApi';
+
+const LDProvider = createLDReactProvider('6a525a8ccd87b60ba57d0fd3', {
+  kind: 'user',
+  key: 'anonymous-user',
+  name: 'Anonymous User'
+});
+
 
 /**
  * Fetch related posts and game taxonomy details in parallel to fully SSR the page
@@ -205,7 +213,9 @@ export async function render(url) {
     <React.StrictMode>
       <HeadProvider head={head}>
         <InitialDataProvider initialData={initialData}>
-          <RouterProvider router={router} />
+          <LDProvider>
+            <RouterProvider router={router} />
+          </LDProvider>
         </InitialDataProvider>
       </HeadProvider>
     </React.StrictMode>
