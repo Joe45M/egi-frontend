@@ -55,6 +55,24 @@ exports.handler = async (event) => {
     url = url.split('?')[0];
   }
 
+  // Enforce trailing slash as the canonical URL form (matches sitemap).
+  // Issue a 301 (permanent) redirect for non-trailing-slash requests so that
+  // search engines index the correct canonical URL. A 301 is followed and the
+  // destination URL is what gets indexed — unlike the 302 that was previously
+  // emitted by React Router, which Bing refused to index.
+  const isStaticAsset = url.startsWith('/static/') ||
+    url.match(/\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot|json|xml|txt|map|webmanifest)$/i);
+  if (!isStaticAsset && url !== '/' && !url.endsWith('/')) {
+    return {
+      statusCode: 301,
+      headers: {
+        'Location': url + '/',
+        'Cache-Control': 'public, max-age=31536000',
+      },
+      body: '',
+    };
+  }
+
   // Log for debugging - this will show in Netlify function logs
   console.log('SSR Function called');
   console.log('Event keys:', Object.keys(event));
