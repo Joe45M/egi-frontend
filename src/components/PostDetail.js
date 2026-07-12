@@ -331,6 +331,37 @@ function PostDetail({ postType = 'games', basePath = '/games' }) {
             />
             <StructuredSchema schemas={schemas} />
             <div className="pt-[150px] p-4 container mx-auto">
+                {/* Palworld Banner */}
+                {(() => {
+                    const isPalworldPost = (tagsList && tagsList.some(tag => 
+                        tag.slug === 'palworld' || 
+                        tag.name.toLowerCase() === 'palworld'
+                    )) || (post.slug && post.slug.toLowerCase().includes('palworld')) || (post.title && post.title.toLowerCase().includes('palworld'));
+
+                    if (isPalworldPost) {
+                        return (
+                            <div className="mb-8 p-6 bg-gradient-to-r from-accent-pink-950/20 to-accent-violet-950/20 border border-accent-violet-500/20 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-4 animate-fade-in-up">
+                                <div className="flex items-center gap-4 text-left">
+                                    <span className="text-3xl shrink-0">🎮</span>
+                                    <div>
+                                        <h4 className="text-white font-bold text-base md:text-lg">Palworld Databases are Live!</h4>
+                                        <p className="text-gray-300 text-xs md:text-sm">Find your next companions in our database, or calculate details with our technology tree builder.</p>
+                                    </div>
+                                </div>
+                                <div className="flex gap-3 shrink-0 w-full md:w-auto">
+                                    <Link to="/palworld/pals" className="flex-1 md:flex-initial text-center text-xs font-bold text-white bg-gradient-to-r from-accent-pink-500 to-accent-violet-500 px-5 py-2.5 rounded-full hover:scale-105 hover:shadow-lg hover:shadow-accent-violet-500/20 transition-all duration-300">
+                                        Pals Directory
+                                    </Link>
+                                    <Link to="/palworld/tech" className="flex-1 md:flex-initial text-center text-xs font-bold text-base-300 border border-base-700 bg-base-900/60 px-5 py-2.5 rounded-full hover:text-white hover:border-white transition-all duration-300">
+                                        Technologies
+                                    </Link>
+                                </div>
+                            </div>
+                        );
+                    }
+                    return null;
+                })()}
+
                 {postType === 'games' && (
                     <div className="mb-6">
                         <Link

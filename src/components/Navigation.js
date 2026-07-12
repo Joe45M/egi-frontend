@@ -95,6 +95,28 @@ function Navigation() {
               >
                 Rimworld
               </Link>
+              <div className="relative group py-2">
+                <button className="text-white tracking-wider flex items-center gap-1 focus:outline-none">
+                  Palworld
+                  <svg className="w-3.5 h-3.5 transition-transform duration-200 group-hover:rotate-185" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                <div className="absolute left-0 mt-2 w-48 bg-base-950/95 backdrop-blur-xl border border-base-800/80 rounded-xl shadow-2xl py-2 hidden group-hover:block transition-all duration-300 z-50">
+                  <Link
+                      to="/palworld/pals"
+                      className="block px-4 py-2.5 text-sm text-base-300 hover:text-white hover:bg-white/5 transition-all duration-200"
+                  >
+                    Pals Directory
+                  </Link>
+                  <Link
+                      to="/palworld/tech"
+                      className="block px-4 py-2.5 text-sm text-base-300 hover:text-white hover:bg-white/5 transition-all duration-200"
+                  >
+                    Technologies Tree
+                  </Link>
+                </div>
+              </div>
             </div>
 
             {/* Read List Button & Mobile Menu Button */}
@@ -197,7 +219,9 @@ function Navigation() {
             { to: '/games', label: 'Gaming news', delay: 100 },
             { to: '/games?game=rust', label: 'Rust', delay: 150 },
             { to: '/games?game=rimworld', label: 'Rimworld', delay: 200 },
-            { to: '/readlist', label: 'Read list', delay: 250 }
+            { to: '/palworld/pals', label: 'Pals', delay: 220 },
+            { to: '/palworld/tech', label: 'Technologies', delay: 240 },
+            { to: '/readlist', label: 'Read list', delay: 260 }
           ].map((item, index) => (
             <Link
               key={item.to}

@@ -20,6 +20,9 @@ import Contact from './pages/Contact';
 import NotFound from './pages/NotFound';
 import Tags from './pages/Tags';
 import TagArchive from './pages/TagArchive';
+import Pals from './pages/Pals';
+import PalDetails from './pages/PalDetails';
+import Technologies from './pages/Technologies';
 
 export function getRouteElements() {
     return (
@@ -44,6 +47,12 @@ export function getRouteElements() {
                 <Route path="game-reviews" element={<Archive type="game-reviews" />} />
                 <Route path="tags" element={<Tags />} />
                 <Route path="tags/:slug" element={<TagArchive />} />
+                
+                {/* Palworld Routes */}
+                <Route path="palworld/pals" element={<Pals />} />
+                <Route path="palworld/pals/:id" element={<PalDetails />} />
+                <Route path="palworld/tech" element={<Technologies />} />
+
                 <Route path="404" element={<NotFound />} />
                 <Route path="*" element={<Navigate to="/404" replace />} />
             </Route>

@@ -6,6 +6,7 @@ import { routes } from './routes-server';
 import { HeadProvider, createEmptyHead } from './headContext';
 import { InitialDataProvider } from './initialDataContext';
 import wordpressApi from './services/wordpressApi';
+import { palworldApi } from './services/palworldApi';
 
 const LDProvider = createLDReactProvider('6a525a8ccd87b60ba57d0fd3', {
   kind: 'user',
@@ -130,6 +131,36 @@ async function preloadRouteData(url) {
           return { post, postType: 'games', basePath: '/games' };
         } catch (error) {
           console.error('Error preloading game post:', error);
+          return { redirect: '/404' };
+        }
+      }
+    }
+
+    // Check if this is the Pals listing route: /palworld/pals
+    if (pathname === '/palworld/pals' || pathname === '/palworld/pals/') {
+      try {
+        const response = await palworldApi.getPals({ limit: 100 });
+        return {
+          pals: response.data || [],
+          totalPages: response.headers?.totalPages || 1,
+          totalItems: response.headers?.total || 0,
+          postType: 'palworld-list'
+        };
+      } catch (error) {
+        console.error('Error preloading Pal list:', error);
+      }
+    }
+
+    // Check if this is a Pal details route: /palworld/pals/:id
+    const palsMatch = pathname.match(/^\/palworld\/pals\/(.+)$/);
+    if (palsMatch) {
+      const palId = extractSlug(palsMatch[1]);
+      if (palId) {
+        try {
+          const pal = await palworldApi.getPalById(palId);
+          return { pal, postType: 'palworld-detail', id: palId };
+        } catch (error) {
+          console.error('Error preloading Pal details:', error);
           return { redirect: '/404' };
         }
       }
