@@ -108,6 +108,7 @@ function PalDetails() {
       <PageMetadata
         title={getPageTitle()}
         description={getPageDescription()}
+        image={pal?.image_url}
         keywords={pal ? `palworld, ${pal.name}, ${pal.name} stats, ${pal.name} element, palworld database` : "palworld database"}
       />
       {pal && <StructuredSchema schemas={schemas} />}
