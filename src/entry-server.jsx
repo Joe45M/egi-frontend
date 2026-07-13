@@ -160,7 +160,7 @@ async function preloadRouteData(url) {
           const pal = await palworldApi.getPalById(palId);
           let breeding = null;
           try {
-            breeding = await palworldApi.getBreedingRecipe(pal.id);
+            breeding = await palworldApi.getBreedingRecipe(pal.id, pal.name);
           } catch (bErr) {
             console.error(`Error preloading breeding recipe for pal ${pal.id}:`, bErr);
           }

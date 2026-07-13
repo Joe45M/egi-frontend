@@ -40,7 +40,7 @@ function PalDetails() {
         setPal(data);
         
         try {
-          const breedingData = await palworldApi.getBreedingRecipe(data.id);
+          const breedingData = await palworldApi.getBreedingRecipe(data.id, data.name);
           setBreeding(breedingData);
         } catch (bErr) {
           console.error("Error fetching breeding recipe:", bErr);
