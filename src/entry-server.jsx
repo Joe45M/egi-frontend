@@ -158,7 +158,13 @@ async function preloadRouteData(url) {
       if (palId) {
         try {
           const pal = await palworldApi.getPalById(palId);
-          return { pal, postType: 'palworld-detail', id: palId };
+          let breeding = null;
+          try {
+            breeding = await palworldApi.getBreedingRecipe(pal.id);
+          } catch (bErr) {
+            console.error(`Error preloading breeding recipe for pal ${pal.id}:`, bErr);
+          }
+          return { pal, breeding, postType: 'palworld-detail', id: palId };
         } catch (error) {
           console.error('Error preloading Pal details:', error);
           return { redirect: '/404' };

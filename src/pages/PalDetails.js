@@ -6,6 +6,7 @@ import PageMetadata, { SITE_URL } from "../components/PageMetadata";
 import StructuredSchema, { generateWebPageSchema, generateBreadcrumbSchema } from "../components/StructuredSchema";
 
 import { useInitialData } from "../initialDataContext";
+import { useFlags, useBoolVariation } from "@launchdarkly/react-sdk";
 
 function PalDetails() {
   const { id } = useParams();
@@ -16,21 +17,34 @@ function PalDetails() {
     (typeof window === 'undefined' || String(initialData.pal.id) === String(id) || initialData.pal.name.toLowerCase() === id.toLowerCase());
 
   const [pal, setPal] = useState(hasInitialData ? initialData.pal : null);
+  const [breeding, setBreeding] = useState(hasInitialData ? initialData.breeding : null);
   const [loading, setLoading] = useState(!hasInitialData);
   const [error, setError] = useState(null);
   const [palGuides, setPalGuides] = useState([]);
+  const [breedingSearch, setBreedingSearch] = useState("");
+
+  const { showPalBreedingDetails } = useFlags();
+  const showBreedingVariation = useBoolVariation('show-pal-breeding-details', false);
+  const showBreeding = showPalBreedingDetails || showBreedingVariation;
 
   useEffect(() => {
     if (hasInitialData) {
       return;
     }
 
-    const fetchPal = async () => {
+    const fetchPalAndBreeding = async () => {
       try {
         setLoading(true);
         setError(null);
         const data = await palworldApi.getPalById(id);
         setPal(data);
+        
+        try {
+          const breedingData = await palworldApi.getBreedingRecipe(data.id);
+          setBreeding(breedingData);
+        } catch (bErr) {
+          console.error("Error fetching breeding recipe:", bErr);
+        }
       } catch (err) {
         console.error("Error fetching pal details:", err);
         setError("Failed to retrieve Pal details. Make sure the database has this Pal.");
@@ -38,7 +52,7 @@ function PalDetails() {
         setLoading(false);
       }
     };
-    fetchPal();
+    fetchPalAndBreeding();
   }, [id, hasInitialData]);
 
   // Fetch guides (posts) tagged with this pal's name
@@ -127,7 +141,8 @@ function PalDetails() {
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
             {/* Left side: Pal Image Box */}
             <div className="md:col-span-5 flex flex-col gap-4">
               <div className="bg-gradient-to-b from-base-800/60 to-base-950/80 border border-base-700/50 rounded-3xl p-6 relative overflow-hidden flex flex-col items-center justify-center aspect-square">
@@ -275,7 +290,88 @@ function PalDetails() {
               </div>
             </div>
           </div>
+
+          {/* Breeding Combinations Section */}
+        {showBreeding && breeding && breeding.breeding_parents && breeding.breeding_parents.length > 0 && (
+          <div className="mt-12 bg-base-800/20 border border-base-800 rounded-3xl p-6 md:p-8">
+            <h2 className="text-2xl font-black text-white mb-2">
+              Breeding Combinations for <span className="text-accent-pink-400">{pal?.name}</span>
+            </h2>
+            <p className="text-sm text-base-300 mb-6">
+              Breed these Pal combinations together to obtain {pal?.name}.
+            </p>
+
+            {/* Search Bar */}
+            <div className="mb-6 relative">
+              <input
+                type="text"
+                value={breedingSearch}
+                onChange={(e) => setBreedingSearch(e.target.value)}
+                placeholder="Search parent Pals..."
+                className="w-full bg-base-900/60 border border-base-800 text-white placeholder-base-500 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-accent-pink-500/50 transition-colors"
+              />
+              {breedingSearch && (
+                <button
+                  onClick={() => setBreedingSearch("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-base-500 hover:text-white transition-colors"
+                  type="button"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              )}
+            </div>
+
+            {/* Filtered grid */}
+            {(() => {
+              const filteredParents = breeding.breeding_parents.filter((pair) => {
+                if (pair.length < 2) return false;
+                const [p1, p2] = pair;
+                const query = breedingSearch.toLowerCase();
+                return p1.name.toLowerCase().includes(query) || p2.name.toLowerCase().includes(query);
+              });
+
+              if (filteredParents.length === 0) {
+                return (
+                  <p className="text-sm text-base-500 italic py-4">No combinations found matching "{breedingSearch}".</p>
+                );
+              }
+
+              return (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[480px] overflow-y-auto pr-2">
+                  {filteredParents.map((pair, idx) => {
+                    const [p1, p2] = pair;
+                    return (
+                      <div key={idx} className="flex items-center justify-between bg-base-900/40 border border-base-800/80 p-3 rounded-2xl gap-3">
+                        {/* Parent 1 */}
+                        <Link
+                          to={`/palworld/pals/${encodeURIComponent(p1.name)}`}
+                          className="text-sm font-bold text-white hover:text-accent-pink-450 transition-colors flex-1 min-w-0 truncate text-right"
+                        >
+                          {p1.name}
+                        </Link>
+
+                        {/* Plus sign */}
+                        <span className="text-base-500 font-bold px-2 flex-shrink-0">+</span>
+
+                        {/* Parent 2 */}
+                        <Link
+                          to={`/palworld/pals/${encodeURIComponent(p2.name)}`}
+                          className="text-sm font-bold text-white hover:text-accent-pink-450 transition-colors flex-1 min-w-0 truncate text-left"
+                        >
+                          {p2.name}
+                        </Link>
+                      </div>
+                    );
+                  })}
+                </div>
+              );
+            })()}
+          </div>
         )}
+      </>
+    )}
 
         {/* Guides section */}
         {palGuides.length > 0 && (

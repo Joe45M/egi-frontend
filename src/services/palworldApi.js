@@ -111,5 +111,12 @@ export const palworldApi = {
         const queryString = queryParams.toString();
         const endpoint = `/tech${queryString ? `?${queryString}` : ''}`;
         return fetchFromAPI(endpoint, { includeHeaders: true });
+    },
+
+    /**
+     * Get Breeding Recipes for a Pal by ID
+     */
+    async getBreedingRecipe(id) {
+        return fetchFromAPI(`/breeding/${id}`);
     }
 };
