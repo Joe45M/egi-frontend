@@ -551,26 +551,27 @@ function PalworldBingo() {
     })
   ];
 
-  if (!seed) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen py-24 bg-base-950">
-        <div className="w-12 h-12 border-4 border-accent-violet-900 border-t-accent-pink-500 rounded-full animate-spin mb-4"></div>
-        <p className="text-base-300 text-sm">Generating Bingo Board...</p>
-      </div>
-    );
-  }
+  return (
+    <>
+      <PageMetadata
+        title={popoutParam ? `Palworld Bingo Overlay - Seed ${seed || ''}` : getPageTitle()}
+        description={popoutParam ? "Streamer overlay view for Palworld Bingo." : getPageDescription()}
+        image="/palworld-bingo-og.png?v=1"
+        imageAlt={popoutParam ? "Palworld Bingo Overlay" : "Palworld Bingo Card Generator"}
+        imageWidth={1200}
+        imageHeight={630}
+        keywords="palworld bingo, palworld bingo card, palworld bingo generator, palworld bingo board, palworld speedrun bingo, palworld challenge board, palworld race, free palworld board generator, palworld bingo maker, play palworld bingo online"
+      />
+      <StructuredSchema schemas={schemas} />
 
-  if (popoutParam) {
-    return (
-      <>
-        <PageMetadata
-          title={`Palworld Bingo Overlay - Seed ${seed}`}
-          description="Streamer overlay view for Palworld Bingo."
-          image="/palworld-bingo-og.png?v=1"
-          imageAlt={`Palworld Bingo Overlay - Seed ${seed}`}
-          imageWidth={1200}
-          imageHeight={630}
-        />
+      {!seed ? (
+        /* Loader shown while seed initializes client-side */
+        <div className="flex flex-col items-center justify-center min-h-screen py-24 bg-base-950">
+          <div className="w-12 h-12 border-4 border-accent-violet-900 border-t-accent-pink-500 rounded-full animate-spin mb-4"></div>
+          <p className="text-base-300 text-sm">Generating Bingo Board...</p>
+        </div>
+      ) : popoutParam ? (
+        /* Streamer Popout Overlay Mode (Only the 5x5 Grid Card) */
         <div className={`min-h-screen p-4 flex flex-col items-center justify-center transition-colors duration-350 ${
           chromaKey === 'green' ? 'bg-[#00FF00]' : 
           chromaKey === 'blue' ? 'bg-[#0000FF]' : 
@@ -670,412 +671,400 @@ function PalworldBingo() {
             </div>
           </div>
         </div>
-      </>
-    );
-  }
-
-  return (
-    <>
-      <PageMetadata
-        title={getPageTitle()}
-        description={getPageDescription()}
-        image="/palworld-bingo-og.png?v=1"
-        imageAlt="Palworld Bingo Card Generator"
-        imageWidth={1200}
-        imageHeight={630}
-        keywords="palworld bingo, palworld bingo card, palworld bingo generator, palworld bingo board, palworld speedrun bingo, palworld challenge board, palworld race, free palworld board generator, palworld bingo maker, play palworld bingo online"
-      />
-      <StructuredSchema schemas={schemas} />
-
-      {/* Subtle Palworld Map Background Overlay */}
-      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-        <img 
-          src="/assets/pals/T_WorldMap.png" 
-          alt="" 
-          className="w-full h-full object-cover opacity-[0.1] filter blur-[1px]" 
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-base-900/10 via-base-950/80 to-base-950"></div>
-      </div>
-
-      <div className="min-h-screen pt-[120px] pb-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-        <div className="container mx-auto max-w-4xl relative z-10">
-          
-          {/* Header */}
-          <div className="text-center mb-8 relative">
-            {/* Visual background glow */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[100px] bg-accent-violet-500/10 blur-[100px] rounded-full pointer-events-none"></div>
-            
-            <h1 className="text-4xl sm:text-5xl font-extrabold mb-3 pb-2 bg-gradient-to-r from-accent-violet-400 via-accent-pink-400 to-amber-300 bg-clip-text text-transparent tracking-tight leading-normal sm:leading-normal">
-              Palworld Bingo Board Generator
-            </h1>
-            <p className="text-gray-400 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed">
-              Generate custom Palworld Bingo cards for speedruns, scavenger hunts, and co-op races. 
-              Use our free seed-based Palworld Bingo board maker to create unique challenges instantly. Click cells to mark off completed tasks!
-            </p>
+      ) : (
+        /* Main Interactive Layout */
+        <>
+          {/* Subtle Palworld Map Background Overlay */}
+          <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+            <img 
+              src="/assets/pals/T_WorldMap.png" 
+              alt="" 
+              className="w-full h-full object-cover opacity-[0.1] filter blur-[1px]" 
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-base-900/10 via-base-950/80 to-base-950"></div>
           </div>
 
-          {/* Bingo Completion Success Box */}
-          {winState && (
-            <div className="mb-8 p-6 bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 border-2 border-amber-200 rounded-3xl text-center shadow-[0_0_40px_rgba(245,158,11,0.45)] text-base-950 relative overflow-hidden transition-all">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.25),transparent_40%)] pointer-events-none"></div>
-              <h3 className="text-2xl sm:text-3xl font-black tracking-widest text-base-950 uppercase animate-bounce mb-1">
-                🎉 BINGO ACHIEVED! 🎉
-              </h3>
-              <p className="text-xs sm:text-sm font-extrabold text-base-950/90 tracking-wide uppercase">
-                Congratulations! You completed a winning line of tasks!
-              </p>
-            </div>
-          )}
-
-          {/* 5x5 Bingo Grid (Full Width & Seed-Loaded) */}
-          {loadingPals ? (
-            /* Skeleton Board Grid matching real layout exactly */
-            <div className="grid grid-cols-5 gap-1.5 sm:gap-2.5 bg-base-950/80 p-2 sm:p-4 rounded-3xl border border-base-800/80 shadow-2xl relative mb-6">
-              {Array(25).fill(0).map((_, idx) => (
-                <div
-                  key={`skeleton_${idx}`}
-                  className="aspect-square bg-base-900/20 border border-base-800/40 rounded-xl p-1.5 sm:p-2.5 flex flex-col justify-between items-center animate-pulse"
-                >
-                  <div className="w-8 sm:w-12 h-2 bg-base-800 rounded opacity-65"></div>
-                  <div className="w-7 h-7 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full bg-base-800 my-1 sm:my-1.5 opacity-40"></div>
-                  <div className="w-10 sm:w-16 h-2 bg-base-800 rounded opacity-65"></div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            /* Real Board Grid Container */
-            <div className="grid grid-cols-5 gap-1.5 sm:gap-2.5 bg-base-950/80 p-2 sm:p-4 rounded-3xl border border-base-800/80 shadow-2xl relative mb-6">
+          <div className="min-h-screen pt-[120px] pb-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+            <div className="container mx-auto max-w-4xl relative z-10">
               
-              {/* Winning combination visual trace lines */}
+              {/* Header */}
+              <div className="text-center mb-8 relative">
+                {/* Visual background glow */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[100px] bg-accent-violet-500/10 blur-[100px] rounded-full pointer-events-none"></div>
+                
+                <h1 className="text-4xl sm:text-5xl font-extrabold mb-3 pb-2 bg-gradient-to-r from-accent-violet-400 via-accent-pink-400 to-amber-300 bg-clip-text text-transparent tracking-tight leading-normal sm:leading-normal">
+                  Palworld Bingo Board Generator
+                </h1>
+                <p className="text-gray-400 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed">
+                  Generate custom Palworld Bingo cards for speedruns, scavenger hunts, and co-op races. 
+                  Use our free seed-based Palworld Bingo board maker to create unique challenges instantly. Click cells to mark off completed tasks!
+                </p>
+              </div>
+
+              {/* Bingo Completion Success Box */}
               {winState && (
-                <div className="absolute inset-0 border border-amber-500/30 rounded-3xl pointer-events-none bg-gradient-to-r from-amber-500/[0.02] to-amber-300/[0.02]"></div>
+                <div className="mb-8 p-6 bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 border-2 border-amber-200 rounded-3xl text-center shadow-[0_0_40px_rgba(245,158,11,0.45)] text-base-950 relative overflow-hidden transition-all">
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.25),transparent_40%)] pointer-events-none"></div>
+                  <h3 className="text-2xl sm:text-3xl font-black tracking-widest text-base-950 uppercase animate-bounce mb-1">
+                    🎉 BINGO ACHIEVED! 🎉
+                  </h3>
+                  <p className="text-xs sm:text-sm font-extrabold text-base-950/90 tracking-wide uppercase">
+                    Congratulations! You completed a winning line of tasks!
+                  </p>
+                </div>
               )}
 
-              {boardCells.map((cell, idx) => {
-                const cellColor = cellStates[idx];
-                const isWinningCell = winState && winState.combo.includes(idx);
-                
-                // Resolve custom image URL for Pals
-                let imgUrl = cell.image_url;
-                if (cell.type === 'pal' || cell.type === 'boss') {
-                  const normalizedTarget = (cell.target || "").toLowerCase();
-                  if (palsData[normalizedTarget]) {
-                    imgUrl = palsData[normalizedTarget].image_url;
-                  }
-                }
-
-                // CSS styling for check states
-                let stateClasses = "bg-base-900/40 border-base-800/60 text-gray-300 hover:bg-base-800/30 hover:border-accent-violet-500/30 hover:-translate-y-[2px]";
-                
-                if (cellColor === 'checked') {
-                  stateClasses = "bg-accent-violet-500/15 border-accent-violet-500/80 text-white shadow-lg shadow-accent-violet-500/5 ring-1 ring-accent-violet-500/30";
-                }
-
-                if (isWinningCell) {
-                  stateClasses += " ring-2 ring-amber-400 shadow-2xl shadow-amber-500/20 z-10 scale-[1.03]";
-                }
-
-                return (
-                  <div
-                    key={`${cell.id}_${idx}`}
-                    onClick={() => handleCellClick(idx)}
-                    className={`aspect-square relative flex flex-col justify-between items-center text-center p-1 sm:p-2 rounded-xl border select-none cursor-pointer transition-all duration-300 ${stateClasses}`}
-                  >
-                    {/* Winning golden corner badge */}
-                    {isWinningCell && (
-                      <span className="absolute -top-1 -left-1 w-3 h-3 bg-amber-400 rotate-45 transform origin-top-left shadow-md z-20"></span>
-                    )}
-
-                    {/* Book Icon linking to Palworld Directory for Pal Items */}
-                    {(cell.type === 'pal' || cell.type === 'boss') && cell.target && (
-                      <Link
-                        to={`/palworld/pals/${encodeURIComponent(cell.target)}`}
-                        onClick={(e) => e.stopPropagation()}
-                        className="absolute bottom-1 right-1 p-0.5 rounded bg-base-950/80 hover:bg-accent-violet-600 border border-base-750 hover:border-accent-violet-500 text-[10px] text-gray-400 hover:text-white transition-all z-20 flex items-center justify-center"
-                        title={`View ${cell.target} details in Paldex`}
-                      >
-                        📖
-                      </Link>
-                    )}
-
-                    {/* Top Badge: Type / Difficulty */}
-                    <div className="w-full flex items-center justify-between text-[8px] sm:text-[10px] md:text-[11px] font-bold uppercase tracking-wider opacity-60">
-                      <span className="truncate">{cell.type}</span>
-                      <span className={`px-1 rounded-sm ${
-                        cell.difficulty === 'hard' ? 'text-red-400' : (cell.difficulty === 'medium' ? 'text-amber-400' : 'text-emerald-400')
-                      }`}>
-                        {cell.difficulty[0]}
-                      </span>
+              {/* 5x5 Bingo Grid (Full Width & Seed-Loaded) */}
+              {loadingPals ? (
+                /* Skeleton Board Grid matching real layout exactly */
+                <div className="grid grid-cols-5 gap-1.5 sm:gap-2.5 bg-base-950/80 p-2 sm:p-4 rounded-3xl border border-base-800/80 shadow-2xl relative mb-6">
+                  {Array(25).fill(0).map((_, idx) => (
+                    <div
+                      key={`skeleton_${idx}`}
+                      className="aspect-square bg-base-900/20 border border-base-800/40 rounded-xl p-1.5 sm:p-2.5 flex flex-col justify-between items-center animate-pulse"
+                    >
+                      <div className="w-8 sm:w-12 h-2 bg-base-800 rounded opacity-65"></div>
+                      <div className="w-7 h-7 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full bg-base-800 my-1 sm:my-1.5 opacity-40"></div>
+                      <div className="w-10 sm:w-16 h-2 bg-base-800 rounded opacity-65"></div>
                     </div>
+                  ))}
+                </div>
+              ) : (
+                /* Real Board Grid Container */
+                <div className="grid grid-cols-5 gap-1.5 sm:gap-2.5 bg-base-950/80 p-2 sm:p-4 rounded-3xl border border-base-800/80 shadow-2xl relative mb-6">
+                  
+                  {/* Winning combination visual trace lines */}
+                  {winState && (
+                    <div className="absolute inset-0 border border-amber-500/30 rounded-3xl pointer-events-none bg-gradient-to-r from-amber-500/[0.02] to-amber-300/[0.02]"></div>
+                  )}
 
-                    {/* Task Image or Emoji Fallback */}
-                    <div className="my-1 sm:my-1.5 flex items-center justify-center w-7 h-7 sm:w-10 sm:h-10 md:w-12 md:h-12 relative">
-                      {loadingPals && (cell.type === 'pal' || cell.type === 'boss') ? (
-                        <div className="w-4 h-4 rounded-full border border-base-800 border-t-accent-violet-500 animate-spin"></div>
-                      ) : imgUrl ? (
-                        <img
-                          src={imgUrl}
-                          alt={cell.target || cell.name}
-                          className="w-full h-full object-contain pointer-events-none transition-transform group-hover:scale-105 duration-200"
-                          onError={(e) => {
-                            e.target.style.display = 'none';
-                          }}
-                        />
-                      ) : (
-                        <span className="text-lg sm:text-xl md:text-2xl filter drop-shadow">
-                          {cell.icon}
-                        </span>
-                      )}
+                  {boardCells.map((cell, idx) => {
+                    const cellColor = cellStates[idx];
+                    const isWinningCell = winState && winState.combo.includes(idx);
+                    
+                    // Resolve custom image URL for Pals
+                    let imgUrl = cell.image_url;
+                    if (cell.type === 'pal' || cell.type === 'boss') {
+                      const normalizedTarget = (cell.target || "").toLowerCase();
+                      if (palsData[normalizedTarget]) {
+                        imgUrl = palsData[normalizedTarget].image_url;
+                      }
+                    }
 
-                      {/* Completion Check Overlay */}
-                      {cellColor && (
-                        <div className="absolute inset-0 flex items-center justify-center bg-base-950/20 backdrop-blur-[0.5px] rounded-full">
-                          <span className="text-xs sm:text-sm font-bold flex items-center justify-center w-4 h-4 sm:w-5 sm:h-5 rounded-full shadow-md text-white bg-accent-violet-600/90">
-                            ✓
+                    // CSS styling for check states
+                    let stateClasses = "bg-base-900/40 border-base-800/60 text-gray-300 hover:bg-base-800/30 hover:border-accent-violet-500/30 hover:-translate-y-[2px]";
+                    
+                    if (cellColor === 'checked') {
+                      stateClasses = "bg-accent-violet-500/15 border-accent-violet-500/80 text-white shadow-lg shadow-accent-violet-500/5 ring-1 ring-accent-violet-500/30";
+                    }
+
+                    if (isWinningCell) {
+                      stateClasses += " ring-2 ring-amber-400 shadow-2xl shadow-amber-500/20 z-10 scale-[1.03]";
+                    }
+
+                    return (
+                      <div
+                        key={`${cell.id}_${idx}`}
+                        onClick={() => handleCellClick(idx)}
+                        className={`aspect-square relative flex flex-col justify-between items-center text-center p-1 sm:p-2 rounded-xl border select-none cursor-pointer transition-all duration-300 ${stateClasses}`}
+                      >
+                        {/* Winning golden corner badge */}
+                        {isWinningCell && (
+                          <span className="absolute -top-1 -left-1 w-3 h-3 bg-amber-400 rotate-45 transform origin-top-left shadow-md z-20"></span>
+                        )}
+
+                        {/* Book Icon linking to Palworld Directory for Pal Items */}
+                        {(cell.type === 'pal' || cell.type === 'boss') && cell.target && (
+                          <Link
+                            to={`/palworld/pals/${encodeURIComponent(cell.target)}`}
+                            onClick={(e) => e.stopPropagation()}
+                            className="absolute bottom-1 right-1 p-0.5 rounded bg-base-950/80 hover:bg-accent-violet-600 border border-base-750 hover:border-accent-violet-500 text-[10px] text-gray-400 hover:text-white transition-all z-20 flex items-center justify-center"
+                            title={`View ${cell.target} details in Paldex`}
+                          >
+                            📖
+                          </Link>
+                        )}
+
+                        {/* Top Badge: Type / Difficulty */}
+                        <div className="w-full flex items-center justify-between text-[8px] sm:text-[10px] md:text-[11px] font-bold uppercase tracking-wider opacity-60">
+                          <span className="truncate">{cell.type}</span>
+                          <span className={`px-1 rounded-sm ${
+                            cell.difficulty === 'hard' ? 'text-red-400' : (cell.difficulty === 'medium' ? 'text-amber-400' : 'text-emerald-400')
+                          }`}>
+                            {cell.difficulty[0]}
                           </span>
                         </div>
-                      )}
-                    </div>
 
-                    {/* Task Label */}
-                    <div className="w-full text-center leading-normal min-h-[24px] sm:min-h-[32px] md:min-h-[44px] flex items-center justify-center px-0.5">
-                      <p className="text-[9.5px] sm:text-xs md:text-sm font-bold text-gray-150 line-clamp-2 select-none tracking-tight leading-snug">
-                        {cell.name}
+                        {/* Task Image or Emoji Fallback */}
+                        <div className="my-1 sm:my-1.5 flex items-center justify-center w-7 h-7 sm:w-10 sm:h-10 md:w-12 md:h-12 relative">
+                          {loadingPals && (cell.type === 'pal' || cell.type === 'boss') ? (
+                            <div className="w-4 h-4 rounded-full border border-base-800 border-t-accent-violet-500 animate-spin"></div>
+                          ) : imgUrl ? (
+                            <img
+                              src={imgUrl}
+                              alt={cell.target || cell.name}
+                              className="w-full h-full object-contain pointer-events-none transition-transform group-hover:scale-105 duration-200"
+                              onError={(e) => {
+                                e.target.style.display = 'none';
+                              }}
+                            />
+                          ) : (
+                            <span className="text-lg sm:text-xl md:text-2xl filter drop-shadow">
+                              {cell.icon}
+                            </span>
+                          )}
+
+                          {/* Completion Check Overlay */}
+                          {cellColor && (
+                            <div className="absolute inset-0 flex items-center justify-center bg-base-950/20 backdrop-blur-[0.5px] rounded-full">
+                              <span className="text-xs sm:text-sm font-bold flex items-center justify-center w-4 h-4 sm:w-5 sm:h-5 rounded-full shadow-md text-white bg-accent-violet-600/90">
+                                ✓
+                              </span>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Task Label */}
+                        <div className="w-full text-center leading-normal min-h-[24px] sm:min-h-[32px] md:min-h-[44px] flex items-center justify-center px-0.5">
+                          <p className="text-[9.5px] sm:text-xs md:text-sm font-bold text-gray-150 line-clamp-2 select-none tracking-tight leading-snug">
+                            {cell.name}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* Interactive Legend (Simplified) */}
+              <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 mb-6 px-4 py-2 bg-base-950/20 rounded-2xl border border-base-800/40 text-xs text-base-300">
+                <span className="font-semibold text-white">Legend:</span>
+                <div className="flex items-center gap-1.5">
+                  <span className="w-3 h-3 rounded bg-base-900 border border-base-750 inline-block"></span>
+                  <span>Unmarked</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="w-3 h-3 rounded bg-accent-violet-500/20 border border-accent-violet-500/60 inline-block shadow-sm"></span>
+                  <span className="font-medium text-accent-violet-400">Completed (✓)</span>
+                </div>
+              </div>
+
+              {/* Configuration and Controls Panel */}
+              <div className="bg-base-950/40 backdrop-blur-xl border border-base-800 rounded-2xl p-4 sm:p-6 mb-8 shadow-xl">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                  
+                  {/* Mode Select */}
+                  <div>
+                    <label className="block text-gray-300 text-xs font-semibold uppercase tracking-wider mb-2">Game Mode</label>
+                    <select
+                      value={mode}
+                      onChange={(e) => {
+                        const nextMode = e.target.value;
+                        setMode(nextMode);
+                        updateURLParams(seed, difficulty, nextMode);
+                      }}
+                      className="w-full bg-base-900 border border-base-700 hover:border-base-600 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-accent-violet-500/40 transition-colors"
+                    >
+                      <option value="balanced">Balanced Mix (All Tasks)</option>
+                      <option value="pals">Pals Only (Scavenger Hunt)</option>
+                      <option value="survival">Survival Only (Craft/Build/Items)</option>
+                    </select>
+                  </div>
+
+                  {/* Difficulty Select */}
+                  <div>
+                    <label className="block text-gray-300 text-xs font-semibold uppercase tracking-wider mb-2">Difficulty</label>
+                    <select
+                      value={difficulty}
+                      onChange={(e) => {
+                        const nextDiff = e.target.value;
+                        setDifficulty(nextDiff);
+                        updateURLParams(seed, nextDiff, mode);
+                      }}
+                      className="w-full bg-base-900 border border-base-700 hover:border-base-600 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-accent-violet-500/40 transition-colors"
+                    >
+                      <option value="mixed">Mixed (All Difficulties)</option>
+                      <option value="easy">Easy (Early Game / Windswept Hills)</option>
+                      <option value="medium">Medium (Mid Game / Level 15-30)</option>
+                      <option value="hard">Hard (End Game / Level 30+)</option>
+                    </select>
+                  </div>
+
+                  {/* Seed Configuration */}
+                  <div>
+                    <label className="block text-gray-300 text-xs font-semibold uppercase tracking-wider mb-2">Board Seed</label>
+                    <div className="flex gap-2">
+                      <input
+                        type="number"
+                        value={seed}
+                        onChange={(e) => {
+                          const val = parseInt(e.target.value, 10);
+                          if (!isNaN(val)) {
+                            updateURLParams(val, difficulty, mode);
+                          }
+                        }}
+                        className="w-full bg-base-900 border border-base-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-accent-violet-500/40"
+                        placeholder="Enter seed"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Quick Actions */}
+                <div className="flex flex-wrap gap-3 items-center justify-between border-t border-base-800 pt-4">
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      onClick={() => handleGenerateNewCard()}
+                      className="bg-accent-violet-600 hover:bg-accent-violet-500 text-white font-semibold text-xs px-4 py-2.5 rounded-xl shadow-lg shadow-accent-violet-500/10 hover:shadow-accent-violet-500/20 active:scale-95 transition-all"
+                    >
+                      🎲 Roll New Card
+                    </button>
+                    <button
+                      onClick={handleCopyLink}
+                      className="bg-base-800 hover:bg-base-700 border border-base-700 text-white font-semibold text-xs px-4 py-2.5 rounded-xl transition-all active:scale-95 flex items-center gap-1.5"
+                    >
+                      🔗 {copied ? "Copied Link!" : "Copy Share Link"}
+                    </button>
+                    <button
+                      onClick={() => {
+                        const url = window.location.pathname + window.location.search + '&popout=true';
+                        window.open(url, 'palworld_bingo_popout', 'width=550,height=630,menubar=no,status=no,toolbar=no,location=no');
+                      }}
+                      className="bg-base-800 hover:bg-base-700 border border-base-700 hover:border-accent-violet-500/30 text-white font-semibold text-xs px-4 py-2.5 rounded-xl transition-all active:scale-95 flex items-center gap-1.5"
+                      title="Open streamer-friendly overlay screen"
+                    >
+                      📺 Streamer Popout
+                    </button>
+                  </div>
+                  
+                  <button
+                    onClick={handleResetProgress}
+                    className="text-base-400 hover:text-red-400 text-xs font-medium border border-transparent hover:border-red-500/20 px-3 py-2 rounded-xl hover:bg-red-500/5 transition-all"
+                  >
+                    🗑️ Clear board progress
+                  </button>
+                </div>
+              </div>
+
+              {/* Instructions / Info Panel */}
+              <div className="bg-base-950/20 border border-base-800/60 rounded-3xl p-6 sm:p-8">
+                <h2 className="text-xl sm:text-2xl font-bold text-white mb-4">
+                  How to Play Palworld Bingo Races
+                </h2>
+                
+                <div className="space-y-4 text-sm text-base-300">
+                  <p>
+                    <strong>Palworld Bingo</strong> is an interactive speedrun companion game. Players spawn in a new Palworld game and complete tasks on their custom Palworld Bingo card.
+                  </p>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
+                    <div className="bg-base-950/40 p-4 rounded-2xl border border-base-800/40">
+                      <h4 className="font-semibold text-white mb-2 flex items-center gap-1.5">
+                        <span>🟢</span> Solo Challenge
+                      </h4>
+                      <p className="text-xs">
+                        Try to get 5 tasks in a row (vertical, horizontal, or diagonal) as fast as possible on your own. It's a great way to spice up a new survival file!
+                      </p>
+                    </div>
+                    <div className="bg-base-950/40 p-4 rounded-2xl border border-base-800/40">
+                      <h4 className="font-semibold text-white mb-2 flex items-center gap-1.5">
+                        <span>⚔️</span> Speedrun Race
+                      </h4>
+                      <p className="text-xs">
+                        Share the URL with a friend. Since the card generates identically from the seed, you start simultaneously on separate games to see who gets a line first!
+                      </p>
+                    </div>
+                    <div className="bg-base-950/40 p-4 rounded-2xl border border-base-800/40">
+                      <h4 className="font-semibold text-white mb-2 flex items-center gap-1.5">
+                        <span>📚</span> Paldex Insights
+                      </h4>
+                      <p className="text-xs">
+                        Need help finding a Pal or checking its traits? Click the 📖 book icon on any Pal card to jump directly to its entry in the database.
                       </p>
                     </div>
                   </div>
-                );
-              })}
-            </div>
-          )}
 
-          {/* Interactive Legend (Simplified) */}
-          <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 mb-6 px-4 py-2 bg-base-950/20 rounded-2xl border border-base-800/40 text-xs text-base-300">
-            <span className="font-semibold text-white">Legend:</span>
-            <div className="flex items-center gap-1.5">
-              <span className="w-3 h-3 rounded bg-base-900 border border-base-750 inline-block"></span>
-              <span>Unmarked</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <span className="w-3 h-3 rounded bg-accent-violet-500/20 border border-accent-violet-500/60 inline-block shadow-sm"></span>
-              <span className="font-medium text-accent-violet-400">Completed (✓)</span>
-            </div>
-          </div>
-
-          {/* Configuration and Controls Panel */}
-          <div className="bg-base-950/40 backdrop-blur-xl border border-base-800 rounded-2xl p-4 sm:p-6 mb-8 shadow-xl">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-              
-              {/* Mode Select */}
-              <div>
-                <label className="block text-gray-300 text-xs font-semibold uppercase tracking-wider mb-2">Game Mode</label>
-                <select
-                  value={mode}
-                  onChange={(e) => {
-                    const nextMode = e.target.value;
-                    setMode(nextMode);
-                    updateURLParams(seed, difficulty, nextMode);
-                  }}
-                  className="w-full bg-base-900 border border-base-700 hover:border-base-600 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-accent-violet-500/40 transition-colors"
-                >
-                  <option value="balanced">Balanced Mix (All Tasks)</option>
-                  <option value="pals">Pals Only (Scavenger Hunt)</option>
-                  <option value="survival">Survival Only (Craft/Build/Items)</option>
-                </select>
-              </div>
-
-              {/* Difficulty Select */}
-              <div>
-                <label className="block text-gray-300 text-xs font-semibold uppercase tracking-wider mb-2">Difficulty</label>
-                <select
-                  value={difficulty}
-                  onChange={(e) => {
-                    const nextDiff = e.target.value;
-                    setDifficulty(nextDiff);
-                    updateURLParams(seed, nextDiff, mode);
-                  }}
-                  className="w-full bg-base-900 border border-base-700 hover:border-base-600 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-accent-violet-500/40 transition-colors"
-                >
-                  <option value="mixed">Mixed (All Difficulties)</option>
-                  <option value="easy">Easy (Early Game / Windswept Hills)</option>
-                  <option value="medium">Medium (Mid Game / Level 15-30)</option>
-                  <option value="hard">Hard (End Game / Level 30+)</option>
-                </select>
-              </div>
-
-              {/* Seed Configuration */}
-              <div>
-                <label className="block text-gray-300 text-xs font-semibold uppercase tracking-wider mb-2">Board Seed</label>
-                <div className="flex gap-2">
-                  <input
-                    type="number"
-                    value={seed}
-                    onChange={(e) => {
-                      const val = parseInt(e.target.value, 10);
-                      if (!isNaN(val)) {
-                        updateURLParams(val, difficulty, mode);
-                      }
-                    }}
-                    className="w-full bg-base-900 border border-base-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-accent-violet-500/40"
-                    placeholder="Enter seed"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Quick Actions */}
-            <div className="flex flex-wrap gap-3 items-center justify-between border-t border-base-800 pt-4">
-              <div className="flex flex-wrap gap-2">
-                <button
-                  onClick={() => handleGenerateNewCard()}
-                  className="bg-accent-violet-600 hover:bg-accent-violet-500 text-white font-semibold text-xs px-4 py-2.5 rounded-xl shadow-lg shadow-accent-violet-500/10 hover:shadow-accent-violet-500/20 active:scale-95 transition-all"
-                >
-                  🎲 Roll New Card
-                </button>
-                <button
-                  onClick={handleCopyLink}
-                  className="bg-base-800 hover:bg-base-700 border border-base-700 text-white font-semibold text-xs px-4 py-2.5 rounded-xl transition-all active:scale-95 flex items-center gap-1.5"
-                >
-                  🔗 {copied ? "Copied Link!" : "Copy Share Link"}
-                </button>
-                <button
-                  onClick={() => {
-                    const url = window.location.pathname + window.location.search + '&popout=true';
-                    window.open(url, 'palworld_bingo_popout', 'width=550,height=630,menubar=no,status=no,toolbar=no,location=no');
-                  }}
-                  className="bg-base-800 hover:bg-base-700 border border-base-700 hover:border-accent-violet-500/30 text-white font-semibold text-xs px-4 py-2.5 rounded-xl transition-all active:scale-95 flex items-center gap-1.5"
-                  title="Open streamer-friendly overlay screen"
-                >
-                  📺 Streamer Popout
-                </button>
-              </div>
-              
-              <button
-                onClick={handleResetProgress}
-                className="text-base-400 hover:text-red-400 text-xs font-medium border border-transparent hover:border-red-500/20 px-3 py-2 rounded-xl hover:bg-red-500/5 transition-all"
-              >
-                🗑️ Clear board progress
-              </button>
-            </div>
-          </div>
-
-          {/* Instructions / Info Panel */}
-          <div className="bg-base-950/20 border border-base-800/60 rounded-3xl p-6 sm:p-8">
-            <h2 className="text-xl sm:text-2xl font-bold text-white mb-4">
-              How to Play Palworld Bingo Races
-            </h2>
-            
-            <div className="space-y-4 text-sm text-base-300">
-              <p>
-                <strong>Palworld Bingo</strong> is an interactive speedrun companion game. Players spawn in a new Palworld game and complete tasks on their custom Palworld Bingo card.
-              </p>
-              
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
-                <div className="bg-base-950/40 p-4 rounded-2xl border border-base-800/40">
-                  <h4 className="font-semibold text-white mb-2 flex items-center gap-1.5">
-                    <span>🟢</span> Solo Challenge
-                  </h4>
-                  <p className="text-xs">
-                    Try to get 5 tasks in a row (vertical, horizontal, or diagonal) as fast as possible on your own. It's a great way to spice up a new survival file!
-                  </p>
-                </div>
-                <div className="bg-base-950/40 p-4 rounded-2xl border border-base-800/40">
-                  <h4 className="font-semibold text-white mb-2 flex items-center gap-1.5">
-                    <span>⚔️</span> Speedrun Race
-                  </h4>
-                  <p className="text-xs">
-                    Share the URL with a friend. Since the card generates identically from the seed, you start simultaneously on separate games to see who gets a line first!
-                  </p>
-                </div>
-                <div className="bg-base-950/40 p-4 rounded-2xl border border-base-800/40">
-                  <h4 className="font-semibold text-white mb-2 flex items-center gap-1.5">
-                    <span>📚</span> Paldex Insights
-                  </h4>
-                  <p className="text-xs">
-                    Need help finding a Pal or checking its traits? Click the 📖 book icon on any Pal card to jump directly to its entry in the database.
-                  </p>
-                </div>
-              </div>
-
-              <div className="border-t border-base-800/50 pt-4 mt-6">
-                <h3 className="font-semibold text-white text-base mb-2">Game Configurations</h3>
-                <ul className="list-disc pl-5 space-y-1.5 text-xs text-base-400">
-                  <li><strong>Balanced Mix:</strong> A curated balance of catching Pals, building production bases, crafting gear, exploration travel, and defeating Alpha bosses.</li>
-                  <li><strong>Pals Only:</strong> Pure scavenger hunt. Fetches Pals from the official Paldex and randomly assigns 25 tamables to capture matching your difficulty.</li>
-                  <li><strong>Survival Only:</strong> Focuses strictly on base milestones, tech unlocks, farming plantation, crafting tools, and hunting resources.</li>
-                  <li><strong>Easy/Medium/Hard filters:</strong> Scale the card according to how long you want to play. Easy is completeable in under 30-45 minutes. Hard might take hours of progression!</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-
-          {/* Latest Palworld Articles section */}
-          {loadingArticles ? (
-            <div className="mt-12 border-t border-base-800 pt-10 animate-pulse">
-              <h2 className="text-2xl font-extrabold text-white mb-6 text-center">
-                Latest <span className="text-accent-pink-400">Palworld</span> News & Guides
-              </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                {Array(3).fill(0).map((_, idx) => (
-                  <div
-                    key={`article_skeleton_${idx}`}
-                    className="bg-base-950/40 border border-base-800/80 rounded-2xl overflow-hidden flex flex-col h-[280px]"
-                  >
-                    <div className="aspect-video bg-base-900/40"></div>
-                    <div className="p-4 flex-1 flex flex-col justify-between">
-                      <div className="space-y-2">
-                        <div className="h-4 bg-base-800 rounded w-full"></div>
-                        <div className="h-4 bg-base-800 rounded w-5/6"></div>
-                      </div>
-                      <div className="h-3 bg-base-800 rounded w-1/3 mt-4"></div>
-                    </div>
+                  <div className="border-t border-base-800/50 pt-4 mt-6">
+                    <h3 className="font-semibold text-white text-base mb-2">Game Configurations</h3>
+                    <ul className="list-disc pl-5 space-y-1.5 text-xs text-base-400">
+                      <li><strong>Balanced Mix:</strong> A curated balance of catching Pals, building production bases, crafting gear, exploration travel, and defeating Alpha bosses.</li>
+                      <li><strong>Pals Only:</strong> Pure scavenger hunt. Fetches Pals from the official Paldex and randomly assigns 25 tamables to capture matching your difficulty.</li>
+                      <li><strong>Survival Only:</strong> Focuses strictly on base milestones, tech unlocks, farming plantation, crafting tools, and hunting resources.</li>
+                      <li><strong>Easy/Medium/Hard filters:</strong> Scale the card according to how long you want to play. Easy is completeable in under 30-45 minutes. Hard might take hours of progression!</li>
+                    </ul>
                   </div>
-                ))}
+                </div>
               </div>
-            </div>
-          ) : articles.length > 0 ? (
-            <div className="mt-12 border-t border-base-800 pt-10">
-              <h2 className="text-2xl font-extrabold text-white mb-6 text-center">
-                Latest <span className="text-accent-pink-400">Palworld</span> News & Guides
-              </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                {articles.map(article => (
-                  <Link
-                    key={article.id}
-                    to={`/games/${article.slug}/`}
-                    className="group bg-base-950/40 hover:bg-base-900/60 border border-base-800/80 hover:border-accent-violet-500/40 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-accent-violet-500/5 flex flex-col"
-                  >
-                    {article.image ? (
-                      <div className="aspect-video overflow-hidden bg-base-900">
-                        <img
-                          src={article.image}
-                          alt={article.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                          loading="lazy"
-                        />
-                      </div>
-                    ) : (
-                      <div className="aspect-video bg-gradient-to-br from-base-800 to-base-900 flex items-center justify-center">
-                        <span className="text-3xl">🎮</span>
-                      </div>
-                    )}
-                    <div className="p-4 flex-1 flex flex-col justify-between">
-                      <h3
-                        className="text-sm font-bold text-white group-hover:text-accent-violet-300 transition-colors line-clamp-2"
-                        dangerouslySetInnerHTML={{ __html: article.title }}
-                      />
-                      <span className="mt-3 text-[11px] font-semibold text-accent-pink-400 uppercase tracking-wider flex items-center gap-1">
-                        Read Article <span className="group-hover:translate-x-1 transition-transform">→</span>
-                      </span>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            </div>
-          ) : null}
 
-        </div>
-      </div>
+              {/* Latest Palworld Articles section */}
+              {loadingArticles ? (
+                <div className="mt-12 border-t border-base-800 pt-10 animate-pulse">
+                  <h2 className="text-2xl font-extrabold text-white mb-6 text-center">
+                    Latest <span className="text-accent-pink-400">Palworld</span> News & Guides
+                  </h2>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                    {Array(3).fill(0).map((_, idx) => (
+                      <div
+                        key={`article_skeleton_${idx}`}
+                        className="bg-base-950/40 border border-base-800/80 rounded-2xl overflow-hidden flex flex-col h-[280px]"
+                      >
+                        <div className="aspect-video bg-base-900/40"></div>
+                        <div className="p-4 flex-1 flex flex-col justify-between">
+                          <div className="space-y-2">
+                            <div className="h-4 bg-base-800 rounded w-full"></div>
+                            <div className="h-4 bg-base-800 rounded w-5/6"></div>
+                          </div>
+                          <div className="h-3 bg-base-800 rounded w-1/3 mt-4"></div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : articles.length > 0 ? (
+                <div className="mt-12 border-t border-base-800 pt-10">
+                  <h2 className="text-2xl font-extrabold text-white mb-6 text-center">
+                    Latest <span className="text-accent-pink-400">Palworld</span> News & Guides
+                  </h2>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                    {articles.map(article => (
+                      <Link
+                        key={article.id}
+                        to={`/games/${article.slug}/`}
+                        className="group bg-base-950/40 hover:bg-base-900/60 border border-base-800/80 hover:border-accent-violet-500/40 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-accent-violet-500/5 flex flex-col"
+                      >
+                        {article.image ? (
+                          <div className="aspect-video overflow-hidden bg-base-900">
+                            <img
+                              src={article.image}
+                              alt={article.title}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                              loading="lazy"
+                            />
+                          </div>
+                        ) : (
+                          <div className="aspect-video bg-gradient-to-br from-base-800 to-base-900 flex items-center justify-center">
+                            <span className="text-3xl">🎮</span>
+                          </div>
+                        )}
+                        <div className="p-4 flex-1 flex flex-col justify-between">
+                          <h3
+                            className="text-sm font-bold text-white group-hover:text-accent-violet-300 transition-colors line-clamp-2"
+                            dangerouslySetInnerHTML={{ __html: article.title }}
+                          />
+                          <span className="mt-3 text-[11px] font-semibold text-accent-pink-400 uppercase tracking-wider flex items-center gap-1">
+                            Read Article <span className="group-hover:translate-x-1 transition-transform">→</span>
+                          </span>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+
+            </div>
+          </div>
+        </>
+      )}
     </>
   );
 }
