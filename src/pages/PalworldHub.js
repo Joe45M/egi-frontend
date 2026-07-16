@@ -122,7 +122,7 @@ function PalworldHub() {
       <PageMetadata
         title={getPageTitle()}
         description={getPageDescription()}
-        image="/palworld-bingo-og.png?v=1"
+        image="/palworld-hub-og.png?v=1"
         imageAlt="Palworld Hub Directory"
         imageWidth={1200}
         imageHeight={630}
