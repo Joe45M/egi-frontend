@@ -531,7 +531,7 @@ function PalworldBingo() {
       applicationCategory: "GameApplication",
       operatingSystem: "Web Browser",
       url: `${SITE_URL}/palworld/bingo`,
-      screenshot: `${SITE_URL}/palworld-bingo-og.png`
+      screenshot: `${SITE_URL}/palworld-bingo-og.png?v=1`
     }),
     generateFAQPageSchema({
       questions: [
@@ -566,7 +566,7 @@ function PalworldBingo() {
         <PageMetadata
           title={`Palworld Bingo Overlay - Seed ${seed}`}
           description="Streamer overlay view for Palworld Bingo."
-          image="/palworld-bingo-og.png"
+          image="/palworld-bingo-og.png?v=1"
           imageAlt={`Palworld Bingo Overlay - Seed ${seed}`}
           imageWidth={1200}
           imageHeight={630}
@@ -679,7 +679,7 @@ function PalworldBingo() {
       <PageMetadata
         title={getPageTitle()}
         description={getPageDescription()}
-        image="/palworld-bingo-og.png"
+        image="/palworld-bingo-og.png?v=1"
         imageAlt="Palworld Bingo Card Generator"
         imageWidth={1200}
         imageHeight={630}
