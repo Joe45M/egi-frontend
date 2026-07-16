@@ -136,6 +136,41 @@ async function preloadRouteData(url) {
       }
     }
 
+    // Check if this is the Palworld Hub route: /palworld or /palworld/
+    if (pathname === '/palworld' || pathname === '/palworld/') {
+      try {
+        const palsResponse = await palworldApi.getPals({ limit: 150 }).catch(() => ({ data: [] }));
+        
+        let articles = [];
+        try {
+          const gameTerm = await wordpressApi.taxonomies.getBySlug('game', 'palworld');
+          if (gameTerm && gameTerm.id) {
+            const postsResponse = await wordpressApi.posts.getByPostType('games', {
+              taxonomyFilter: { game: gameTerm.id },
+              perPage: 12,
+              includeImages: true
+            });
+            articles = Array.isArray(postsResponse) ? postsResponse : (postsResponse?.posts || []);
+          }
+        } catch (postErr) {
+          console.error("Error preloading hub articles:", postErr);
+          const postsResponse = await wordpressApi.posts.getByPostType('games', {
+            perPage: 12,
+            includeImages: true
+          });
+          articles = Array.isArray(postsResponse) ? postsResponse : (postsResponse?.posts || []);
+        }
+
+        return {
+          pals: palsResponse.data || [],
+          articles,
+          postType: 'palworld-hub'
+        };
+      } catch (error) {
+        console.error('Error preloading Palworld Hub data:', error);
+      }
+    }
+
     // Check if this is the Pals listing route: /palworld/pals
     if (pathname === '/palworld/pals' || pathname === '/palworld/pals/') {
       try {

@@ -104,6 +104,12 @@ function Navigation() {
                 </button>
                 <div className="absolute left-0 mt-2 w-48 bg-base-950/95 backdrop-blur-xl border border-base-800/80 rounded-xl shadow-2xl py-2 hidden group-hover:block transition-all duration-300 z-50">
                   <Link
+                      to="/palworld"
+                      className="block px-4 py-2.5 text-sm font-semibold text-accent-violet-400 hover:text-white hover:bg-white/5 transition-all duration-200"
+                  >
+                    Palworld Hub
+                  </Link>
+                  <Link
                       to="/palworld/pals"
                       className="block px-4 py-2.5 text-sm text-base-300 hover:text-white hover:bg-white/5 transition-all duration-200"
                   >
@@ -225,6 +231,7 @@ function Navigation() {
             { to: '/games', label: 'Gaming news', delay: 100 },
             { to: '/games?game=rust', label: 'Rust', delay: 150 },
             { to: '/games?game=rimworld', label: 'Rimworld', delay: 200 },
+            { to: '/palworld', label: 'Palworld Hub', delay: 210 },
             { to: '/palworld/pals', label: 'Pals', delay: 220 },
             { to: '/palworld/tech', label: 'Technologies', delay: 240 },
             { to: '/palworld/bingo', label: 'Bingo Generator', delay: 250 },

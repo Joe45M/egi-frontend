@@ -26,6 +26,7 @@ const Pals = lazy(() => import('./pages/Pals'));
 const PalDetails = lazy(() => import('./pages/PalDetails'));
 const Technologies = lazy(() => import('./pages/Technologies'));
 const PalworldBingo = lazy(() => import('./pages/PalworldBingo'));
+const PalworldHub = lazy(() => import('./pages/PalworldHub'));
 
 // Loading fallback component
 const RouteLoadingFallback = () => (
@@ -64,6 +65,7 @@ export function getRouteElements() {
                 <Route path="tags/:slug" element={<Suspense fallback={<RouteLoadingFallback />}><TagArchive /></Suspense>} />
                 
                 {/* Palworld Routes */}
+                <Route path="palworld" element={<Suspense fallback={<RouteLoadingFallback />}><PalworldHub /></Suspense>} />
                 <Route path="palworld/pals" element={<Suspense fallback={<RouteLoadingFallback />}><Pals /></Suspense>} />
                 <Route path="palworld/pals/:id" element={<Suspense fallback={<RouteLoadingFallback />}><PalDetails /></Suspense>} />
                 <Route path="palworld/tech" element={<Suspense fallback={<RouteLoadingFallback />}><Technologies /></Suspense>} />
