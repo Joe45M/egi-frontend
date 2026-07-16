@@ -186,7 +186,8 @@ function PalDetails() {
         generateBreadcrumbSchema({
           items: [
             { name: "Home", url: SITE_URL },
-            { name: "Palworld Pals", url: `${SITE_URL}/palworld/pals` },
+            { name: "Palworld Hub", url: `${SITE_URL}/palworld` },
+            { name: "Pals Directory", url: `${SITE_URL}/palworld/pals` },
             { name: pal.name, url: `${SITE_URL}/palworld/pals/${id}` }
           ]
         })
@@ -204,6 +205,17 @@ function PalDetails() {
       {pal && <StructuredSchema schemas={schemas} />}
 
       <div className="pt-[140px] pb-16 px-4 container mx-auto max-w-4xl">
+        {/* Breadcrumb Trail Navigation */}
+        <nav className="flex items-center gap-2 text-xs font-semibold text-base-400 mb-6 bg-base-950/20 px-4 py-2.5 rounded-xl border border-base-800/40 w-fit">
+          <Link to="/" className="hover:text-accent-violet-300 transition-colors">Home</Link>
+          <span className="opacity-40">/</span>
+          <Link to="/palworld" className="hover:text-accent-violet-300 transition-colors">Palworld Hub</Link>
+          <span className="opacity-40">/</span>
+          <Link to="/palworld/pals" className="hover:text-accent-violet-300 transition-colors">Pals</Link>
+          <span className="opacity-40">/</span>
+          <span className="text-gray-200">{pal ? pal.name : 'Details'}</span>
+        </nav>
+
         <div className="mb-6">
           <Link
             to="/palworld/pals"
