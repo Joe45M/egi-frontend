@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
 import { palworldApi } from "../services/palworldApi";
 import wordpressApi from "../services/wordpressApi";
@@ -7,6 +7,82 @@ import StructuredSchema, { generateWebPageSchema, generateBreadcrumbSchema } fro
 
 import { useInitialData } from "../initialDataContext";
 import { useFlags, useBoolVariation } from "@launchdarkly/react-sdk";
+
+function HabitatMap({ spawns }) {
+  const canvasRef = useRef(null);
+  const imageRef = useRef(null);
+
+  const drawMap = () => {
+    const canvas = canvasRef.current;
+    const img = imageRef.current;
+    if (!canvas || !img) return;
+
+    const ctx = canvas.getContext('2d');
+    const rect = img.getBoundingClientRect();
+    
+    // Set internal resolution to match rendered size
+    canvas.width = rect.width;
+    canvas.height = rect.height;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    if (!spawns || spawns.length === 0) return;
+
+    const minCoord = -1024000;
+    const maxCoord = 1024000;
+    const range = maxCoord - minCoord;
+
+    spawns.forEach(pt => {
+      const relX = (pt.y - minCoord) / range;
+      const relY = 1.0 - (pt.x - minCoord) / range;
+
+      const px = relX * canvas.width;
+      const py = relY * canvas.height;
+
+      // Draw radius
+      const radiusPx = Math.max(4, (pt.radius / range) * canvas.width);
+
+      ctx.beginPath();
+      ctx.arc(px, py, radiusPx, 0, 2 * Math.PI);
+      if (pt.isBoss) {
+        ctx.fillStyle = 'rgba(239, 68, 68, 0.4)';
+        ctx.strokeStyle = 'rgba(239, 68, 68, 0.9)';
+      } else {
+        ctx.fillStyle = 'rgba(245, 158, 11, 0.18)';
+        ctx.strokeStyle = 'rgba(245, 158, 11, 0.75)';
+      }
+      ctx.lineWidth = 1.5;
+      ctx.fill();
+      ctx.stroke();
+    });
+  };
+
+  useEffect(() => {
+    window.addEventListener('resize', drawMap);
+    // Draw initial if image is already loaded
+    if (imageRef.current && imageRef.current.complete) {
+      drawMap();
+    }
+    return () => window.removeEventListener('resize', drawMap);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [spawns]);
+
+  return (
+    <div className="relative w-full aspect-square rounded-3xl overflow-hidden border border-base-800 bg-base-950/40">
+      <img
+        ref={imageRef}
+        src="/assets/pals/T_WorldMap.png"
+        alt="World Map"
+        className="w-full h-full object-cover select-none"
+        onLoad={drawMap}
+      />
+      <canvas
+        ref={canvasRef}
+        className="absolute inset-0 w-full h-full pointer-events-none"
+      />
+    </div>
+  );
+}
 
 function PalDetails() {
   const { id } = useParams();
@@ -22,10 +98,24 @@ function PalDetails() {
   const [error, setError] = useState(null);
   const [palGuides, setPalGuides] = useState([]);
   const [breedingSearch, setBreedingSearch] = useState("");
+  const [spawnsData, setSpawnsData] = useState(null);
 
   const { showPalBreedingDetails } = useFlags();
   const showBreedingVariation = useBoolVariation('show-pal-breeding-details', false);
   const showBreeding = showPalBreedingDetails || showBreedingVariation;
+
+  useEffect(() => {
+    const fetchSpawns = async () => {
+      try {
+        const response = await fetch('/assets/pals/spawns.json');
+        const data = await response.json();
+        setSpawnsData(data);
+      } catch (err) {
+        console.error("Error loading spawn data:", err);
+      }
+    };
+    fetchSpawns();
+  }, []);
 
   useEffect(() => {
     if (hasInitialData) {
@@ -288,6 +378,46 @@ function PalDetails() {
                 ) : (
                   <p className="text-xs text-base-400 italic">This Pal has no specific work suitabilities.</p>
                 )}
+              </div>
+
+              {/* Habitat & Spawns Map Section */}
+              <div className="bg-base-800/40 border border-base-800 rounded-2xl p-6">
+                <h2 className="text-md font-bold text-white uppercase tracking-wider pb-2 border-b border-base-700/50 mb-4 flex justify-between items-center">
+                  <span>Habitat Spawns Map</span>
+                  <span className="text-[10px] text-base-400 font-mono lowercase">Coordinates scale: ~1:1000</span>
+                </h2>
+                
+                {(() => {
+                  if (!pal) return null;
+                  const palSpawns = spawnsData ? spawnsData[pal.internal_id] : null;
+                  if (!palSpawns || palSpawns.length === 0) {
+                    return (
+                      <div className="py-8 text-center bg-base-950/20 rounded-2xl border border-base-800/60">
+                        <p className="text-sm text-base-400 italic">No wild habitat spawn locations found for this Pal.</p>
+                        <p className="text-xs text-base-500 mt-1">This Pal may be breed-only, dungeon-only, or obtained through specific boss raids.</p>
+                      </div>
+                    );
+                  }
+                  
+                  return (
+                    <div className="space-y-4">
+                      <HabitatMap spawns={palSpawns} />
+                      <div className="flex flex-wrap gap-4 text-xs font-semibold text-base-300 bg-base-950/30 p-3 rounded-xl border border-base-800/50">
+                        <div className="flex items-center gap-1.5">
+                          <span className="w-3 h-3 rounded-full bg-amber-500/20 border border-amber-500/70 inline-block"></span>
+                          <span>Wild Spawns</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <span className="w-3 h-3 rounded-full bg-red-500/40 border border-red-500 inline-block"></span>
+                          <span>Alpha Boss Spawn</span>
+                        </div>
+                        <div className="ml-auto text-[11px] text-base-500">
+                          Total Spawn Points: {palSpawns.length}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })()}
               </div>
             </div>
           </div>

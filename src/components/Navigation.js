@@ -115,6 +115,12 @@ function Navigation() {
                   >
                     Technologies Tree
                   </Link>
+                  <Link
+                      to="/palworld/bingo"
+                      className="block px-4 py-2.5 text-sm text-base-300 hover:text-white hover:bg-white/5 transition-all duration-200"
+                  >
+                    Bingo Generator
+                  </Link>
                 </div>
               </div>
             </div>
@@ -221,6 +227,7 @@ function Navigation() {
             { to: '/games?game=rimworld', label: 'Rimworld', delay: 200 },
             { to: '/palworld/pals', label: 'Pals', delay: 220 },
             { to: '/palworld/tech', label: 'Technologies', delay: 240 },
+            { to: '/palworld/bingo', label: 'Bingo Generator', delay: 250 },
             { to: '/readlist', label: 'Read list', delay: 260 }
           ].map((item, index) => (
             <Link
