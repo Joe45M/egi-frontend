@@ -168,25 +168,49 @@ export default function PalworldBreeding() {
 
   if (loading) {
     return (
-      <div className="pt-[200px] p-4 container mx-auto text-center">
-        <div className="animate-pulse max-w-xl mx-auto">
-          <div className="h-12 bg-base-800 rounded-lg mb-4 w-3/4 mx-auto"></div>
-          <div className="h-6 bg-base-800 rounded mb-8 w-1/2 mx-auto"></div>
-          <div className="h-48 bg-base-800 rounded-2xl"></div>
+      <>
+        <PageMetadata
+          title={getPageTitle()}
+          description={getPageDescription()}
+          image="/palworld-breeding-og.png"
+          imageAlt="Palworld Breeding Calculator Tool"
+          imageWidth={1200}
+          imageHeight={630}
+          keywords="palworld breeding calculator, palworld breeding combos, palworld 1.0 breeding, palworld breeding mutation, passive skill inheritance"
+        />
+        <StructuredSchema schemas={schemas} />
+        <div className="pt-[200px] p-4 container mx-auto text-center">
+          <div className="animate-pulse max-w-xl mx-auto">
+            <div className="h-12 bg-base-800 rounded-lg mb-4 w-3/4 mx-auto"></div>
+            <div className="h-6 bg-base-800 rounded mb-8 w-1/2 mx-auto"></div>
+            <div className="h-48 bg-base-800 rounded-2xl"></div>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
   if (error) {
     return (
-      <div className="pt-[200px] p-4 container mx-auto text-center text-white">
-        <div className="max-w-md mx-auto bg-red-950/20 border border-red-500/20 p-6 rounded-2xl">
-          <h2 className="text-xl font-bold text-red-500 mb-2">Error Loading Data</h2>
-          <p className="text-base-400 mb-4">{error}</p>
-          <Link to="/palworld" className="text-accent-pink-400 hover:underline">Return to Palworld Hub</Link>
+      <>
+        <PageMetadata
+          title={getPageTitle()}
+          description={getPageDescription()}
+          image="/palworld-breeding-og.png"
+          imageAlt="Palworld Breeding Calculator Tool"
+          imageWidth={1200}
+          imageHeight={630}
+          keywords="palworld breeding calculator, palworld breeding combos, palworld 1.0 breeding, palworld breeding mutation, passive skill inheritance"
+        />
+        <StructuredSchema schemas={schemas} />
+        <div className="pt-[200px] p-4 container mx-auto text-center text-white">
+          <div className="max-w-md mx-auto bg-red-950/20 border border-red-500/20 p-6 rounded-2xl">
+            <h2 className="text-xl font-bold text-red-500 mb-2">Error Loading Data</h2>
+            <p className="text-base-400 mb-4">{error}</p>
+            <Link to="/palworld" className="text-accent-pink-400 hover:underline">Return to Palworld Hub</Link>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
