@@ -441,7 +441,7 @@ function PalDetails() {
               Breeding Combinations for <span className="text-accent-pink-400">{pal?.name}</span>
             </h2>
             <p className="text-sm text-base-300 mb-6">
-              Breed these Pal combinations together to obtain {pal?.name}.
+              Breed these Pal combinations together to obtain {pal?.name}. Or find custom combinations for any species with our interactive <Link to="/palworld/palworld-breeding" className="text-accent-pink-450 font-bold hover:underline">Breeding Calculator</Link>.
             </p>
 
             {/* Search Bar */}

@@ -129,7 +129,7 @@ function Technologies() {
             Palworld <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent-pink-500 to-accent-violet-500">Technology Tree</span>
           </h1>
           <p className="text-base-300 max-w-2xl text-sm md:text-base">
-            Discover and calculate costs for all Palworld technologies. Filter by technology level, cost points, and classification.
+            Discover and calculate costs for all Palworld technologies. Filter by technology level, cost points, and classification, or check out how to breed your mount Pals with our <Link to="/palworld/palworld-breeding" className="text-accent-pink-450 font-bold hover:underline">Breeding Calculator</Link>.
           </p>
         </div>
 

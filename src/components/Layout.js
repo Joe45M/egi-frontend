@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import Navigation from './Navigation';
 import Footer from './Footer';
@@ -7,6 +8,13 @@ import StructuredSchema, { generateOrganizationSchema, generateWebSiteSchema } f
 
 function Layout() {
   const location = useLocation();
+  
+  useEffect(() => {
+    // Clear chunk-load-reload flag since the app loaded/mounted successfully
+    if (typeof window !== 'undefined') {
+      sessionStorage.removeItem('chunk-load-reload');
+    }
+  }, []);
   
   // Detect popout mode from query parameters to bypass header/footer layout elements
   const isPopout = new URLSearchParams(location.search).get('popout') === 'true';

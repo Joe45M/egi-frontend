@@ -127,6 +127,12 @@ function Navigation() {
                   >
                     Bingo Generator
                   </Link>
+                  <Link
+                      to="/palworld/palworld-breeding"
+                      className="block px-4 py-2.5 text-sm text-base-300 hover:text-white hover:bg-white/5 transition-all duration-200"
+                  >
+                    Breeding Calculator
+                  </Link>
                 </div>
               </div>
             </div>
@@ -235,6 +241,7 @@ function Navigation() {
             { to: '/palworld/pals', label: 'Pals', delay: 220 },
             { to: '/palworld/tech', label: 'Technologies', delay: 240 },
             { to: '/palworld/bingo', label: 'Bingo Generator', delay: 250 },
+            { to: '/palworld/palworld-breeding', label: 'Breeding Calculator', delay: 255 },
             { to: '/readlist', label: 'Read list', delay: 260 }
           ].map((item, index) => (
             <Link

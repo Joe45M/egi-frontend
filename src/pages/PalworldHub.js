@@ -10,6 +10,7 @@ import StructuredSchema, {
 import { palworldApi } from '../services/palworldApi';
 import wordpressApi from '../services/wordpressApi';
 import { useInitialData } from '../initialDataContext';
+import FAQ from '../components/FAQ';
 
 // 10 Detailed FAQs for Palworld 1.0
 const FAQS = [
@@ -72,7 +73,6 @@ function PalworldHub() {
   // Search input & filtering state
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedElement, setSelectedElement] = useState("all");
-  const [openFaqIndex, setOpenFaqIndex] = useState(null);
 
   // Dynamic filtered list query state
   const [filteredPals, setFilteredPals] = useState([]);
@@ -353,8 +353,8 @@ function PalworldHub() {
             )}
           </div>
 
-          {/* Core Utilities Grid (3 CTA Cards) */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+          {/* Core Utilities Grid (4 CTA Cards) */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
             
             {/* CTA 1: Paldex Directory */}
             <Link
@@ -376,27 +376,47 @@ function PalworldHub() {
               </span>
             </Link>
 
-            {/* CTA 2: Technology Tree */}
+            {/* CTA 2: Breeding Calculator */}
             <Link
-              to="/palworld/tech"
+              to="/palworld/palworld-breeding"
               className="group bg-base-950/50 hover:bg-base-900/60 border border-base-800 hover:border-accent-pink-500/40 rounded-3xl p-6 sm:p-8 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-accent-pink-500/5 relative overflow-hidden flex flex-col justify-between"
             >
-              <div className="absolute top-0 right-0 w-[120px] h-[120px] bg-[radial-gradient(circle_at_top_right,rgba(236,72,153,0.1),transparent_70%)] pointer-events-none"></div>
+              <div className="absolute top-0 right-0 w-[120px] h-[120px] bg-[radial-gradient(circle_at_top_right,rgba(236,72,153,0.15),transparent_70%)] pointer-events-none"></div>
+              <div>
+                <span className="text-4xl mb-4 block filter drop-shadow">🧬</span>
+                <h3 className="text-xl font-bold text-white mb-2 group-hover:text-accent-pink-300 transition-colors">
+                  Breeding Calculator
+                </h3>
+                <p className="text-gray-400 text-xs sm:text-sm leading-relaxed mb-6">
+                  Select parents to find offspring, check combos for a target Pal, and learn the 1.0 mutation mechanics & passive inheritance rules.
+                </p>
+              </div>
+              <span className="text-xs font-bold text-accent-pink-400 group-hover:text-accent-pink-300 uppercase tracking-widest flex items-center gap-1">
+                Calculate Combos <span className="group-hover:translate-x-1.5 transition-transform duration-200">→</span>
+              </span>
+            </Link>
+
+            {/* CTA 3: Technology Tree */}
+            <Link
+              to="/palworld/tech"
+              className="group bg-base-950/50 hover:bg-base-900/60 border border-base-800 hover:border-accent-violet-500/40 rounded-3xl p-6 sm:p-8 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-accent-violet-500/5 relative overflow-hidden flex flex-col justify-between"
+            >
+              <div className="absolute top-0 right-0 w-[120px] h-[120px] bg-[radial-gradient(circle_at_top_right,rgba(168,85,247,0.1),transparent_70%)] pointer-events-none"></div>
               <div>
                 <span className="text-4xl mb-4 block filter drop-shadow">⚡</span>
-                <h3 className="text-xl font-bold text-white mb-2 group-hover:text-accent-pink-300 transition-colors">
+                <h3 className="text-xl font-bold text-white mb-2 group-hover:text-accent-violet-300 transition-colors">
                   Technology Tree
                 </h3>
                 <p className="text-gray-400 text-xs sm:text-sm leading-relaxed mb-6">
                   Trace level requirements and technology point costs for items, weapons, structures, and Pal saddles. Plan your build progression.
                 </p>
               </div>
-              <span className="text-xs font-bold text-accent-pink-400 group-hover:text-accent-pink-300 uppercase tracking-widest flex items-center gap-1">
+              <span className="text-xs font-bold text-accent-violet-400 group-hover:text-accent-violet-300 uppercase tracking-widest flex items-center gap-1">
                 View Tech Tree <span className="group-hover:translate-x-1.5 transition-transform duration-200">→</span>
               </span>
             </Link>
 
-            {/* CTA 3: Seeded Bingo */}
+            {/* CTA 4: Seeded Bingo */}
             <Link
               to="/palworld/bingo"
               className="group bg-base-950/50 hover:bg-base-900/60 border border-base-800 hover:border-amber-500/40 rounded-3xl p-6 sm:p-8 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-amber-500/5 relative overflow-hidden flex flex-col justify-between"
@@ -599,45 +619,12 @@ function PalworldHub() {
           </div>
 
           {/* Interactive FAQs Accordion Section */}
-          <div className="border-t border-base-800 pt-12">
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-white text-center mb-2">
-              Palworld 1.0 Frequently Asked Questions
-            </h2>
-            <p className="text-gray-400 text-xs sm:text-sm text-center mb-8">
-              Everything you need to know about the official Palworld 1.0 release, map expansions, and breeding progression.
-            </p>
-
-            <div className="max-w-3xl mx-auto space-y-4">
-              {FAQS.map((faq, index) => {
-                const isOpen = openFaqIndex === index;
-                return (
-                  <div
-                    key={`faq_${index}`}
-                    className="bg-base-950/30 border border-base-800/60 rounded-2xl overflow-hidden transition-all duration-200"
-                  >
-                    <button
-                      onClick={() => setOpenFaqIndex(isOpen ? null : index)}
-                      className="w-full px-6 py-4 flex items-center justify-between text-left focus:outline-none hover:bg-white/[0.02] transition-colors"
-                    >
-                      <span className="text-sm sm:text-base font-bold text-white pr-4">
-                        {faq.q}
-                      </span>
-                      <span className={`text-accent-violet-400 font-bold transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}>
-                        ▼
-                      </span>
-                    </button>
-                    
-                    {/* Collapsible Answer Body */}
-                    {isOpen && (
-                      <div className="px-6 pb-5 pt-1 text-xs sm:text-sm text-base-300 border-t border-base-900 bg-base-950/15 leading-relaxed whitespace-pre-line">
-                        {faq.a}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
+          <FAQ 
+            faqs={FAQS} 
+            title="Palworld 1.0 Frequently Asked Questions" 
+            subtitle="Everything you need to know about the official Palworld 1.0 release, map expansions, and breeding progression."
+            accentColorClass="text-accent-violet-400"
+          />
 
         </div>
       </div>

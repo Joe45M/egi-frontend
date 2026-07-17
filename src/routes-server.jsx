@@ -25,6 +25,7 @@ import PalDetails from './pages/PalDetails';
 import Technologies from './pages/Technologies';
 import PalworldBingo from './pages/PalworldBingo';
 import PalworldHub from './pages/PalworldHub';
+import PalworldBreeding from './pages/PalworldBreeding';
 
 export function getRouteElements() {
     return (
@@ -56,6 +57,7 @@ export function getRouteElements() {
                 <Route path="palworld/pals/:id" element={<PalDetails />} />
                 <Route path="palworld/tech" element={<Technologies />} />
                 <Route path="palworld/bingo" element={<PalworldBingo />} />
+                <Route path="palworld/palworld-breeding" element={<PalworldBreeding />} />
 
                 <Route path="404" element={<NotFound />} />
                 <Route path="*" element={<Navigate to="/404" replace />} />

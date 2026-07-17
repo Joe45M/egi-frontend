@@ -175,7 +175,7 @@ function Pals() {
             Palworld <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent-pink-500 to-accent-violet-500">Pals Directory</span>
           </h1>
           <p className="text-base-300 max-w-2xl text-sm md:text-base">
-            Complete database of all Pals in Palworld. Use the advanced filtering below to search by Element types, Work Suitabilities, Stats ranges, and more.
+            Complete database of all Pals in Palworld. Filter by Elements, Work Suitability, and Stats, or find optimal parent combinations with our <Link to="/palworld/palworld-breeding" className="text-accent-pink-450 font-bold hover:underline">Breeding Calculator</Link>.
           </p>
         </div>
 

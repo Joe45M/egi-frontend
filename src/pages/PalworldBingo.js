@@ -696,8 +696,7 @@ function PalworldBingo() {
                   Palworld Bingo Board Generator
                 </h1>
                 <p className="text-gray-400 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed">
-                  Generate custom Palworld Bingo cards for speedruns, scavenger hunts, and co-op races. 
-                  Use our free seed-based Palworld Bingo board maker to create unique challenges instantly. Click cells to mark off completed tasks!
+                  Generate custom Palworld Bingo cards for speedruns, scavenger hunts, and co-op races. Use our free seed-based board maker to create unique challenges, or plan your next breeding project with our <Link to="/palworld/palworld-breeding" className="text-accent-pink-400 font-bold hover:underline">Breeding Calculator</Link>.
                 </p>
               </div>
 
