@@ -4,4 +4,4 @@ User-agent: *
 Allow: /
 Disallow: /api/
 
-Sitemap: https://api.elitegamerinsights.com/games-sitemap.xml
+Sitemap: https://api-v2.elitegamerinsights.com/sitemap.xml

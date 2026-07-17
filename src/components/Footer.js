@@ -125,7 +125,7 @@ function Footer() {
               <Link to="/game-download-speed-calculator" className="text-gray-400 hover:bg-gradient-to-r hover:from-accent-pink-400 hover:to-accent-violet-400 hover:bg-clip-text hover:text-transparent transition-all duration-300">
                 Game Download Speed Calculator
               </Link>
-              <Link to="https://api.elitegamerinsights.com/sitemap_index.xml" className="text-gray-400 hover:bg-gradient-to-r hover:from-accent-pink-400 hover:to-accent-violet-400 hover:bg-clip-text hover:text-transparent transition-all duration-300">
+              <Link to="https://api-v2.elitegamerinsights.com/sitemap.xml" className="text-gray-400 hover:bg-gradient-to-r hover:from-accent-pink-400 hover:to-accent-violet-400 hover:bg-clip-text hover:text-transparent transition-all duration-300">
                 Sitemap
               </Link>
             </div>
