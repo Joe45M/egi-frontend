@@ -687,6 +687,15 @@ function PalworldBingo() {
           <div className="min-h-screen pt-[120px] pb-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
             <div className="container mx-auto max-w-4xl relative z-10">
               
+              {/* Breadcrumb Trail Navigation */}
+              <nav className="flex items-center gap-2 text-xs font-semibold text-base-400 mb-6 bg-base-950/20 px-4 py-2.5 rounded-xl border border-base-800/40 w-fit mx-auto sm:mx-0">
+                <Link to="/" className="hover:text-accent-violet-300 transition-colors">Home</Link>
+                <span className="opacity-40">/</span>
+                <Link to="/palworld" className="hover:text-accent-violet-300 transition-colors">Palworld Hub</Link>
+                <span className="opacity-40">/</span>
+                <span className="text-gray-200">Bingo Generator</span>
+              </nav>
+
               {/* Header */}
               <div className="text-center mb-8 relative">
                 {/* Visual background glow */}
