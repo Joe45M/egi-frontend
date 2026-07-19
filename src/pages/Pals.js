@@ -352,6 +352,9 @@ function Pals() {
 
           {/* Pals Content */}
           <div className="flex-grow">
+            {/* Mobile Paldex Sidebar ad fallback (shows on mobile, hidden on desktop) */}
+            <AdPlacement placement="paldexSidebar" className="lg:hidden !my-4" />
+
             {/* Top Toolbar */}
             <div className="bg-base-800/40 rounded-xl p-4 border border-base-800/80 mb-6 flex flex-col sm:flex-row gap-4 items-center justify-between">
               {/* Search Bar */}

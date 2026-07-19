@@ -44,14 +44,21 @@ function AdPlacement({ placement, className = "", style = {} }) {
       mutationObserver.observe(adElement, { attributes: true, childList: true, subtree: true });
     }
 
-    // 2. Set up fallback timeout to check if loading failed (due to AdBlocker or network timeout)
+    // 2. Set up fallback timeout to check if loading failed (due to AdBlocker or explicit unfilled status)
     const timeoutTimer = setTimeout(() => {
-      const handled = checkStatus();
-      if (!handled) {
-        // If still no status and no iframe, assume it failed/blocked
+      const adStatus = adElement.getAttribute('data-ad-status');
+      const hasIframe = adElement.querySelector('iframe') !== null;
+
+      if (adStatus === 'unfilled') {
         setIsAdFailed(true);
+      } else if (!window.adsbygoogle || (!hasIframe && !adStatus)) {
+        // Only collapse if the script is blocked (no adsbygoogle) or it has zero activity
+        setIsAdFailed(true);
+      } else if (adStatus === 'filled' || hasIframe) {
+        setIsAdLoaded(true);
+        setIsAdFailed(false);
       }
-    }, 5000); // 5 seconds timeout (slightly increased to allow polling to complete)
+    }, 8000); // 8 seconds timeout (allows slow network loads without premature collapse)
 
     // 3. AdSense Initialization Logic
     const initAd = () => {
@@ -85,7 +92,7 @@ function AdPlacement({ placement, className = "", style = {} }) {
               clearInterval(pollInterval);
               pollInterval = null;
             }
-          } else if (pollCount > 25) { // Stop polling after 5 seconds (25 * 200ms)
+          } else if (pollCount > 30) { // Stop polling after 6 seconds (30 * 200ms)
             clearInterval(pollInterval);
             pollInterval = null;
           }
@@ -150,6 +157,7 @@ function AdPlacement({ placement, className = "", style = {} }) {
   // Combine inline styles
   const combinedStyle = {
     display: "block",
+    width: "100%",
     textAlign: "center",
     ...configStyle,
     ...style

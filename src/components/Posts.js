@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import PostCard from "./PostCard";
 import wordpressApi from "../services/wordpressApi";
 import { useInitialData } from "../initialDataContext";
+import AdPlacement from "./AdPlacement";
 
 function Posts({ posts: propPosts = null }) {
   const initialData = useInitialData();
@@ -58,6 +59,17 @@ function Posts({ posts: propPosts = null }) {
 
   const postsToDisplay = posts;
 
+  const renderedItems = useMemo(() => {
+    const list = [];
+    postsToDisplay.forEach((post, idx) => {
+      if (idx > 0 && idx % 12 === 0) {
+        list.push({ isAd: true, id: `ad-posts-grid-${idx}` });
+      }
+      list.push(post);
+    });
+    return list;
+  }, [postsToDisplay]);
+
   // Loading state
   if (loading) {
     return (
@@ -105,7 +117,16 @@ function Posts({ posts: propPosts = null }) {
   return (
     <div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {postsToDisplay.map((post) => {
+        {renderedItems.map((item) => {
+          if (item.isAd) {
+            return (
+              <div key={item.id} className="col-span-1 md:col-span-2 lg:col-span-3 flex justify-center items-center my-2">
+                <AdPlacement placement="paldexGrid" className="!my-0" />
+              </div>
+            );
+          }
+
+          const post = item;
           // Use post slug for link, or fallback to /games with id
           const postLink = post.slug ? `/games/${post.slug}` : `/games?id=${post.id}`;
           // Fallback image if no featured image

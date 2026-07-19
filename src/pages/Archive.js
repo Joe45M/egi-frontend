@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useParams, useSearchParams, Link, Navigate } from "react-router-dom";
 import wordpressApi from "../services/wordpressApi";
 import Pagination from "../components/Pagination";
 import PageMetadata, { SITE_URL } from "../components/PageMetadata";
 import StructuredSchema, { generateCollectionPageSchema, generateBreadcrumbSchema, generateWebPageSchema } from "../components/StructuredSchema";
 import PostCard from "../components/PostCard";
+import AdPlacement from "../components/AdPlacement";
 function Archive({ type: propType }) {
   const { type: paramType } = useParams();
   const type = propType || paramType;
@@ -20,6 +21,17 @@ function Archive({ type: propType }) {
   const gameParam = searchParams.get('game'); // Can be slug or ID
   const postsPerPage = 24;
   const [gameTermId, setGameTermId] = useState(null);
+
+  const renderedItems = useMemo(() => {
+    const list = [];
+    posts.forEach((post, idx) => {
+      if (idx > 0 && idx % 12 === 0) {
+        list.push({ isAd: true, id: `ad-archive-grid-${idx}` });
+      }
+      list.push(post);
+    });
+    return list;
+  }, [posts]);
 
   useEffect(() => {
     const fetchGameInfo = async () => {
@@ -282,8 +294,16 @@ function Archive({ type: propType }) {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {posts.map((post) => {
-            // Use post slug for link
+          {renderedItems.map((item) => {
+            if (item.isAd) {
+              return (
+                <div key={item.id} className="col-span-1 md:col-span-2 lg:col-span-3 flex justify-center items-center my-2">
+                  <AdPlacement placement="paldexGrid" className="!my-0" />
+                </div>
+              );
+            }
+
+            const post = item;
             const postLink = post.slug ? `/${type}/${post.slug}` : `/${type}?id=${post.id}`;
 
             return (
