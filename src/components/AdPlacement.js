@@ -16,6 +16,7 @@ function AdPlacement({ placement, className = "", style = {} }) {
 
     let observer = null;
     let timer = null;
+    let pollInterval = null;
     let mutationObserver = null;
 
     // Check status helper
@@ -50,7 +51,7 @@ function AdPlacement({ placement, className = "", style = {} }) {
         // If still no status and no iframe, assume it failed/blocked
         setIsAdFailed(true);
       }
-    }, 4000); // 4 seconds timeout
+    }, 5000); // 5 seconds timeout (slightly increased to allow polling to complete)
 
     // 3. AdSense Initialization Logic
     const initAd = () => {
@@ -75,13 +76,32 @@ function AdPlacement({ placement, className = "", style = {} }) {
     const tryInit = () => {
       const success = initAd();
       if (!success) {
-        // If not initialized (due to offsetWidth = 0), monitor for size changes
-        if (typeof ResizeObserver !== 'undefined') {
+        // If adsbygoogle is not loaded yet, or element width is 0, poll for script availability
+        let pollCount = 0;
+        pollInterval = setInterval(() => {
+          pollCount++;
+          if (window.adsbygoogle && adElement.offsetWidth > 0) {
+            if (initAd()) {
+              clearInterval(pollInterval);
+              pollInterval = null;
+            }
+          } else if (pollCount > 25) { // Stop polling after 5 seconds (25 * 200ms)
+            clearInterval(pollInterval);
+            pollInterval = null;
+          }
+        }, 200);
+
+        // Also monitor for size changes if width was 0 initially
+        if (adElement.offsetWidth === 0 && typeof ResizeObserver !== 'undefined') {
           observer = new ResizeObserver(() => {
-            if (adElement.offsetWidth > 0) {
+            if (adElement.offsetWidth > 0 && window.adsbygoogle) {
               if (initAd()) {
                 observer.disconnect();
                 observer = null;
+                if (pollInterval) {
+                  clearInterval(pollInterval);
+                  pollInterval = null;
+                }
               }
             }
           });
@@ -96,6 +116,7 @@ function AdPlacement({ placement, className = "", style = {} }) {
     return () => {
       if (timer) clearTimeout(timer);
       clearTimeout(timeoutTimer);
+      if (pollInterval) clearInterval(pollInterval);
       if (observer) observer.disconnect();
       if (mutationObserver) mutationObserver.disconnect();
     };

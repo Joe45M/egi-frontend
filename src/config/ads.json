@@ -34,7 +34,7 @@
     "paldexGrid": {
       "enabled": true,
       "slot": "2742820353",
-      "format": "horizontal",
+      "format": "auto",
       "responsive": true
     }
   }
