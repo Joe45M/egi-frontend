@@ -7,6 +7,8 @@ import ScrollToTop from './ScrollToTop';
 import StructuredSchema, { generateOrganizationSchema, generateWebSiteSchema } from './StructuredSchema';
 import AdPlacement from './AdPlacement';
 
+import adsConfig from '../config/ads.json';
+
 function Layout() {
   const location = useLocation();
   
@@ -14,6 +16,27 @@ function Layout() {
     // Clear chunk-load-reload flag since the app loaded/mounted successfully
     if (typeof window !== 'undefined') {
       sessionStorage.removeItem('chunk-load-reload');
+    }
+
+    // Dynamic loading of Google AdSense after hydration
+    const loadAdSense = () => {
+      if (typeof window !== 'undefined' && !window.adsenseScriptLoaded) {
+        window.adsenseScriptLoaded = true;
+        const script = document.createElement('script');
+        script.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsConfig.clientId}`;
+        script.async = true;
+        script.crossOrigin = 'anonymous';
+        document.body.appendChild(script);
+      }
+    };
+    
+    // We defer loading slightly to prioritize main thread for layout/hydration
+    if (typeof window !== 'undefined') {
+      if (window.requestIdleCallback) {
+        window.requestIdleCallback(() => loadAdSense());
+      } else {
+        setTimeout(loadAdSense, 1000);
+      }
     }
   }, []);
   

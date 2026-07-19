@@ -9,22 +9,57 @@ function AdPlacement({ placement, className = "", style = {} }) {
     // If the placement is disabled or not configured, do nothing
     if (!config || !config.enabled) return;
 
-    const timer = setTimeout(() => {
-      if (adRef.current && window.adsbygoogle) {
+    let observer = null;
+    let timer = null;
+
+    const initAd = () => {
+      const adElement = adRef.current;
+      if (!adElement || !window.adsbygoogle) return false;
+
+      // Check if the element is visible (has width > 0)
+      if (adElement.offsetWidth > 0) {
         try {
-          const adElement = adRef.current;
-          // Check if this ad hasn't been initialized yet
           if (!adElement.dataset.adsbygoogleStatus) {
             window.adsbygoogle.push({});
             adElement.dataset.adsbygoogleStatus = 'done';
           }
+          return true; // Successfully initialized
         } catch (e) {
           console.error(`AdSense error for placement "${placement}":`, e);
+          return true; // Don't try again if it errored
         }
       }
-    }, 150); // slight delay to ensure DOM is ready and prevent layout shift during mount
+      return false; // Not initialized yet because width is 0
+    };
 
-    return () => clearTimeout(timer);
+    const tryInit = () => {
+      const success = initAd();
+      if (!success) {
+        // If not initialized (due to offsetWidth = 0), monitor for size changes
+        const adElement = adRef.current;
+        if (adElement && typeof ResizeObserver !== 'undefined') {
+          observer = new ResizeObserver(() => {
+            if (adElement.offsetWidth > 0) {
+              if (initAd()) {
+                observer.disconnect();
+                observer = null;
+              }
+            }
+          });
+          observer.observe(adElement);
+        }
+      }
+    };
+
+    // Delay slightly to ensure layout has computed sizes
+    timer = setTimeout(tryInit, 150);
+
+    return () => {
+      if (timer) clearTimeout(timer);
+      if (observer) {
+        observer.disconnect();
+      }
+    };
   }, [placement, config]);
 
   // If placement is not found or disabled, don't render anything

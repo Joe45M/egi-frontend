@@ -80,16 +80,7 @@
       <script src="https://cdn.usefathom.com/script.js" data-site="GPASAVRX" data-spa="auto" defer></script>
       <!-- / Fathom -->
       
-      <!-- Google AdSense - Load asynchronously after page load -->
-      <script>
-        // Prefetch AdSense script
-        const link = document.createElement('link');
-        link.rel = 'prefetch';
-        link.href = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6764478945960117';
-        document.head.appendChild(link);
-      </script>
-      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6764478945960117"
-              crossorigin="anonymous"></script>
+      <!-- Google AdSense script is loaded dynamically in src/components/Layout.js to prevent hydration errors -->
 
       <!-- Microsoft Clarity - Load after page load -->
       <script>
