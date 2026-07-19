@@ -132,7 +132,7 @@ function Pals() {
     setPage(1);
   };
 
-  const getPageTitle = () => "Palworld Pals Directory & Stats Database - EliteGamerInsights";
+  const getPageTitle = () => "Palworld Pals Directory & Stats Database";
   const getPageDescription = () => "Explore the full Palworld directory. Filter and search all Pals by elements, work suitabilities, stats, and discover details, rarity, and fast navigation.";
 
   const renderedItems = useMemo(() => {

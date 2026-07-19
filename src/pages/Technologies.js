@@ -86,7 +86,7 @@ function Technologies() {
     setPage(1);
   };
 
-  const getPageTitle = () => "Palworld Technology tree Calculator & Database - EliteGamerInsights";
+  const getPageTitle = () => "Palworld Technology tree Calculator & Database";
   const getPageDescription = () => "Complete listing of Palworld technologies, costs, unlock levels, unlocks structures, items, and ancient vs regular categories.";
 
   const schemas = [

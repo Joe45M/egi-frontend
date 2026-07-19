@@ -213,7 +213,7 @@ function PalworldHub() {
     return articles.slice(0, visibleGuidesCount);
   }, [articles, visibleGuidesCount]);
 
-  const getPageTitle = () => "Palworld Guides, Paldex & Tech Tree | Elite Gamer Insights";
+  const getPageTitle = () => "Palworld Guides, Paldex & Tech Tree";
   const getPageDescription = () => "The ultimate Palworld companion hub. Access complete Paldex stats, technology trees, seeded bingo cards, and 1.0 guides. Learn base building & breeding combos.";
 
   const schemas = [
