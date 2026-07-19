@@ -194,7 +194,8 @@ function Pals() {
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Filters Sidebar (Desktop) / Dropdown (Mobile) */}
           <div className={`w-full lg:w-1/4 ${showMobileFilters ? "block mb-6" : "hidden lg:block"} shrink-0`}>
-            <div className="bg-base-800/80 backdrop-blur-md rounded-2xl p-6 border border-base-700/50 sticky top-28 space-y-6 max-h-[60vh] overflow-y-auto">
+            <div className="sticky top-28 space-y-6">
+              <div className="bg-base-800/80 backdrop-blur-md rounded-2xl p-6 border border-base-700/50 space-y-6 max-h-[60vh] overflow-y-auto">
               <div className="flex justify-between items-center pb-4 border-b border-base-700">
                 <h2 className="text-lg font-bold text-white">Filters</h2>
                 <button
@@ -345,10 +346,11 @@ function Pals() {
                   </div>
                 </div>
               </div>
+              
+              <AdPlacement placement="paldexSidebar" className="hidden lg:flex !my-0" />
             </div>
-            
-            <AdPlacement placement="paldexSidebar" className="hidden lg:flex mt-6" />
           </div>
+        </div>
 
           {/* Pals Content */}
           <div className="flex-grow">

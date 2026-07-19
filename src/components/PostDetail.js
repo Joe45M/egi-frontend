@@ -531,7 +531,7 @@ function PostDetail({ postType = 'games', basePath = '/games' }) {
                             )}
                         </div>
 
-                        <div className="lg:col-span-2">
+                        <div className="lg:col-span-2 space-y-6">
                             {/* Author Box */}
                             <AuthorBox
                                 name={post.authorName}
@@ -539,8 +539,6 @@ function PostDetail({ postType = 'games', basePath = '/games' }) {
                                 avatarUrl={post.authorAvatar}
                                 slug={post.authorSlug}
                             />
-
-                            <AdPlacement placement="articleSidebar" />
 
                              {/* Game Related Posts */}
                              {associatedGame && (
@@ -564,6 +562,16 @@ function PostDetail({ postType = 'games', basePath = '/games' }) {
                                  limit={20}
                                  initialPosts={post.relatedPosts}
                              />
+
+                             {/* Sticky Ad Placement on Desktop */}
+                             <div className="sticky top-28 hidden lg:block">
+                                 <AdPlacement placement="articleSidebar" className="!my-0" />
+                             </div>
+
+                             {/* Mobile Fallback Ad Placement */}
+                             <div className="lg:hidden">
+                                 <AdPlacement placement="articleSidebar" className="!my-0" />
+                             </div>
                         </div>
                     </div>
                 </div>
