@@ -1,20 +1,60 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import adsConfig from '../config/ads.json';
 
 function AdPlacement({ placement, className = "", style = {} }) {
   const adRef = useRef(null);
   const config = adsConfig.placements[placement];
+  const [isAdLoaded, setIsAdLoaded] = useState(false);
+  const [isAdFailed, setIsAdFailed] = useState(false);
 
   useEffect(() => {
     // If the placement is disabled or not configured, do nothing
     if (!config || !config.enabled) return;
 
+    const adElement = adRef.current;
+    if (!adElement) return;
+
     let observer = null;
     let timer = null;
+    let mutationObserver = null;
 
+    // Check status helper
+    const checkStatus = () => {
+      const adStatus = adElement.getAttribute('data-ad-status');
+      const hasIframe = adElement.querySelector('iframe') !== null;
+
+      if (adStatus === 'filled' || hasIframe) {
+        setIsAdLoaded(true);
+        setIsAdFailed(false);
+        return true;
+      } else if (adStatus === 'unfilled') {
+        setIsAdFailed(true);
+        setIsAdLoaded(false);
+        return true;
+      }
+      return false;
+    };
+
+    // 1. Set up MutationObserver to detect attributes and child changes added by AdSense
+    if (typeof MutationObserver !== 'undefined') {
+      mutationObserver = new MutationObserver(() => {
+        checkStatus();
+      });
+      mutationObserver.observe(adElement, { attributes: true, childList: true, subtree: true });
+    }
+
+    // 2. Set up fallback timeout to check if loading failed (due to AdBlocker or network timeout)
+    const timeoutTimer = setTimeout(() => {
+      const handled = checkStatus();
+      if (!handled) {
+        // If still no status and no iframe, assume it failed/blocked
+        setIsAdFailed(true);
+      }
+    }, 4000); // 4 seconds timeout
+
+    // 3. AdSense Initialization Logic
     const initAd = () => {
-      const adElement = adRef.current;
-      if (!adElement || !window.adsbygoogle) return false;
+      if (!window.adsbygoogle) return false;
 
       // Check if the element is visible (has width > 0)
       if (adElement.offsetWidth > 0) {
@@ -36,8 +76,7 @@ function AdPlacement({ placement, className = "", style = {} }) {
       const success = initAd();
       if (!success) {
         // If not initialized (due to offsetWidth = 0), monitor for size changes
-        const adElement = adRef.current;
-        if (adElement && typeof ResizeObserver !== 'undefined') {
+        if (typeof ResizeObserver !== 'undefined') {
           observer = new ResizeObserver(() => {
             if (adElement.offsetWidth > 0) {
               if (initAd()) {
@@ -56,14 +95,14 @@ function AdPlacement({ placement, className = "", style = {} }) {
 
     return () => {
       if (timer) clearTimeout(timer);
-      if (observer) {
-        observer.disconnect();
-      }
+      clearTimeout(timeoutTimer);
+      if (observer) observer.disconnect();
+      if (mutationObserver) mutationObserver.disconnect();
     };
   }, [placement, config]);
 
-  // If placement is not found or disabled, don't render anything
-  if (!config || !config.enabled) {
+  // If placement is disabled or ad failed to load (no fill / blocked), don't render anything
+  if (!config || !config.enabled || isAdFailed) {
     return null;
   }
 
@@ -96,11 +135,13 @@ function AdPlacement({ placement, className = "", style = {} }) {
   };
 
   return (
-    <div className={`ad-placement-container my-8 flex flex-col items-center justify-center w-full transition-all duration-300 ${minHeightClass} ${className}`}>
-      {/* Subtle Ad Label */}
-      <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1.5 select-none">
-        Advertisement
-      </span>
+    <div className={`ad-placement-container my-8 flex flex-col items-center justify-center w-full transition-all duration-300 ${isAdLoaded ? '' : minHeightClass} ${className}`}>
+      {/* Subtle Ad Label - only visible once the ad has successfully loaded */}
+      {isAdLoaded && (
+        <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1.5 select-none">
+          Advertisement
+        </span>
+      )}
       <div className="w-full flex justify-center overflow-hidden">
         <ins
           ref={adRef}
