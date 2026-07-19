@@ -338,6 +338,11 @@ function PostDetail({ postType = 'games', basePath = '/games' }) {
 
     const schemas = wpSchema && wpSchema.length > 0 ? wpSchema : fallbackSchemas;
 
+    const isPalworldPost = (tagsList && tagsList.some(tag => 
+        tag.slug === 'palworld' || 
+        tag.name.toLowerCase() === 'palworld'
+    )) || (post.slug && post.slug.toLowerCase().includes('palworld')) || (post.title && post.title.toLowerCase().includes('palworld'));
+
     return (
         <>
             <PageMetadata
@@ -357,37 +362,6 @@ function PostDetail({ postType = 'games', basePath = '/games' }) {
             />
             <StructuredSchema schemas={schemas} />
             <div className="pt-[150px] p-4 container mx-auto">
-                {/* Palworld Banner */}
-                {(() => {
-                    const isPalworldPost = (tagsList && tagsList.some(tag => 
-                        tag.slug === 'palworld' || 
-                        tag.name.toLowerCase() === 'palworld'
-                    )) || (post.slug && post.slug.toLowerCase().includes('palworld')) || (post.title && post.title.toLowerCase().includes('palworld'));
-
-                    if (isPalworldPost) {
-                        return (
-                            <div className="mb-8 p-6 bg-gradient-to-r from-accent-pink-950/20 to-accent-violet-950/20 border border-accent-violet-500/20 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-4 animate-fade-in-up">
-                                <div className="flex items-center gap-4 text-left">
-                                    <span className="text-3xl shrink-0">🎮</span>
-                                    <div>
-                                        <h4 className="text-white font-bold text-base md:text-lg">Palworld Databases are Live!</h4>
-                                        <p className="text-gray-300 text-xs md:text-sm">Find your next companions in our database, or calculate details with our technology tree builder.</p>
-                                    </div>
-                                </div>
-                                <div className="flex gap-3 shrink-0 w-full md:w-auto">
-                                    <Link to="/palworld/pals" className="flex-1 md:flex-initial text-center text-xs font-bold text-white bg-gradient-to-r from-accent-pink-500 to-accent-violet-500 px-5 py-2.5 rounded-full hover:scale-105 hover:shadow-lg hover:shadow-accent-violet-500/20 transition-all duration-300">
-                                        Pals Directory
-                                    </Link>
-                                    <Link to="/palworld/tech" className="flex-1 md:flex-initial text-center text-xs font-bold text-base-300 border border-base-700 bg-base-900/60 px-5 py-2.5 rounded-full hover:text-white hover:border-white transition-all duration-300">
-                                        Technologies
-                                    </Link>
-                                </div>
-                            </div>
-                        );
-                    }
-                    return null;
-                })()}
-
                 {postType === 'games' && (
                     <div className="mb-6">
                         <Link
@@ -410,61 +384,8 @@ function PostDetail({ postType = 'games', basePath = '/games' }) {
 
                 <hr className="border-t border-t-gray-60 mb-4" />
 
-                <div className="text-gray-400 flex-wrap mb-5 lg:mb-0 flex justify-between">
-                    <div>
-                        Posted by <Link to="/profile" className="w-full ">{post.authorName || 'Author'}</Link> on {formatDate(post.date)}
-                    </div>
-
-                    <div className="flex flex-wrap mt-5 lg:mt-0 items-center gap-4 mb-5">
-                        <GooglePreferredSourceButton />
-                        <SavePost slug={post.slug} postType={postType} />
-
-                        {/* Social Share Buttons */}
-                        <div className="flex items-center gap-3 bg-base-800/40 px-3 py-1.5 rounded-full border border-base-800 text-sm">
-                            <span className="text-gray-400 font-semibold flex items-center gap-1">
-                                <ShareNetwork size={14} className="text-accent-pink-500" /> Share:
-                            </span>
-                            <a 
-                                href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(articleUrl)}&text=${encodeURIComponent(articleTitle)}`}
-                                target="_blank" 
-                                rel="noopener noreferrer" 
-                                className="text-gray-400 hover:text-accent-pink-500 transition-colors flex items-center"
-                                title="Share on Twitter"
-                            >
-                                <TwitterLogo size={18} />
-                            </a>
-                            <a 
-                                href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(articleUrl)}`}
-                                target="_blank" 
-                                rel="noopener noreferrer" 
-                                className="text-gray-400 hover:text-accent-pink-500 transition-colors flex items-center"
-                                title="Share on Facebook"
-                            >
-                                <FacebookLogo size={18} />
-                            </a>
-                            <a 
-                                href={`https://www.reddit.com/submit?url=${encodeURIComponent(articleUrl)}&title=${encodeURIComponent(articleTitle)}`}
-                                target="_blank" 
-                                rel="noopener noreferrer" 
-                                className="text-gray-400 hover:text-accent-pink-500 transition-colors flex items-center"
-                                title="Share on Reddit"
-                            >
-                                <RedditLogo size={18} />
-                            </a>
-                            <button 
-                                onClick={handleCopyLink} 
-                                className="text-gray-400 hover:text-accent-pink-500 transition-colors relative flex items-center justify-center"
-                                title="Copy post link"
-                            >
-                                <LinkSimple size={18} />
-                                {copied && (
-                                    <span className="absolute -top-9 left-1/2 -translate-x-1/2 bg-base-950 text-white text-xs px-2 py-1 rounded shadow-lg border border-base-800 font-semibold z-40 whitespace-nowrap">
-                                        Copied!
-                                    </span>
-                                )}
-                            </button>
-                        </div>
-                    </div>
+                <div className="text-gray-400 text-sm mb-6">
+                    Posted by <Link to="/profile" className="hover:text-white transition-colors">{post.authorName || 'Author'}</Link> on {formatDate(post.date)}
                 </div>
 
                 <div>
@@ -473,9 +394,12 @@ function PostDetail({ postType = 'games', basePath = '/games' }) {
                             {post.image && (
                                 <Image url={post.image} alt={post.title} />
                             )}
-                            <div className="my-8">
-                                <TableOfContents />
+                            
+                            {/* Table of Contents - Visible on Mobile, hidden on Desktop */}
+                            <div className="lg:hidden mb-6">
+                                <TableOfContents defaultOpen={false} />
                             </div>
+
                             <div
                                 ref={contentRef}
                                 className="wp-content"
@@ -495,6 +419,86 @@ function PostDetail({ postType = 'games', basePath = '/games' }) {
                                                 #{tag.name}
                                             </Link>
                                         ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Actions & Share Widget - Visible on Mobile */}
+                            <div className="lg:hidden mt-6 bg-gradient-to-br from-accent-violet-950/30 to-base-800/50 rounded-2xl p-6 border border-accent-violet-900/20 backdrop-blur-md shadow-xl">
+                                <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4">Actions & Share</h3>
+                                <div className="space-y-4">
+                                    <div className="flex justify-center w-full">
+                                        <GooglePreferredSourceButton />
+                                    </div>
+                                    <div className="flex items-center justify-between gap-4 pt-4 border-t border-base-800 flex-wrap">
+                                        <SavePost slug={post.slug} postType={postType} />
+                                        
+                                        {/* Social Share Buttons */}
+                                        <div className="flex items-center gap-3 bg-base-800/40 px-3 py-1.5 rounded-full border border-base-800 text-sm">
+                                            <span className="text-gray-400 font-semibold flex items-center gap-1">
+                                                <ShareNetwork size={14} className="text-accent-pink-500" /> Share:
+                                            </span>
+                                            <a 
+                                                href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(articleUrl)}&text=${encodeURIComponent(articleTitle)}`}
+                                                target="_blank" 
+                                                rel="noopener noreferrer" 
+                                                className="text-gray-400 hover:text-accent-pink-500 transition-colors flex items-center"
+                                                title="Share on Twitter"
+                                            >
+                                                <TwitterLogo size={18} />
+                                            </a>
+                                            <a 
+                                                href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(articleUrl)}`}
+                                                target="_blank" 
+                                                rel="noopener noreferrer" 
+                                                className="text-gray-400 hover:text-accent-pink-500 transition-colors flex items-center"
+                                                title="Share on Facebook"
+                                            >
+                                                <FacebookLogo size={18} />
+                                            </a>
+                                            <a 
+                                                href={`https://www.reddit.com/submit?url=${encodeURIComponent(articleUrl)}&title=${encodeURIComponent(articleTitle)}`}
+                                                target="_blank" 
+                                                rel="noopener noreferrer" 
+                                                className="text-gray-400 hover:text-accent-pink-500 transition-colors flex items-center"
+                                                title="Share on Reddit"
+                                            >
+                                                <RedditLogo size={18} />
+                                            </a>
+                                            <button 
+                                                onClick={handleCopyLink} 
+                                                className="text-gray-400 hover:text-accent-pink-500 transition-colors relative flex items-center justify-center"
+                                                title="Copy post link"
+                                            >
+                                                <LinkSimple size={18} />
+                                                {copied && (
+                                                    <span className="absolute -top-9 left-1/2 -translate-x-1/2 bg-base-950 text-white text-xs px-2 py-1 rounded shadow-lg border border-base-800 font-semibold z-40 whitespace-nowrap">
+                                                        Copied!
+                                                    </span>
+                                                )}
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Palworld Banner - Visible on Mobile */}
+                            {isPalworldPost && (
+                                <div className="lg:hidden mt-6 p-6 bg-gradient-to-r from-accent-pink-950/20 to-accent-violet-950/20 border border-accent-violet-500/20 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-4">
+                                    <div className="flex items-center gap-4 text-left">
+                                        <span className="text-3xl shrink-0">🎮</span>
+                                        <div>
+                                            <h4 className="text-white font-bold text-base md:text-lg">Palworld Databases are Live!</h4>
+                                            <p className="text-gray-300 text-xs md:text-sm">Find your next companions in our database, or calculate details with our technology tree builder.</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex gap-3 shrink-0 w-full md:w-auto">
+                                        <Link to="/palworld/pals" className="flex-1 md:flex-initial text-center text-xs font-bold text-white bg-gradient-to-r from-accent-pink-500 to-accent-violet-500 px-5 py-2.5 rounded-full hover:scale-105 hover:shadow-lg hover:shadow-accent-violet-500/20 transition-all duration-300">
+                                            Pals Directory
+                                        </Link>
+                                        <Link to="/palworld/tech" className="flex-1 md:flex-initial text-center text-xs font-bold text-base-300 border border-base-700 bg-base-900/60 px-5 py-2.5 rounded-full hover:text-white hover:border-white transition-all duration-300">
+                                            Technologies
+                                        </Link>
                                     </div>
                                 </div>
                             )}
@@ -532,6 +536,32 @@ function PostDetail({ postType = 'games', basePath = '/games' }) {
                         </div>
 
                         <div className="lg:col-span-2 space-y-6">
+                            {/* Table of Contents - Sidebar on Desktop */}
+                            <div className="hidden lg:block">
+                                <TableOfContents defaultOpen={false} />
+                            </div>
+
+                            {/* Palworld Banner - Sidebar on Desktop */}
+                            {isPalworldPost && (
+                                <div className="hidden lg:flex p-6 bg-gradient-to-br from-accent-pink-950/20 to-accent-violet-950/20 border border-accent-violet-500/20 rounded-2xl flex-col gap-4 animate-fade-in-up">
+                                    <div className="flex items-center gap-4 text-left">
+                                        <span className="text-3xl shrink-0">🎮</span>
+                                        <div>
+                                            <h4 className="text-white font-bold text-base">Palworld Databases</h4>
+                                            <p className="text-gray-300 text-xs mt-1">Find companions in our database or calculate details with our tech tree builder.</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-col gap-2 w-full">
+                                        <Link to="/palworld/pals" className="w-full text-center text-xs font-bold text-white bg-gradient-to-r from-accent-pink-500 to-accent-violet-500 px-5 py-2.5 rounded-full hover:scale-105 hover:shadow-lg hover:shadow-accent-violet-500/20 transition-all duration-300">
+                                            Pals Directory
+                                        </Link>
+                                        <Link to="/palworld/tech" className="w-full text-center text-xs font-bold text-base-300 border border-base-700 bg-base-900/60 px-5 py-2.5 rounded-full hover:text-white hover:border-white transition-all duration-300">
+                                            Technologies
+                                        </Link>
+                                    </div>
+                                </div>
+                            )}
+
                             {/* Author Box */}
                             <AuthorBox
                                 name={post.authorName}
@@ -563,9 +593,68 @@ function PostDetail({ postType = 'games', basePath = '/games' }) {
                                  initialPosts={post.relatedPosts}
                              />
 
-                             {/* Sticky Ad Placement on Desktop */}
-                             <div className="sticky top-28 hidden lg:block">
+                             {/* Sticky Ad & Actions Widget on Desktop */}
+                             <div className="sticky top-28 hidden lg:block space-y-6">
                                  <AdPlacement placement="articleSidebar" className="!my-0" />
+                                 
+                                 {/* Actions & Share Widget - Sidebar on Desktop */}
+                                 <div className="bg-gradient-to-br from-accent-violet-950/30 to-base-800/50 rounded-2xl p-6 border border-accent-violet-900/20 backdrop-blur-md shadow-xl">
+                                     <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4">Actions & Share</h3>
+                                     <div className="space-y-4">
+                                         <div className="flex justify-center w-full">
+                                             <GooglePreferredSourceButton />
+                                         </div>
+                                         <div className="flex items-center justify-between gap-4 pt-4 border-t border-base-800 flex-wrap">
+                                             <SavePost slug={post.slug} postType={postType} />
+                                             
+                                             {/* Social Share Buttons */}
+                                             <div className="flex items-center gap-3 bg-base-800/40 px-3 py-1.5 rounded-full border border-base-800 text-sm">
+                                                 <span className="text-gray-400 font-semibold flex items-center gap-1">
+                                                     <ShareNetwork size={14} className="text-accent-pink-500" /> Share:
+                                                 </span>
+                                                 <a 
+                                                     href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(articleUrl)}&text=${encodeURIComponent(articleTitle)}`}
+                                                     target="_blank" 
+                                                     rel="noopener noreferrer" 
+                                                     className="text-gray-400 hover:text-accent-pink-500 transition-colors flex items-center"
+                                                     title="Share on Twitter"
+                                                 >
+                                                     <TwitterLogo size={18} />
+                                                 </a>
+                                                 <a 
+                                                     href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(articleUrl)}`}
+                                                     target="_blank" 
+                                                     rel="noopener noreferrer" 
+                                                     className="text-gray-400 hover:text-accent-pink-500 transition-colors flex items-center"
+                                                     title="Share on Facebook"
+                                                 >
+                                                     <FacebookLogo size={18} />
+                                                 </a>
+                                                 <a 
+                                                     href={`https://www.reddit.com/submit?url=${encodeURIComponent(articleUrl)}&title=${encodeURIComponent(articleTitle)}`}
+                                                     target="_blank" 
+                                                     rel="noopener noreferrer" 
+                                                     className="text-gray-400 hover:text-accent-pink-500 transition-colors flex items-center"
+                                                     title="Share on Reddit"
+                                                 >
+                                                     <RedditLogo size={18} />
+                                                 </a>
+                                                 <button 
+                                                     onClick={handleCopyLink} 
+                                                     className="text-gray-400 hover:text-accent-pink-500 transition-colors relative flex items-center justify-center"
+                                                     title="Copy post link"
+                                                 >
+                                                     <LinkSimple size={18} />
+                                                     {copied && (
+                                                         <span className="absolute -top-9 left-1/2 -translate-x-1/2 bg-base-950 text-white text-xs px-2 py-1 rounded shadow-lg border border-base-800 font-semibold z-40 whitespace-nowrap">
+                                                             Copied!
+                                                         </span>
+                                                     )}
+                                                 </button>
+                                             </div>
+                                         </div>
+                                     </div>
+                                 </div>
                              </div>
 
                              {/* Mobile Fallback Ad Placement */}

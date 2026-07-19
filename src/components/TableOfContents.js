@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
-function TableOfContents() {
+function TableOfContents({ defaultOpen = false }) {
   const [headings, setHeadings] = useState([]);
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(defaultOpen);
   const location = useLocation();
 
   useEffect(() => {
