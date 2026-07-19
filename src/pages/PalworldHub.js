@@ -353,8 +353,8 @@ function PalworldHub() {
             )}
           </div>
 
-          {/* Core Utilities Grid (4 CTA Cards) */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+          {/* Core Utilities Grid (5 CTA Cards) */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 mb-16">
             
             {/* CTA 1: Paldex Directory */}
             <Link
@@ -396,7 +396,27 @@ function PalworldHub() {
               </span>
             </Link>
 
-            {/* CTA 3: Technology Tree */}
+            {/* CTA 3: Interactive Map */}
+            <Link
+              to="/palworld/map"
+              className="group bg-base-950/50 hover:bg-base-900/60 border border-base-800 hover:border-teal-500/40 rounded-3xl p-6 sm:p-8 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-teal-500/5 relative overflow-hidden flex flex-col justify-between"
+            >
+              <div className="absolute top-0 right-0 w-[120px] h-[120px] bg-[radial-gradient(circle_at_top_right,rgba(45,212,191,0.15),transparent_70%)] pointer-events-none"></div>
+              <div>
+                <span className="text-4xl mb-4 block filter drop-shadow">🗺️</span>
+                <h3 className="text-xl font-bold text-white mb-2 group-hover:text-teal-300 transition-colors">
+                  Interactive Map
+                </h3>
+                <p className="text-gray-400 text-xs sm:text-sm leading-relaxed mb-6">
+                  Track spawn distributions, level ranges, and alpha bosses in real-time. Use zoom, pan, search, and coordinates tracking.
+                </p>
+              </div>
+              <span className="text-xs font-bold text-teal-400 group-hover:text-teal-300 uppercase tracking-widest flex items-center gap-1">
+                Open Map <span className="group-hover:translate-x-1.5 transition-transform duration-200">→</span>
+              </span>
+            </Link>
+
+            {/* CTA 4: Technology Tree */}
             <Link
               to="/palworld/tech"
               className="group bg-base-950/50 hover:bg-base-900/60 border border-base-800 hover:border-accent-violet-500/40 rounded-3xl p-6 sm:p-8 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-accent-violet-500/5 relative overflow-hidden flex flex-col justify-between"
@@ -416,7 +436,7 @@ function PalworldHub() {
               </span>
             </Link>
 
-            {/* CTA 4: Seeded Bingo */}
+            {/* CTA 5: Seeded Bingo */}
             <Link
               to="/palworld/bingo"
               className="group bg-base-950/50 hover:bg-base-900/60 border border-base-800 hover:border-amber-500/40 rounded-3xl p-6 sm:p-8 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-amber-500/5 relative overflow-hidden flex flex-col justify-between"

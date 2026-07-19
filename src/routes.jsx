@@ -113,6 +113,7 @@ const Technologies = lazyWithRetry(() => import('./pages/Technologies'));
 const PalworldBingo = lazyWithRetry(() => import('./pages/PalworldBingo'));
 const PalworldHub = lazyWithRetry(() => import('./pages/PalworldHub'));
 const PalworldBreeding = lazyWithRetry(() => import('./pages/PalworldBreeding'));
+const PalworldMap = lazyWithRetry(() => import('./pages/PalworldMap'));
 
 // Loading fallback component
 const RouteLoadingFallback = () => (
@@ -157,6 +158,7 @@ export function getRouteElements() {
                 <Route path="palworld/tech" element={<Suspense fallback={<RouteLoadingFallback />}><Technologies /></Suspense>} />
                 <Route path="palworld/bingo" element={<Suspense fallback={<RouteLoadingFallback />}><PalworldBingo /></Suspense>} />
                 <Route path="palworld/palworld-breeding" element={<Suspense fallback={<RouteLoadingFallback />}><PalworldBreeding /></Suspense>} />
+                <Route path="palworld/map" element={<Suspense fallback={<RouteLoadingFallback />}><PalworldMap /></Suspense>} />
 
                 <Route path="404" element={<Suspense fallback={<RouteLoadingFallback />}><NotFound /></Suspense>} />
                 <Route path="*" element={<Navigate to="/404" replace />} />

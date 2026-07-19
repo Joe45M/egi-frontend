@@ -33,8 +33,25 @@ function HabitatMap({ spawns }) {
     const range = maxCoord - minCoord;
 
     spawns.forEach(pt => {
-      const relX = (pt.y - minCoord) / range;
-      const relY = 1.0 - (pt.x - minCoord) / range;
+      let gameX = 0;
+      let gameY = 0;
+
+      if (pt.isBoss) {
+        // Boss coordinates in JSON are in-game coordinates * 1000
+        gameX = pt.x / 1000;
+        gameY = pt.y / 1000;
+      } else {
+        // Regular coordinates in JSON are raw save coordinates
+        gameX = (pt.y - 158000) / 459;
+        gameY = (pt.x - (-123888)) / 459;
+      }
+
+      // Convert back to aligned save-projection space
+      const unrealY = gameX * 459 + 158000;
+      const unrealX = gameY * 459 - 123888;
+
+      const relX = (unrealY - minCoord) / range;
+      const relY = 1.0 - (unrealX - minCoord) / range;
 
       const px = relX * canvas.width;
       const py = relY * canvas.height;
