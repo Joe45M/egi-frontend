@@ -5,6 +5,7 @@ import Footer from './Footer';
 import LatestArticleRibbon from './LatestArticleRibbon';
 import ScrollToTop from './ScrollToTop';
 import StructuredSchema, { generateOrganizationSchema, generateWebSiteSchema } from './StructuredSchema';
+import AdPlacement from './AdPlacement';
 
 function Layout() {
   const location = useLocation();
@@ -38,10 +39,17 @@ function Layout() {
       <StructuredSchema schemas={siteSchemas} />
       <ScrollToTop />
       <Navigation />
+      
+      {/* globalHeader placement is disabled by default to avoid fixed-nav overlap, but fully supported */}
+      <AdPlacement placement="globalHeader" className="container mx-auto px-4 mt-20 -mb-10" />
+      
       <main className="flex-grow">
         <Outlet />
       </main>
       <LatestArticleRibbon />
+      
+      <AdPlacement placement="globalFooter" className="container mx-auto px-4" />
+      
       <Footer />
     </div>
   );

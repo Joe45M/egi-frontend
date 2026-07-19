@@ -12,6 +12,7 @@ import StructuredSchema, { generateArticleSchema, generateBreadcrumbSchema } fro
 import AuthorBox from "./AuthorBox";
 import { replaceAdShortcodes } from "../utils/ads";
 import TableOfContents from "./TableOfContents";
+import AdPlacement from "./AdPlacement";
 
 import RelatedPosts from "./RelatedPosts";
 import GameRelatedPosts from "./GameRelatedPosts";
@@ -538,6 +539,8 @@ function PostDetail({ postType = 'games', basePath = '/games' }) {
                                 avatarUrl={post.authorAvatar}
                                 slug={post.authorSlug}
                             />
+
+                            <AdPlacement placement="articleSidebar" />
 
                              {/* Game Related Posts */}
                              {associatedGame && (

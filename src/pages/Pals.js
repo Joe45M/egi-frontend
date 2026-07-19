@@ -1,9 +1,10 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { palworldApi } from "../services/palworldApi";
 import PageMetadata, { SITE_URL } from "../components/PageMetadata";
 import StructuredSchema, { generateWebPageSchema, generateBreadcrumbSchema } from "../components/StructuredSchema";
 import { useInitialData } from "../initialDataContext";
+import AdPlacement from "../components/AdPlacement";
 
 const ELEMENTS = ["Fire", "Water", "Grass", "Electric", "Ice", "Ground", "Dark", "Dragon", "Neutral", "Earth"];
 const WORKS = ["Kindling", "Watering", "Planting", "Generating Electricity", "Handiwork", "Gathering", "Lumbering", "Mining", "Medicine Production", "Transporting", "Cooling", "Farming"];
@@ -133,6 +134,17 @@ function Pals() {
 
   const getPageTitle = () => "Palworld Pals Directory & Stats Database - EliteGamerInsights";
   const getPageDescription = () => "Explore the full Palworld directory. Filter and search all Pals by elements, work suitabilities, stats, and discover details, rarity, and fast navigation.";
+
+  const renderedItems = useMemo(() => {
+    const list = [];
+    pals.forEach((pal, idx) => {
+      if (idx > 0 && idx % 12 === 0) {
+        list.push({ isAd: true, id: `ad-grid-${idx}` });
+      }
+      list.push(pal);
+    });
+    return list;
+  }, [pals]);
 
   const schemas = [
     generateWebPageSchema({
@@ -334,6 +346,8 @@ function Pals() {
                 </div>
               </div>
             </div>
+            
+            <AdPlacement placement="paldexSidebar" className="hidden lg:flex mt-6" />
           </div>
 
           {/* Pals Content */}
@@ -438,72 +452,83 @@ function Pals() {
               <>
                 {/* Pals Grid */}
                 <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
-                  {pals.map((pal) => (
-                    <Link
-                      key={pal.id}
-                      to={`/palworld/pals/${encodeURIComponent(pal.name)}`}
-                      className="group bg-base-800/40 hover:bg-base-800/80 border border-base-800 hover:border-accent-violet-500/40 rounded-2xl p-3.5 md:p-5 transition-all duration-300 flex flex-col hover:-translate-y-1 hover:shadow-xl hover:shadow-accent-violet-500/5"
-                    >
-                      {/* Image Frame */}
-                      <div className="bg-base-950/60 rounded-xl aspect-square flex items-center justify-center mb-4 relative overflow-hidden">
-                        {pal.image_url ? (
-                          <img
-                            src={pal.image_url}
-                            alt={pal.name}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                            loading="lazy"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-base-800 to-base-900 gap-1">
-                            <span className="text-3xl">🎮</span>
-                            <span className="text-[10px] text-base-500 font-medium text-center px-1 leading-tight line-clamp-2">{pal.name}</span>
+                  {renderedItems.map((item) => {
+                    if (item.isAd) {
+                      return (
+                        <div key={item.id} className="col-span-2 md:col-span-3 flex justify-center items-center my-2">
+                          <AdPlacement placement="paldexGrid" className="!my-0" />
+                        </div>
+                      );
+                    }
+                    
+                    const pal = item;
+                    return (
+                      <Link
+                        key={pal.id}
+                        to={`/palworld/pals/${encodeURIComponent(pal.name)}`}
+                        className="group bg-base-800/40 hover:bg-base-800/80 border border-base-800 hover:border-accent-violet-500/40 rounded-2xl p-3.5 md:p-5 transition-all duration-300 flex flex-col hover:-translate-y-1 hover:shadow-xl hover:shadow-accent-violet-500/5"
+                      >
+                        {/* Image Frame */}
+                        <div className="bg-base-950/60 rounded-xl aspect-square flex items-center justify-center mb-4 relative overflow-hidden">
+                          {pal.image_url ? (
+                            <img
+                              src={pal.image_url}
+                              alt={pal.name}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                              loading="lazy"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-base-800 to-base-900 gap-1">
+                              <span className="text-3xl">🎮</span>
+                              <span className="text-[10px] text-base-500 font-medium text-center px-1 leading-tight line-clamp-2">{pal.name}</span>
+                            </div>
+                          )}
+                          {/* Size tag */}
+                          <div className="absolute top-2 right-2 bg-base-900 border border-base-700 text-[10px] font-bold text-white px-2 py-0.5 rounded-md">
+                            {pal.size}
                           </div>
-                        )}
-                        {/* Size tag */}
-                        <div className="absolute top-2 right-2 bg-base-900 border border-base-700 text-[10px] font-bold text-white px-2 py-0.5 rounded-md">
-                          {pal.size}
                         </div>
-                      </div>
 
-                      {/* Header */}
-                      <div className="mb-3">
-                        <span className="text-[10px] text-accent-pink-400 font-mono font-bold tracking-widest block mb-1">
-                          No. {pal.id.toString().padStart(3, "0")}
-                        </span>
-                        <h3 className="text-lg font-bold text-white group-hover:text-accent-violet-300 transition-colors duration-200">
-                          {pal.name}
-                        </h3>
-                      </div>
-
-                      {/* Elements */}
-                      <div className="flex flex-wrap gap-1 mb-4">
-                        {pal.element_types?.map((elem) => (
-                          <span
-                            key={elem}
-                            className="text-[10px] font-extrabold uppercase tracking-wide bg-base-900 text-base-300 px-2 py-1 rounded border border-base-700/60"
-                          >
-                            {elem}
+                        {/* Header */}
+                        <div className="mb-3">
+                          <span className="text-[10px] text-accent-pink-400 font-mono font-bold tracking-widest block mb-1">
+                            No. {pal.id.toString().padStart(3, "0")}
                           </span>
-                        ))}
-                      </div>
+                          <h3 className="text-lg font-bold text-white group-hover:text-accent-violet-300 transition-colors duration-200">
+                            {pal.name}
+                          </h3>
+                        </div>
 
-                      {/* Base Stats Summary */}
-                      <div className="mt-auto grid grid-cols-3 gap-2 border-t border-base-800/80 pt-3">
-                        <div className="text-center">
-                          <span className="text-[9px] text-base-500 block">HP</span>
-                          <span className="text-xs font-bold text-white">{pal.hp}</span>
+                        {/* Elements */}
+                        <div className="flex flex-wrap gap-1 mb-4">
+                          {pal.element_types?.map((elem) => (
+                            <span
+                              key={elem}
+                              className="text-[10px] font-extrabold uppercase tracking-wide bg-base-900 text-base-300 px-2 py-1 rounded border border-base-700/60"
+                            >
+                              {elem}
+                            </span>
+                          ))}
                         </div>
-                        <div className="text-center">
-                          <span className="text-[9px] text-base-500 block">ATK</span>
-                          <span className="text-xs font-bold text-white">{pal.attack}</span>
+
+                        {/* Base Stats Summary */}
+                        <div className="mt-auto grid grid-cols-3 gap-2 border-t border-base-800/80 pt-3">
+                          <div className="text-center">
+                            <span className="text-[9px] text-base-500 block">HP</span>
+                            <span className="text-xs font-bold text-white">{pal.hp}</span>
+                          </div>
+                          <div className="text-center">
+                            <span className="text-[9px] text-base-500 block">ATK</span>
+                            <span className="text-xs font-bold text-white">{pal.attack}</span>
+                          </div>
+                          <div className="text-center">
+                            <span className="text-[9px] text-base-500 block">DEF</span>
+                            <span className="text-xs font-bold text-white">{pal.defense}</span>
+                          </div>
                         </div>
-                        <div className="text-center">
-                          <span className="text-[9px] text-base-500 block">DEF</span>
-                          <span className="text-xs font-bold text-white">{pal.defense}</span>
-                        </div>
-                      </div>
-                    </Link>
-                  ))}
+                      </Link>
+                    );
+                  })}
                 </div>
 
                 {/* Pagination */}

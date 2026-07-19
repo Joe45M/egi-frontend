@@ -1,0 +1,41 @@
+{
+  "clientId": "ca-pub-6764478945960117",
+  "placements": {
+    "globalHeader": {
+      "enabled": false,
+      "slot": "2742820353",
+      "format": "auto",
+      "responsive": true
+    },
+    "globalFooter": {
+      "enabled": true,
+      "slot": "5923769426",
+      "format": "auto",
+      "responsive": true
+    },
+    "articleSidebar": {
+      "enabled": true,
+      "slot": "3384451209",
+      "format": "auto",
+      "responsive": true
+    },
+    "calculatorContent": {
+      "enabled": true,
+      "slot": "2742820353",
+      "format": "auto",
+      "responsive": true
+    },
+    "paldexSidebar": {
+      "enabled": true,
+      "slot": "3384451209",
+      "format": "auto",
+      "responsive": true
+    },
+    "paldexGrid": {
+      "enabled": true,
+      "slot": "2742820353",
+      "format": "horizontal",
+      "responsive": true
+    }
+  }
+}

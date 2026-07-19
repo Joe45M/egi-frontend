@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import PageMetadata, { SITE_URL } from '../components/PageMetadata';
 import StructuredSchema, { generateSoftwareApplicationSchema, generateWebPageSchema, generateBreadcrumbSchema } from '../components/StructuredSchema';
+import AdPlacement from '../components/AdPlacement';
 
 function KDCalculator() {
   const [kills, setKills] = useState('');
@@ -230,6 +231,8 @@ function KDCalculator() {
               </div>
             )}
           </div>
+
+          <AdPlacement placement="calculatorContent" />
 
           {/* Information Section */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">

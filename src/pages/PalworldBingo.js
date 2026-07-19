@@ -9,6 +9,7 @@ import StructuredSchema, {
 } from '../components/StructuredSchema';
 import { palworldApi } from '../services/palworldApi';
 import wordpressApi from '../services/wordpressApi';
+import AdPlacement from '../components/AdPlacement';
 
 // Seeded PRNG Mulberry32
 function mulberry32(a) {
@@ -953,6 +954,8 @@ function PalworldBingo() {
                   </button>
                 </div>
               </div>
+
+              <AdPlacement placement="calculatorContent" />
 
               {/* Instructions / Info Panel */}
               <div className="bg-base-950/20 border border-base-800/60 rounded-3xl p-6 sm:p-8">

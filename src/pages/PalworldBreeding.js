@@ -7,6 +7,7 @@ import StructuredSchema, {
   generateFAQPageSchema
 } from '../components/StructuredSchema';
 import FAQ from '../components/FAQ';
+import AdPlacement from '../components/AdPlacement';
 
 const FAQS = [
   {
@@ -589,6 +590,8 @@ export default function PalworldBreeding() {
             )}
 
           </div>
+
+          <AdPlacement placement="calculatorContent" />
 
           {/* 1.0 Mutation Guide and Passive Inheritance Section */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-16">
