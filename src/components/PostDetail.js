@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, Link, Navigate } from "react-router-dom";
 import { TwitterLogo, FacebookLogo, RedditLogo, LinkSimple, ShareNetwork } from 'phosphor-react';
-import { Image } from './Editor';
 import SavePost from "./SavePost";
 import GooglePreferredSourceButton from "./GooglePreferredSourceButton";
 import wordpressApi from "../services/wordpressApi";
@@ -361,40 +360,56 @@ function PostDetail({ postType = 'games', basePath = '/games' }) {
                 hideSiteNameInTitle={true}
             />
             <StructuredSchema schemas={schemas} />
-            <div className="pt-[150px] p-4 container mx-auto">
-                {postType === 'games' && (
-                    <div className="mb-6">
-                        <Link
-                            to={basePath}
-                            className="group inline-flex items-center gap-2 text-gray-400 hover:text-white transition-all duration-300"
+            {/* ── Desaturated Header Image with Bottom-to-Top Fade Overlay ── */}
+            {post.image && (
+                <div className="absolute top-0 left-0 right-0 h-[850px] pointer-events-none z-0 overflow-hidden">
+                    <div
+                        className="absolute inset-0 bg-cover bg-top"
+                        style={{
+                            backgroundImage: `url(${post.image})`,
+                            filter: 'grayscale(85%) contrast(1.1) brightness(0.65)',
+                        }}
+                    />
+                    {/* Overlay: Solid #0d0f1a at bottom, fading out towards the top */}
+                    <div
+                        className="absolute inset-0"
+                        style={{
+                            background: `
+                                linear-gradient(to top, #181C2D 0%, #0d0f1a 35%, rgba(13, 15, 26, 0.82) 70%, rgba(13, 15, 26, 0.2) 100%)
+                            `,
+                        }}
+                    />
+                </div>
+            )}
+
+            <div className="relative z-10 pt-[220px] md:pt-[260px] pb-16 p-4 container mx-auto">
+                <div className="mb-4">
+                    <Link
+                        to={basePath || '/games'}
+                        className="group inline-flex items-center gap-2 text-gray-400 hover:text-white transition-all duration-300 relative z-20 cursor-pointer"
+                    >
+                        <svg
+                            className="w-4 h-4 group-hover:-translate-x-1 transition-transform duration-300"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
                         >
-                            <svg
-                                className="w-4 h-4 group-hover:-translate-x-1 transition-transform duration-300"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                            >
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                            </svg>
-                            <span className="text-sm font-medium">Back to all posts</span>
-                        </Link>
-                    </div>
-                )}
-                <h1 className="text-4xl font-bold mb-4 text-white" dangerouslySetInnerHTML={{ __html: post.title }}></h1>
-
-                <hr className="border-t border-t-gray-60 mb-4" />
-
-                <div className="text-gray-400 text-sm mb-6">
-                    Posted by <Link to="/profile" className="hover:text-white transition-colors">{post.authorName || 'Author'}</Link> on {formatDate(post.date)}
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                        </svg>
+                        <span className="text-sm font-medium">Back to all posts</span>
+                    </Link>
                 </div>
 
                 <div>
-                    <div className="grid gap-5 lg:grid-cols-5">
+                    <div className="grid gap-6 lg:grid-cols-5 items-start">
                         <div className="lg:col-span-3">
-                            {post.image && (
-                                <Image url={post.image} alt={post.title} />
-                            )}
-                            
+                            {/* Meta & Title in main column matching design mockup */}
+                            <p className="text-gray-400 text-xs font-mono uppercase tracking-wider mb-3">
+                                // POSTED BY {post.authorName || 'Author'} ON {formatDate(post.date)}
+                            </p>
+                            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 text-white leading-tight" dangerouslySetInnerHTML={{ __html: post.title }} />
+
+
                             {/* Table of Contents - Visible on Mobile, hidden on Desktop */}
                             <div className="lg:hidden mb-6">
                                 <TableOfContents defaultOpen={false} />
@@ -537,7 +552,7 @@ function PostDetail({ postType = 'games', basePath = '/games' }) {
 
                         <div className="lg:col-span-2 space-y-6">
                             {/* Table of Contents - Sidebar on Desktop */}
-                            <div className="hidden lg:block">
+                            <div className="hidden lg:block lg:pt-[130px]">
                                 <TableOfContents defaultOpen={false} />
                             </div>
 

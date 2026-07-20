@@ -66,14 +66,14 @@ function GameRelatedPosts({ gameId, gameName, postType = 'games', limit = 20, cu
     if (posts.length === 0) return null;
 
     return (
-        <div className="mb-8">
+        <div className="mb-8 bg-accent-violet-950/10 p-3 rounded-xl">
             <h3 className="text-xl font-bold mb-4 text-white">More from {gameName}</h3>
             <div className="max-h-[350px] overflow-y-auto pr-2 space-y-2 scroll-smooth" style={{ scrollbarWidth: 'thin' }}>
                 {posts.map((post) => (
                     <Link
                         key={post.id}
                         to={`/${postType}/${post.slug}`}
-                        className="group block p-3 bg-accent-violet-950/10 hover:bg-accent-violet-950/20 rounded-lg transition-colors border border-accent-violet-900/10 hover:border-accent-violet-500/20"
+                        className="group block p-3  hover:bg-accent-violet-950/20 rounded-lg transition-colors border border-accent-violet-900/10 hover:border-accent-violet-500/20"
                     >
                         <h4
                             className="text-sm font-semibold text-gray-200 group-hover:text-accent-pink-400 transition-colors duration-200 leading-snug line-clamp-2"

@@ -5,9 +5,20 @@ import StructuredSchema, { generateWebPageSchema, generateBreadcrumbSchema } fro
 import { palworldApi } from '../services/palworldApi';
 
 const MAP_SIZE = 2048;
-const MIN_COORD = -1024000;
-const MAX_COORD = 1024000;
-const RANGE = MAX_COORD - MIN_COORD;
+
+// Calibrated world coordinate extents of the Palworld map image.
+// Derived via least-squares regression over 23 known alpha boss positions
+// mapping world_xy (Unreal Engine coords in cm) to in-game HUD display coords.
+// hx = 0.002178 * world_xy.y - 344.07   (canvas horizontal / HUD X)
+// hy = 0.002178 * world_xy.x + 269.81   (canvas vertical / HUD Y)
+const WY_MIN = -312119;   // world_xy.y at left edge of map canvas
+const WY_RANGE = 940129;  // total world_xy.y span across canvas width
+const WX_MIN = -593906;   // world_xy.x at bottom edge of map canvas
+const WX_RANGE = 940104;  // total world_xy.x span across canvas height
+
+// HUD display range (preserved for mouse coordinate tooltip display)
+const HUD_RANGE = 2048;
+const HUD_MIN = -1024;
 
 const ELEMENT_TYPES = [
   "neutral", "fire", "water", "grass", "electric", "earth", "ice", "dragon", "dark"
@@ -101,26 +112,16 @@ function PalworldMap() {
     });
   }, [spawnsData, selectedPal, showNormalSpawns, showBossSpawns, minLevelFilter, maxLevelFilter]);
 
-  // Coordinate conversion helper for both regular and boss spawners
+  // Coordinate conversion: world_xy (Unreal cm) -> canvas relX/relY [0..1]
+  // and HUD display X/Y values matching the in-game coordinate display.
   const getSpawnerMapCoords = useCallback((pt) => {
-    let gameX = 0;
-    let gameY = 0;
+    // pt.x = world_xy.x, pt.y = world_xy.y (Unreal Engine world coordinates)
+    const relX = (pt.y - WY_MIN) / WY_RANGE;         // horizontal (left=0, right=1)
+    const relY = 1.0 - (pt.x - WX_MIN) / WX_RANGE;  // vertical (top=0, bottom=1)
 
-    if (pt.isBoss) {
-      // Boss coordinates in JSON are in-game coordinates * 1000
-      gameX = pt.x / 1000;
-      gameY = pt.y / 1000;
-    } else {
-      // Regular coordinates in JSON are raw save coordinates
-      gameX = (pt.y - 158000) / 459;
-      gameY = (pt.x - (-123888)) / 459;
-    }
-
-    const unrealY = gameX * 459 + 158000;
-    const unrealX = gameY * 459 - 123888;
-
-    const relX = (unrealY - MIN_COORD) / RANGE;
-    const relY = 1.0 - (unrealX - MIN_COORD) / RANGE;
+    // In-game HUD display coordinates (matches xy field in v1 dataset)
+    const gameX = Math.round(0.002178 * pt.y - 344.07);
+    const gameY = Math.round(0.002178 * pt.x + 269.81);
 
     return { relX, relY, gameX, gameY };
   }, []);
@@ -142,7 +143,7 @@ function PalworldMap() {
       const py = relY * MAP_SIZE;
 
       // Spawner Radius in relative pixel units
-      const radiusPx = Math.max(8, (pt.radius / RANGE) * MAP_SIZE);
+      const radiusPx = Math.max(8, (pt.radius / WY_RANGE) * MAP_SIZE);
 
       ctx.beginPath();
       ctx.arc(px, py, radiusPx, 0, 2 * Math.PI);
@@ -248,11 +249,13 @@ function PalworldMap() {
       if (mapX >= 0 && mapX <= MAP_SIZE && mapY >= 0 && mapY <= MAP_SIZE) {
         const relX = mapX / MAP_SIZE;
         const relY = mapY / MAP_SIZE;
-        
-        // Division by 1000 maps to display coordinates
-        const gameX = Math.round((relX * RANGE + MIN_COORD) / 1000);
-        const gameY = Math.round(((1.0 - relY) * RANGE + MIN_COORD) / 1000);
-        
+
+        // Convert canvas position back to in-game HUD display coordinates
+        const worldY = relX * WY_RANGE + WY_MIN;
+        const worldX = (1.0 - relY) * WX_RANGE + WX_MIN;
+        const gameX = Math.round(0.002178 * worldY - 344.07);
+        const gameY = Math.round(0.002178 * worldX + 269.81);
+
         setHoverCoords({ x: gameX, y: gameY });
       } else {
         setHoverCoords(null);

@@ -45,7 +45,7 @@ function RelatedPosts({ postId, postType = 'games', basePath = '/games', limit =
 
   if (loading) {
     return (
-      <div className="mb-8">
+      <div className="mb-8 bg-accent-violet-950/10 p-3 rounded-xl">
         <h2 className="text-xl font-bold mb-4 text-white">Related Posts</h2>
         <div className="space-y-2 pr-2">
           {[1, 2, 3, 4, 5].map((i) => (
@@ -65,7 +65,7 @@ function RelatedPosts({ postId, postType = 'games', basePath = '/games', limit =
   }
 
   return (
-    <div className="w-full mb-8">
+    <div className="w-full mb-8 bg-accent-violet-950/10 p-3 rounded-xl">
       <h2 className="text-xl font-bold mb-4 text-white">Related Posts</h2>
       <div className="max-h-[350px] overflow-y-auto pr-2 space-y-2 scroll-smooth" style={{ scrollbarWidth: 'thin' }}>
         {posts.length > 0 ? (
@@ -73,7 +73,7 @@ function RelatedPosts({ postId, postType = 'games', basePath = '/games', limit =
             <Link
               to={post.slug ? `${basePath}/${post.slug}` : basePath}
               key={post.id}
-              className="group block p-3 bg-accent-violet-950/10 hover:bg-accent-violet-950/20 rounded-lg transition-colors border border-accent-violet-900/10 hover:border-accent-violet-500/20"
+              className="group block p-3 hover:bg-accent-violet-950/20 rounded-lg transition-colors border border-accent-violet-900/10 hover:border-accent-violet-500/20"
             >
               <h3
                 className="text-sm font-semibold text-gray-200 group-hover:text-accent-pink-400 transition-colors duration-200 leading-snug line-clamp-2"
