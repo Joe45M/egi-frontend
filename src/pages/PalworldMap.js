@@ -16,9 +16,6 @@ const WY_RANGE = 940129;  // total world_xy.y span across canvas width
 const WX_MIN = -593906;   // world_xy.x at bottom edge of map canvas
 const WX_RANGE = 940104;  // total world_xy.x span across canvas height
 
-// HUD display range (preserved for mouse coordinate tooltip display)
-const HUD_RANGE = 2048;
-const HUD_MIN = -1024;
 
 const ELEMENT_TYPES = [
   "neutral", "fire", "water", "grass", "electric", "earth", "ice", "dragon", "dark"

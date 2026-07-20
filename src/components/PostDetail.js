@@ -405,7 +405,7 @@ function PostDetail({ postType = 'games', basePath = '/games' }) {
                         <div className="lg:col-span-3">
                             {/* Meta & Title in main column matching design mockup */}
                             <p className="text-gray-400 text-xs font-mono uppercase tracking-wider mb-3">
-                                // POSTED BY {post.authorName || 'Author'} ON {formatDate(post.date)}
+                                {"// "}POSTED BY {post.authorName || 'Author'} ON {formatDate(post.date)}
                             </p>
                             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 text-white leading-tight" dangerouslySetInnerHTML={{ __html: post.title }} />
 
