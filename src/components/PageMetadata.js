@@ -133,7 +133,10 @@ function PageMetadata({
       cleanSearch = `?${cleanString}`;
     }
   }
-  const fullUrl = canonicalUrl || `${SITE_URL}${location.pathname}${cleanSearch}`;
+  let fullUrl = canonicalUrl || `${SITE_URL}${location.pathname}${cleanSearch}`;
+  if (fullUrl && !fullUrl.endsWith('/') && !fullUrl.includes('?') && !fullUrl.includes('#') && !fullUrl.match(/\.[a-zA-Z0-9]+$/)) {
+    fullUrl = `${fullUrl}/`;
+  }
 
   // Handle image URL (support relative and absolute)
   let fullImageUrl = image;

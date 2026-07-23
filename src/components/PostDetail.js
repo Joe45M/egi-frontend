@@ -282,7 +282,7 @@ function PostDetail({ postType = 'games', basePath = '/games' }) {
     const articleTitle = stripHtml(post.title);
     const articleExcerpt = post.excerpt ? stripHtml(post.excerpt) : createExcerpt(post.content);
     const articleImage = post.image || null;
-    const articleUrl = `${SITE_URL}${basePath}/${slug}`;
+    const articleUrl = `${SITE_URL}${basePath}/${slug}/`;
     const publishedDate = post.date ? new Date(post.date).toISOString() : null;
     const modifiedDate = post.modified ? new Date(post.modified).toISOString() : publishedDate;
 
