@@ -214,6 +214,29 @@
   margin-bottom: 0;
 }
 
+/* Custom HTML / Code Blocks & Custom Container Visibility Overrides */
+/* Ensures custom code blocks, HTML blocks, and custom components always render at full opacity */
+.wp-content .wp-block-html,
+.wp-content .wp-block-custom-html,
+.wp-content .wp-block-code,
+.wp-content .wp-block-embed,
+.wp-content [class*="pmd-"],
+.wp-content [class*="-container"],
+.wp-content [style*="opacity: 0"],
+.wp-content [style*="opacity:0"],
+.wp-content [style*="opacity: 0;"],
+.wp-content [style*="opacity:0;"] {
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: none !important;
+}
+
+.wp-content [class*="pmd-"] *,
+.wp-content [class*="-container"] * {
+  visibility: visible !important;
+}
+
+
 /* Mobile Menu Animations */
 @keyframes slideInUp {
   from {

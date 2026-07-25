@@ -187,7 +187,7 @@ function PostDetail({ postType = 'games', basePath = '/games' }) {
         fetchPost();
     }, [slug, postType, hasInitialData]);
 
-    // Initialize AdSense ads from WordPress content
+    // Initialize AdSense ads and custom HTML/code blocks from WordPress content
     useEffect(() => {
         if (!post || !contentRef.current) return;
 
@@ -196,15 +196,44 @@ function PostDetail({ postType = 'games', basePath = '/games' }) {
             const contentElement = contentRef.current;
             if (!contentElement) return;
 
+            // Ensure all custom block containers always have visible class & full opacity
+            const customContainers = contentElement.querySelectorAll('[class*="-container"], [class*="pmd-"], .wp-block-html, .wp-block-custom-html, .wp-block-code');
+            customContainers.forEach(el => {
+                el.classList.add('visible');
+                el.style.opacity = '1';
+                el.style.visibility = 'visible';
+            });
+
             // Find all ad elements in the content
             const adElements = contentElement.querySelectorAll('ins.adsbygoogle');
 
-            // Remove any script tags (they won't execute anyway)
+            // Handle inline scripts in custom HTML blocks
             const scripts = contentElement.querySelectorAll('script');
             scripts.forEach(script => {
-                // Only remove AdSense initialization scripts
+                // Remove AdSense initialization scripts (handled below via window.adsbygoogle)
                 if (script.textContent && script.textContent.includes('adsbygoogle')) {
                     script.remove();
+                    return;
+                }
+
+                // Execute embedded scripts from custom HTML blocks if not already executed
+                if (!script.dataset.executed) {
+                    try {
+                        let code = script.textContent;
+                        if (code && code.trim()) {
+                            // If page is already loaded, convert DOMContentLoaded handlers to execute immediately
+                            if (document.readyState === 'complete' || document.readyState === 'interactive') {
+                                code = code.replace(/document\.addEventListener\s*\(\s*['"]DOMContentLoaded['"]\s*,\s*(function\s*\([^)]*\)\s*\{|(?:\([^)]*\)|[a-zA-Z0-9_$]+)\s*=>\s*\{)/g, '(function() {');
+                            }
+                            const newScript = document.createElement('script');
+                            newScript.textContent = code;
+                            document.body.appendChild(newScript);
+                            document.body.removeChild(newScript);
+                        }
+                        script.dataset.executed = 'true';
+                    } catch (e) {
+                        console.error('Custom block inline script execution error:', e);
+                    }
                 }
             });
 
