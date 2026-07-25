@@ -187,63 +187,128 @@ function PostDetail({ postType = 'games', basePath = '/games' }) {
         fetchPost();
     }, [slug, postType, hasInitialData]);
 
-    // Initialize AdSense ads and custom HTML/code blocks from WordPress content
+    // Hardened Script Execution & Custom Block Hydration Engine
     useEffect(() => {
         if (!post || !contentRef.current) return;
 
-        // Wait for content to be rendered
         const timer = setTimeout(() => {
             const contentElement = contentRef.current;
             if (!contentElement) return;
 
-            // Ensure all custom block containers always have visible class & full opacity
-            const customContainers = contentElement.querySelectorAll('[class*="-container"], [class*="pmd-"], .wp-block-html, .wp-block-custom-html, .wp-block-code');
-            customContainers.forEach(el => {
-                el.classList.add('visible');
-                el.style.opacity = '1';
-                el.style.visibility = 'visible';
-            });
+            // 1. Force container visibility & .visible class on custom block wrappers
+            const forceContainerVisibility = () => {
+                const customContainers = contentElement.querySelectorAll(
+                    '[class*="-container"], [class*="pmd-"], .wp-block-html, .wp-block-custom-html, .wp-block-code, .wp-block-embed'
+                );
+                customContainers.forEach(el => {
+                    el.classList.add('visible');
+                    el.style.opacity = '1';
+                    el.style.visibility = 'visible';
+                });
+            };
 
-            // Find all ad elements in the content
-            const adElements = contentElement.querySelectorAll('ins.adsbygoogle');
+            forceContainerVisibility();
 
-            // Handle inline scripts in custom HTML blocks
-            const scripts = contentElement.querySelectorAll('script');
-            scripts.forEach(script => {
+            // 2. Execute imported & embedded scripts safely in isolated IIFEs
+            const scripts = Array.from(contentElement.querySelectorAll('script'));
+            scripts.forEach((script, index) => {
                 // Remove AdSense initialization scripts (handled below via window.adsbygoogle)
                 if (script.textContent && script.textContent.includes('adsbygoogle')) {
                     script.remove();
                     return;
                 }
 
-                // Execute embedded scripts from custom HTML blocks if not already executed
-                if (!script.dataset.executed) {
+                if (script.dataset.executed === 'true') return;
+                script.dataset.executed = 'true';
+
+                // Handle external scripts with src
+                if (script.src) {
                     try {
-                        let code = script.textContent;
-                        if (code && code.trim()) {
-                            // If page is already loaded, convert DOMContentLoaded handlers to execute immediately
-                            if (document.readyState === 'complete' || document.readyState === 'interactive') {
-                                code = code.replace(/document\.addEventListener\s*\(\s*['"]DOMContentLoaded['"]\s*,\s*(function\s*\([^)]*\)\s*\{|(?:\([^)]*\)|[a-zA-Z0-9_$]+)\s*=>\s*\{)/g, '(function() {');
+                        const newScript = document.createElement('script');
+                        Array.from(script.attributes).forEach(attr => {
+                            if (attr.name !== 'dataset') {
+                                newScript.setAttribute(attr.name, attr.value);
                             }
-                            const newScript = document.createElement('script');
-                            newScript.textContent = code;
-                            document.body.appendChild(newScript);
-                            document.body.removeChild(newScript);
-                        }
-                        script.dataset.executed = 'true';
-                    } catch (e) {
-                        console.error('Custom block inline script execution error:', e);
+                        });
+                        newScript.async = false;
+                        newScript.onerror = (err) => console.error(`[HardenedScript] Error loading external script (${script.src}):`, err);
+                        document.head.appendChild(newScript);
+                    } catch (err) {
+                        console.error(`[HardenedScript] Failed to load external script (${script.src}):`, err);
                     }
+                    return;
+                }
+
+                // Handle inline scripts with IIFE encapsulation
+                const rawCode = script.textContent ? script.textContent.trim() : '';
+                if (!rawCode) return;
+
+                try {
+                    // Wrap script in an IIFE with event listener traps so DOMContentLoaded / load handlers execute immediately if DOM is ready
+                    const iifeCode = `
+(function() {
+    'use strict';
+    var isDomReady = document.readyState === 'complete' || document.readyState === 'interactive';
+    var origDocAddEventListener = document.addEventListener.bind(document);
+    var origWinAddEventListener = window.addEventListener.bind(window);
+
+    if (isDomReady) {
+        document.addEventListener = function(type, listener, options) {
+            if (type === 'DOMContentLoaded' || type === 'load') {
+                try {
+                    if (typeof listener === 'function') listener(new Event(type));
+                } catch (e) {
+                    console.error('[HardenedScript] Error in ' + type + ' listener:', e);
+                }
+                return;
+            }
+            return origDocAddEventListener(type, listener, options);
+        };
+
+        window.addEventListener = function(type, listener, options) {
+            if (type === 'DOMContentLoaded' || type === 'load') {
+                try {
+                    if (typeof listener === 'function') listener(new Event(type));
+                } catch (e) {
+                    console.error('[HardenedScript] Error in ' + type + ' listener:', e);
+                }
+                return;
+            }
+            return origWinAddEventListener(type, listener, options);
+        };
+    }
+
+    try {
+        ${rawCode}
+    } catch (scriptError) {
+        console.error('[HardenedScript] Custom block script execution error:', scriptError);
+    } finally {
+        if (isDomReady) {
+            document.addEventListener = origDocAddEventListener;
+            window.addEventListener = origWinAddEventListener;
+        }
+    }
+})();
+`;
+
+                    const scriptNode = document.createElement('script');
+                    scriptNode.setAttribute('type', 'text/javascript');
+                    scriptNode.setAttribute('data-hardened-iife', 'true');
+                    scriptNode.textContent = iifeCode;
+
+                    document.body.appendChild(scriptNode);
+                    document.body.removeChild(scriptNode);
+                } catch (err) {
+                    console.error(`[HardenedScript] Failed to execute inline script #${index}:`, err);
                 }
             });
 
-            // Initialize each ad
+            // 3. Initialize AdSense ads
+            const adElements = contentElement.querySelectorAll('ins.adsbygoogle');
             if (window.adsbygoogle && adElements.length > 0) {
                 adElements.forEach((adElement) => {
                     try {
-                        // Check if this ad hasn't been initialized yet
                         if (!adElement.dataset.adsbygoogleStatus) {
-                            // Push an empty object to initialize this specific ad
                             window.adsbygoogle.push({});
                             adElement.dataset.adsbygoogleStatus = 'done';
                         }
@@ -252,6 +317,11 @@ function PostDetail({ postType = 'games', basePath = '/games' }) {
                     }
                 });
             }
+
+            // Multi-pass visibility re-assertion
+            setTimeout(forceContainerVisibility, 100);
+            setTimeout(forceContainerVisibility, 500);
+
         }, 100);
 
         return () => clearTimeout(timer);
