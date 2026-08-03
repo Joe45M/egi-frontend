@@ -1,14 +1,11 @@
 import { useState, useEffect } from 'react';
-import { ShieldWarning, ArrowClockwise, CheckCircle, Info, Sparkle, LockLaminated } from 'phosphor-react';
+import { ShieldWarning, ArrowClockwise, Info, Sparkle, LockLaminated } from 'phosphor-react';
 import { useAdBlockDetector } from '../utils/adBlockDetector';
 import { splitArticleContent } from '../utils/contentSplitter';
 
 function AntiAdBlocker({ content, paragraphCut = 1 }) {
   const [isHydrated, setIsHydrated] = useState(false);
-  const { isAdBlockerActive, recheckAdBlock, dismissGracePeriod } = useAdBlockDetector();
-  const [rechecking, setRechecking] = useState(false);
-  const [justUnlocked, setJustUnlocked] = useState(false);
-  const [recheckMessage, setRecheckMessage] = useState('');
+  const { isAdBlockerActive, dismissGracePeriod } = useAdBlockDetector();
 
   // Hydration safety: ensure client initial render matches server rendered HTML
   useEffect(() => {
@@ -17,19 +14,9 @@ function AntiAdBlocker({ content, paragraphCut = 1 }) {
 
   const { introHtml, restrictedHtml } = splitArticleContent(content, paragraphCut);
 
-  const handleRecheck = async () => {
-    setRechecking(true);
-    setRecheckMessage('');
-    
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    const stillActive = await recheckAdBlock();
-    setRechecking(false);
-
-    if (!stillActive) {
-      setJustUnlocked(true);
-      setTimeout(() => setJustUnlocked(false), 3000);
-    } else {
-      setRecheckMessage('Ad blocker still detected. Please ensure it is disabled for this domain and try again.');
+  const handleRefresh = () => {
+    if (typeof window !== 'undefined') {
+      window.location.reload();
     }
   };
 
@@ -42,8 +29,8 @@ function AntiAdBlocker({ content, paragraphCut = 1 }) {
     return <div dangerouslySetInnerHTML={{ __html: content }} />;
   }
 
-  // If adblocker is not active or user just unlocked
-  if (!isAdBlockerActive && !justUnlocked) {
+  // If adblocker is not active
+  if (!isAdBlockerActive) {
     return <div dangerouslySetInnerHTML={{ __html: content }} />;
   }
 
@@ -54,17 +41,6 @@ function AntiAdBlocker({ content, paragraphCut = 1 }) {
         className="wp-content-intro mb-6"
         dangerouslySetInnerHTML={{ __html: introHtml }}
       />
-
-      {/* Unlocked Toast Banner if just unblocked */}
-      {justUnlocked && (
-        <div className="my-6 p-4 rounded-2xl bg-emerald-950/80 border border-emerald-500/40 text-emerald-200 flex items-center gap-3 backdrop-blur-md animate-fade-in shadow-lg shadow-emerald-950/40">
-          <CheckCircle size={28} className="text-emerald-400 shrink-0" weight="fill" />
-          <div>
-            <h4 className="font-bold text-sm text-emerald-300">Ad Blocker Disabled — Thank You!</h4>
-            <p className="text-xs text-emerald-400/90">Your support allows us to continue producing free guides and content.</p>
-          </div>
-        </div>
-      )}
 
       {/* Blurred & Gated Content Area */}
       {isAdBlockerActive && (
@@ -122,25 +98,18 @@ function AntiAdBlocker({ content, paragraphCut = 1 }) {
                   </div>
                   <div className="flex items-start gap-2 text-xs text-gray-300">
                     <span className="flex items-center justify-center w-5 h-5 rounded-full bg-accent-violet-950 text-accent-violet-300 font-bold text-[10px] shrink-0 border border-accent-violet-500/30">3</span>
-                    <span>Click the button below to instantly unlock the full article.</span>
+                    <span>Click the refresh button below to reload and unlock the article.</span>
                   </div>
                 </div>
-
-                {recheckMessage && (
-                  <p className="text-xs text-rose-400 font-semibold mb-4 bg-rose-950/40 border border-rose-800/40 p-2.5 rounded-xl">
-                    {recheckMessage}
-                  </p>
-                )}
 
                 {/* Action Buttons */}
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
                   <button
-                    onClick={handleRecheck}
-                    disabled={rechecking}
-                    className="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-accent-violet-600 via-accent-violet-500 to-accent-pink-600 hover:from-accent-violet-500 hover:to-accent-pink-500 text-white font-bold text-sm shadow-lg shadow-accent-violet-950/60 hover:shadow-accent-violet-600/30 transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-60 cursor-pointer"
+                    onClick={handleRefresh}
+                    className="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-accent-violet-600 via-accent-violet-500 to-accent-pink-600 hover:from-accent-violet-500 hover:to-accent-pink-500 text-white font-bold text-sm shadow-lg shadow-accent-violet-950/60 hover:shadow-accent-violet-600/30 transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer"
                   >
-                    <ArrowClockwise size={18} className={rechecking ? 'animate-spin' : ''} />
-                    {rechecking ? 'Re-checking Ad Blocker...' : "I've Disabled AdBlock"}
+                    <ArrowClockwise size={18} />
+                    I've Disabled AdBlock (Refresh Page)
                   </button>
 
                   <button
