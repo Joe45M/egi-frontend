@@ -12,6 +12,7 @@ import AuthorBox from "./AuthorBox";
 import { replaceAdShortcodes } from "../utils/ads";
 import TableOfContents from "./TableOfContents";
 import AdPlacement from "./AdPlacement";
+import AntiAdBlocker from "./AntiAdBlocker";
 
 import RelatedPosts from "./RelatedPosts";
 import GameRelatedPosts from "./GameRelatedPosts";
@@ -517,8 +518,9 @@ function PostDetail({ postType = 'games', basePath = '/games' }) {
                             <div
                                 ref={contentRef}
                                 className="wp-content"
-                                dangerouslySetInnerHTML={{ __html: replaceAdShortcodes(post.content) }}
-                            />
+                            >
+                                <AntiAdBlocker content={replaceAdShortcodes(post.content)} paragraphCut={1} />
+                            </div>
                             {/* Tags list */}
                             {tagsList && tagsList.length > 0 && (
                                 <div className="mt-8 pt-6 border-t border-base-800">
