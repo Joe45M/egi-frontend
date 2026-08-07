@@ -530,6 +530,22 @@ export const postsApi = {
     },
 
     /**
+     * Fetch composite SSR post data in a single request (post + relatedPosts + associatedGame + gameRelatedPosts)
+     * @param {string} postType - Post type name
+     * @param {string} slug - Post slug
+     */
+    async getCompositeSSRPost(postType, slug) {
+        try {
+            const encodedSlug = encodeURIComponent(slug);
+            const data = await fetchFromAPI(`https://api.elitegamerinsights.com/wp-json/egi/v1/ssr-post?slug=${encodedSlug}&type=${postType}`);
+            return data;
+        } catch (error) {
+            console.error(`Error fetching composite SSR post for ${postType} / "${slug}":`, error);
+            throw error;
+        }
+    },
+
+    /**
      * Get a single post by ID
      * @param {number} postId - Post ID
      * @param {boolean} includeImage - Whether to fetch featured image (default: true)

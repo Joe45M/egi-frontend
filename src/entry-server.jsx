@@ -123,19 +123,37 @@ async function preloadRouteData(url) {
       return slug;
     }
 
+async function loadPostDataWithCompositeFallback(postType, slug, basePath) {
+  try {
+    const composite = await wordpressApi.posts.getCompositeSSRPost(postType, slug);
+    if (composite && composite.post) {
+      const post = composite.post;
+      post.relatedPosts = composite.relatedPosts || [];
+      post.associatedGame = composite.associatedGame || null;
+      post.gameRelatedPosts = composite.gameRelatedPosts || [];
+      return { post, postType, basePath };
+    }
+  } catch (compositeError) {
+    console.warn(`[Composite API Fallback] ${postType} / ${slug} failed, falling back to standard REST API:`, compositeError?.message || compositeError);
+  }
+
+  // Fallback to standard REST API queries if composite endpoint fails
+  try {
+    let post = await wordpressApi.posts.getByPostTypeAndSlug(postType, slug, true);
+    post = await enrichPostWithSidebarData(post, postType);
+    return { post, postType, basePath };
+  } catch (error) {
+    console.error(`Error preloading ${postType} post:`, error);
+    return { redirect: '/404' };
+  }
+}
+
     // Check if this is a game post route: /games/:slug
     const gamesMatch = pathname.match(/^\/games\/(.+)$/);
     if (gamesMatch) {
       const slug = extractSlug(gamesMatch[1]);
       if (slug) {
-        try {
-          let post = await wordpressApi.posts.getByPostTypeAndSlug('games', slug, true);
-          post = await enrichPostWithSidebarData(post, 'games');
-          return { post, postType: 'games', basePath: '/games' };
-        } catch (error) {
-          console.error('Error preloading game post:', error);
-          return { redirect: '/404' };
-        }
+        return await loadPostDataWithCompositeFallback('games', slug, '/games');
       }
     }
 
@@ -215,14 +233,7 @@ async function preloadRouteData(url) {
     if (cultureMatch) {
       const slug = extractSlug(cultureMatch[1]);
       if (slug) {
-        try {
-          let post = await wordpressApi.posts.getByPostTypeAndSlug('culture', slug, true);
-          post = await enrichPostWithSidebarData(post, 'culture');
-          return { post, postType: 'culture', basePath: '/culture' };
-        } catch (error) {
-          console.error('Error preloading culture post:', error);
-          return { redirect: '/404' };
-        }
+        return await loadPostDataWithCompositeFallback('culture', slug, '/culture');
       }
     }
 
@@ -231,14 +242,7 @@ async function preloadRouteData(url) {
     if (gameReviewsMatch) {
       const slug = extractSlug(gameReviewsMatch[1]);
       if (slug) {
-        try {
-          let post = await wordpressApi.posts.getByPostTypeAndSlug('game-reviews', slug, true);
-          post = await enrichPostWithSidebarData(post, 'game-reviews');
-          return { post, postType: 'game-reviews', basePath: '/game-reviews' };
-        } catch (error) {
-          console.error('Error preloading game-reviews post:', error);
-          return { redirect: '/404' };
-        }
+        return await loadPostDataWithCompositeFallback('game-reviews', slug, '/game-reviews');
       }
     }
   } catch (error) {
