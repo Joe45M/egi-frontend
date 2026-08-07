@@ -45,21 +45,49 @@ function loadServerBundle() {
   return null;
 }
 
-exports.handler = async (event) => {
-  // Get the URL from the event - Netlify uses different event structures
-  // Try multiple possible properties
-  let url = event.path || event.rawPath || (event.requestContext && event.requestContext.path) || '/';
+function extractRequestedPath(event) {
+  // Try Netlify edge rewrite headers for original requested path
+  const headerPath = event.headers?.['x-original-url'] ||
+                     event.headers?.['x-rewrite-url'] ||
+                     event.headers?.['x-forwarded-uri'] ||
+                     event.headers?.['X-Original-Url'] ||
+                     event.headers?.['X-Rewrite-Url'] ||
+                     event.headers?.['X-Forwarded-Uri'];
+  
+  if (headerPath && !headerPath.includes('/.netlify/functions/ssr')) {
+    return headerPath;
+  }
 
-  // If we got the full path with query string, extract just the path
+  if (event.rawUrl) {
+    try {
+      const parsed = new URL(event.rawUrl);
+      if (parsed.pathname && !parsed.pathname.includes('/.netlify/functions/ssr')) {
+        return parsed.pathname + (parsed.search || '');
+      }
+    } catch (e) {}
+  }
+
+  if (event.rawPath && !event.rawPath.includes('/.netlify/functions/ssr')) {
+    return event.rawPath;
+  }
+
+  if (event.path && !event.path.includes('/.netlify/functions/ssr')) {
+    return event.path;
+  }
+
+  return '/';
+}
+
+exports.handler = async (event) => {
+  // Get the real requested URL path from Netlify edge rewrite event
+  let url = extractRequestedPath(event);
+
+  // If we got the full path with query string, extract just the path for router matching
   if (url.includes('?')) {
     url = url.split('?')[0];
   }
 
   // Enforce trailing slash as the canonical URL form (matches sitemap).
-  // Issue a 301 (permanent) redirect for non-trailing-slash requests so that
-  // search engines index the correct canonical URL. A 301 is followed and the
-  // destination URL is what gets indexed — unlike the 302 that was previously
-  // emitted by React Router, which Bing refused to index.
   const isStaticAsset = url.startsWith('/static/') ||
     url.match(/\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot|json|xml|txt|map|webmanifest)$/i);
   if (!isStaticAsset && url !== '/' && !url.endsWith('/')) {
@@ -74,11 +102,7 @@ exports.handler = async (event) => {
   }
 
   // Log for debugging - this will show in Netlify function logs
-  console.log('SSR Function called');
-  console.log('Event keys:', Object.keys(event));
-  console.log('URL:', url);
-  console.log('event.path:', event.path);
-  console.log('event.rawPath:', event.rawPath);
+  console.log('SSR Function called for path:', url);
 
   // Static assets should be handled by redirects, but as a safety check
   if (
@@ -114,13 +138,6 @@ exports.handler = async (event) => {
       };
     }
 
-    // Debug logging - check if head has values
-    console.log('SSR Debug - URL:', url);
-    console.log('SSR Debug - Head values:', JSON.stringify(head, null, 2));
-    console.log('SSR Debug - HTML length:', html ? html.length : 0);
-    console.log('SSR Debug - Has title:', !!head?.title);
-    console.log('SSR Debug - Has ogImage:', !!head?.ogImage);
-
     // Read the HTML template
     const htmlPath = resolveAssetPath('build/index.html');
     if (!htmlPath) {
@@ -140,7 +157,6 @@ exports.handler = async (event) => {
       if (template.includes('<title>')) {
         template = template.replace(/<title>.*?<\/title>/i, `<title>${escapedTitle}</title>`);
       } else {
-        // Insert before closing </head> as a fallback
         template = template.replace('</head>', `<title>${escapedTitle}</title></head>`);
       }
     }
@@ -161,10 +177,16 @@ exports.handler = async (event) => {
       }
     }
 
-    // Inject canonical URL (either from SEO head data or request path)
+    // Inject canonical URL (standardized to HTTPS with trailing slash)
     const siteUrl = 'https://elitegamerinsights.com';
-    const finalCanonicalUrl = head?.canonicalUrl || `${siteUrl}${url}`;
-    const escapedUrl = finalCanonicalUrl.replace(/"/g, '&quot;');
+    let rawCanonical = head?.canonicalUrl || `${siteUrl}${url}`;
+    if (rawCanonical.startsWith('http://')) {
+      rawCanonical = rawCanonical.replace('http://', 'https://');
+    }
+    if (!rawCanonical.endsWith('/') && !rawCanonical.includes('?') && !rawCanonical.includes('#') && !rawCanonical.match(/\.[a-zA-Z0-9]+$/)) {
+      rawCanonical = `${rawCanonical}/`;
+    }
+    const escapedUrl = rawCanonical.replace(/"/g, '&quot;');
     if (template.match(/<link\s+rel="canonical"[^>]*>/i)) {
       template = template.replace(
         /<link\s+rel="canonical"[^>]*>/i,
@@ -311,8 +333,14 @@ exports.handler = async (event) => {
 
       // Always inject canonical URL even in fallback mode for SEO safety
       const siteUrl = 'https://elitegamerinsights.com';
-      const finalCanonicalUrl = `${siteUrl}${url}`;
-      const escapedUrl = finalCanonicalUrl.replace(/"/g, '&quot;');
+      let rawCanonical = `${siteUrl}${url}`;
+      if (rawCanonical.startsWith('http://')) {
+        rawCanonical = rawCanonical.replace('http://', 'https://');
+      }
+      if (!rawCanonical.endsWith('/') && !rawCanonical.includes('?') && !rawCanonical.includes('#') && !rawCanonical.match(/\.[a-zA-Z0-9]+$/)) {
+        rawCanonical = `${rawCanonical}/`;
+      }
+      const escapedUrl = rawCanonical.replace(/"/g, '&quot;');
       if (template.match(/<link\s+rel="canonical"[^>]*>/i)) {
         template = template.replace(
           /<link\s+rel="canonical"[^>]*>/i,
