@@ -134,8 +134,16 @@ function PageMetadata({
     }
   }
   let fullUrl = canonicalUrl || `${SITE_URL}${location.pathname}${cleanSearch}`;
-  if (fullUrl && !fullUrl.endsWith('/') && !fullUrl.includes('?') && !fullUrl.includes('#') && !fullUrl.match(/\.[a-zA-Z0-9]+$/)) {
-    fullUrl = `${fullUrl}/`;
+  try {
+    const parsedUrl = new URL(fullUrl);
+    if (parsedUrl.pathname.length > 1 && parsedUrl.pathname.endsWith('/')) {
+      parsedUrl.pathname = parsedUrl.pathname.replace(/\/+$/, '');
+      fullUrl = parsedUrl.toString();
+    }
+  } catch (e) {
+    if (fullUrl.length > 30 && fullUrl.endsWith('/') && !fullUrl.endsWith('com/')) {
+      fullUrl = fullUrl.substring(0, fullUrl.length - 1);
+    }
   }
 
   // Handle image URL (support relative and absolute)

@@ -177,16 +177,33 @@ exports.handler = async (event) => {
       }
     }
 
-    // Inject canonical URL (standardized to HTTPS with trailing slash)
-    const siteUrl = 'https://elitegamerinsights.com';
-    let rawCanonical = head?.canonicalUrl || `${siteUrl}${url}`;
-    if (rawCanonical.startsWith('http://')) {
-      rawCanonical = rawCanonical.replace('http://', 'https://');
+function formatCanonicalUrl(rawUrlStr) {
+  const siteUrl = 'https://elitegamerinsights.com';
+  let formatted = rawUrlStr || siteUrl;
+  if (formatted.startsWith('http://')) {
+    formatted = formatted.replace('http://', 'https://');
+  }
+  if (!formatted.startsWith('http://') && !formatted.startsWith('https://')) {
+    if (!formatted.startsWith('/')) formatted = '/' + formatted;
+    formatted = `${siteUrl}${formatted}`;
+  }
+  try {
+    const parsed = new URL(formatted);
+    if (parsed.pathname.length > 1 && parsed.pathname.endsWith('/')) {
+      parsed.pathname = parsed.pathname.replace(/\/+$/, '');
     }
-    if (!rawCanonical.endsWith('/') && !rawCanonical.includes('?') && !rawCanonical.includes('#') && !rawCanonical.match(/\.[a-zA-Z0-9]+$/)) {
-      rawCanonical = `${rawCanonical}/`;
+    return parsed.toString();
+  } catch (e) {
+    if (formatted.length > 30 && formatted.endsWith('/') && !formatted.endsWith('com/')) {
+      formatted = formatted.replace(/\/+$/, '');
     }
-    const escapedUrl = rawCanonical.replace(/"/g, '&quot;');
+    return formatted;
+  }
+}
+
+    // Inject canonical URL (standardized without trailing slash for inner pages)
+    const finalCanonicalUrl = formatCanonicalUrl(head?.canonicalUrl || `${siteUrl}${url}`);
+    const escapedUrl = finalCanonicalUrl.replace(/"/g, '&quot;');
     if (template.match(/<link\s+rel="canonical"[^>]*>/i)) {
       template = template.replace(
         /<link\s+rel="canonical"[^>]*>/i,
@@ -314,9 +331,8 @@ exports.handler = async (event) => {
       statusCode: status,
       headers: {
         'Content-Type': 'text/html; charset=utf-8',
-        'Cache-Control': 'no-cache, no-store, must-revalidate',
-        'Pragma': 'no-cache',
-        'Expires': '0',
+        'Cache-Control': 'public, max-age=0, s-maxage=300, stale-while-revalidate=86400',
+        'Netlify-Vary': 'query=none',
       },
       body: template,
     };
@@ -332,15 +348,8 @@ exports.handler = async (event) => {
       let template = fs.readFileSync(htmlPath, 'utf8');
 
       // Always inject canonical URL even in fallback mode for SEO safety
-      const siteUrl = 'https://elitegamerinsights.com';
-      let rawCanonical = `${siteUrl}${url}`;
-      if (rawCanonical.startsWith('http://')) {
-        rawCanonical = rawCanonical.replace('http://', 'https://');
-      }
-      if (!rawCanonical.endsWith('/') && !rawCanonical.includes('?') && !rawCanonical.includes('#') && !rawCanonical.match(/\.[a-zA-Z0-9]+$/)) {
-        rawCanonical = `${rawCanonical}/`;
-      }
-      const escapedUrl = rawCanonical.replace(/"/g, '&quot;');
+      const finalCanonicalUrl = formatCanonicalUrl(`${siteUrl}${url}`);
+      const escapedUrl = finalCanonicalUrl.replace(/"/g, '&quot;');
       if (template.match(/<link\s+rel="canonical"[^>]*>/i)) {
         template = template.replace(
           /<link\s+rel="canonical"[^>]*>/i,

@@ -21,7 +21,7 @@ const LDProvider = createLDReactProvider('6a525a8ccd87b60ba57d0fd3', {
 async function enrichPostWithSidebarData(post, postType) {
   if (!post) return post;
   
-  const relatedPromise = wordpressApi.posts.getRelatedByPostType(postType, post.id, 20)
+  const relatedPromise = wordpressApi.posts.getRelatedByPostType(postType, post.id, 20, post.categories)
     .catch(e => {
       console.error(`Error preloading related posts for ${postType} ${post.id}:`, e);
       return [];
@@ -33,11 +33,12 @@ async function enrichPostWithSidebarData(post, postType) {
     const gameId = gameIds[0];
     gamePromise = (async () => {
       try {
-        const associatedGame = await wordpressApi.taxonomies.getById('game', gameId);
-        const result = await wordpressApi.posts.getByPostType(postType, {
+        const gameTermPromise = wordpressApi.taxonomies.getById('game', gameId);
+        const gamePostsPromise = wordpressApi.posts.getByPostType(postType, {
           perPage: 21,
           taxonomyFilter: { game: gameId }
         });
+        const [associatedGame, result] = await Promise.all([gameTermPromise, gamePostsPromise]);
         const fetched = Array.isArray(result) ? result : (result.posts || []);
         const gameRelatedPosts = fetched.filter(p => String(p.id) !== String(post.id)).slice(0, 20);
         return { associatedGame, gameRelatedPosts };
@@ -69,20 +70,22 @@ async function preloadRouteData(url) {
     // Check if this is the Home page route
     if (pathname === '/' || pathname === '') {
       try {
-        const sliderPostsResult = await wordpressApi.posts.getByPostType('games', {
-          perPage: 3,
-          includeImages: true,
-          orderBy: 'date',
-          order: 'desc'
-        });
-        const sliderPosts = Array.isArray(sliderPostsResult) ? sliderPostsResult : (sliderPostsResult?.posts || []);
+        const [sliderPostsResult, postsResult] = await Promise.all([
+          wordpressApi.posts.getByPostType('games', {
+            perPage: 3,
+            includeImages: true,
+            orderBy: 'date',
+            order: 'desc'
+          }),
+          wordpressApi.posts.getByPostType('games', {
+            perPage: 36,
+            includeImages: true,
+            orderBy: 'date',
+            order: 'desc'
+          })
+        ]);
 
-        const postsResult = await wordpressApi.posts.getByPostType('games', {
-          perPage: 36,
-          includeImages: true,
-          orderBy: 'date',
-          order: 'desc'
-        });
+        const sliderPosts = Array.isArray(sliderPostsResult) ? sliderPostsResult : (sliderPostsResult?.posts || []);
         const allPosts = Array.isArray(postsResult) ? postsResult : (postsResult?.posts || []);
 
         return {
@@ -250,8 +253,22 @@ export async function render(url) {
 
   const head = createEmptyHead();
 
-  // Pre-fetch data for routes that need it
-  const initialData = await preloadRouteData(url);
+  // Pre-fetch data for routes with a 2.5s timeout safety guard
+  let timeoutId;
+  const timeoutPromise = new Promise(resolve => {
+    timeoutId = setTimeout(() => {
+      console.warn(`[SSR Timeout Warning] preloadRouteData exceeded 2500ms for URL: ${url}`);
+      resolve(null);
+    }, 2500);
+  });
+
+  const initialData = await Promise.race([
+    preloadRouteData(url),
+    timeoutPromise
+  ]).finally(() => {
+    if (timeoutId) clearTimeout(timeoutId);
+  });
+
   console.log('entry-server: initialData:', initialData ? (initialData.redirect ? `redirect=${initialData.redirect}` : `postType=${initialData.postType}, slug=${initialData.post?.slug}`) : 'null');
 
   if (initialData && initialData.redirect) {

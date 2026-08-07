@@ -656,13 +656,16 @@ export const postsApi = {
      * @param {string} postType - Post type name (e.g., 'post', 'page', or custom post type)
      * @param {number} postId - Current post ID
      * @param {number} limit - Maximum number of related posts (default: 4)
+     * @param {Array<number>} [knownCategories=null] - Pre-fetched categories array to avoid redundant network call
      */
-    async getRelatedByPostType(postType, postId, limit = 4) {
+    async getRelatedByPostType(postType, postId, limit = 4, knownCategories = null) {
         try {
-            // First get the current post to get its categories and tags
-            const currentPost = await fetchFromAPI(`/${postType}/${postId}`);
-
-            const categories = currentPost.categories || [];
+            let categories = knownCategories;
+            if (!Array.isArray(categories)) {
+                // Fallback: get current post to extract categories if not provided
+                const currentPost = await fetchFromAPI(`/${postType}/${postId}`);
+                categories = currentPost.categories || [];
+            }
 
             // Build query to get posts with same categories or tags from the same post type
             const queryParams = new URLSearchParams({
@@ -671,7 +674,7 @@ export const postsApi = {
                 _embed: '1',
             });
 
-            if (categories.length > 0) {
+            if (categories && categories.length > 0) {
                 queryParams.append('categories', categories[0].toString());
             }
 
