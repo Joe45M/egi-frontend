@@ -126,17 +126,33 @@ exports.handler = async (event) => {
     url = url.split('?')[0];
   }
 
-  // Enforce trailing slash as canonical form
+  // Handle trailing slash enforcement: game-reviews MUST NOT use trailing slashes, other routes do
   const isStaticAsset = url.startsWith('/static/') || STATIC_ASSET_REGEX.test(url);
-  if (!isStaticAsset && url !== '/' && !url.endsWith('/')) {
-    return {
-      statusCode: 301,
-      headers: {
-        'Location': url + '/',
-        'Cache-Control': 'public, max-age=31536000, immutable',
-      },
-      body: '',
-    };
+  const isGameReviewsRoute = url.startsWith('/game-reviews');
+
+  if (!isStaticAsset) {
+    if (isGameReviewsRoute) {
+      if (url.endsWith('/')) {
+        const urlWithoutSlash = url.length > 13 ? url.replace(/\/+$/, '') : '/game-reviews';
+        return {
+          statusCode: 301,
+          headers: {
+            'Location': urlWithoutSlash,
+            'Cache-Control': 'public, max-age=31536000, immutable',
+          },
+          body: '',
+        };
+      }
+    } else if (url !== '/' && !url.endsWith('/')) {
+      return {
+        statusCode: 301,
+        headers: {
+          'Location': url + '/',
+          'Cache-Control': 'public, max-age=31536000, immutable',
+        },
+        body: '',
+      };
+    }
   }
 
   if (isStaticAsset) {
