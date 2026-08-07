@@ -18,7 +18,7 @@ function Layout() {
       sessionStorage.removeItem('chunk-load-reload');
     }
 
-    // Dynamic loading of Google AdSense after hydration
+    // Dynamic loading of Google AdSense after initial paint / interaction
     const loadAdSense = () => {
       if (typeof window !== 'undefined' && !window.adsenseScriptLoaded) {
         window.adsenseScriptLoaded = true;
@@ -30,13 +30,21 @@ function Layout() {
       }
     };
     
-    // We defer loading slightly to prioritize main thread for layout/hydration
+    // Defer AdSense loading until user interaction or 3.5s fallback to eliminate script blocking on initial paint
     if (typeof window !== 'undefined') {
-      if (window.requestIdleCallback) {
-        window.requestIdleCallback(() => loadAdSense());
-      } else {
-        setTimeout(loadAdSense, 1000);
-      }
+      const interactionEvents = ['keydown', 'mousemove', 'touchmove', 'touchstart', 'scroll'];
+      const onUserInteraction = () => {
+        loadAdSense();
+        interactionEvents.forEach(evt => window.removeEventListener(evt, onUserInteraction));
+      };
+      
+      interactionEvents.forEach(evt => window.addEventListener(evt, onUserInteraction, { passive: true }));
+      const timer = setTimeout(loadAdSense, 3500);
+
+      return () => {
+        clearTimeout(timer);
+        interactionEvents.forEach(evt => window.removeEventListener(evt, onUserInteraction));
+      };
     }
   }, []);
   
