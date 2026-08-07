@@ -4,33 +4,78 @@
 
 const API_BASE_URL = 'https://api.elitegamerinsights.com/wp-json/palworld/v1';
 
-async function fetchFromAPI(endpoint, options = {}) {
-    try {
-        const url = endpoint.startsWith('http') ? endpoint : `${API_BASE_URL}${endpoint}`;
-        const isServer = typeof window === 'undefined';
-        const response = await fetch(url, { keepalive: isServer, ...options });
+const PALWORLD_CACHE = new Map();
+const INFLIGHT_PROMISES = new Map();
+const CACHE_TTL_MS = 10 * 60 * 1000; // 10 minutes
+const MAX_CACHE_ENTRIES = 250;
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-
-        if (options.includeHeaders) {
-            return {
-                data,
-                headers: {
-                    total: parseInt(response.headers.get('X-WP-Total') || '0', 10),
-                    totalPages: parseInt(response.headers.get('X-WP-TotalPages') || '0', 10),
-                }
-            };
-        }
-
-        return data;
-    } catch (error) {
-        console.error(`API Error fetching Palworld ${endpoint}:`, error);
-        throw error;
+function trimCacheIfFull() {
+    if (PALWORLD_CACHE.size > MAX_CACHE_ENTRIES) {
+        const oldestKey = PALWORLD_CACHE.keys().next().value;
+        if (oldestKey) PALWORLD_CACHE.delete(oldestKey);
     }
+}
+
+async function fetchFromAPI(endpoint, options = {}) {
+    const isGetMethod = !options.method || options.method.toUpperCase() === 'GET';
+    const useCache = isGetMethod && !options.bypassCache;
+    const url = endpoint.startsWith('http') ? endpoint : `${API_BASE_URL}${endpoint}`;
+    const cacheKey = `${url}_headers:${Boolean(options.includeHeaders)}`;
+
+    if (useCache) {
+        const cached = PALWORLD_CACHE.get(cacheKey);
+        if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
+            return cached.data;
+        }
+
+        if (INFLIGHT_PROMISES.has(cacheKey)) {
+            return INFLIGHT_PROMISES.get(cacheKey);
+        }
+    }
+
+    const fetchPromise = (async () => {
+        try {
+            const isServer = typeof window === 'undefined';
+            const response = await fetch(url, { keepalive: isServer, ...options });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            let result = data;
+            if (options.includeHeaders) {
+                result = {
+                    data,
+                    headers: {
+                        total: parseInt(response.headers.get('X-WP-Total') || '0', 10),
+                        totalPages: parseInt(response.headers.get('X-WP-TotalPages') || '0', 10),
+                    }
+                };
+            }
+
+            if (useCache) {
+                trimCacheIfFull();
+                PALWORLD_CACHE.set(cacheKey, { timestamp: Date.now(), data: result });
+            }
+
+            return result;
+        } catch (error) {
+            console.error(`API Error fetching Palworld ${endpoint}:`, error);
+            throw error;
+        } finally {
+            if (useCache) {
+                INFLIGHT_PROMISES.delete(cacheKey);
+            }
+        }
+    })();
+
+    if (useCache) {
+        INFLIGHT_PROMISES.set(cacheKey, fetchPromise);
+    }
+
+    return fetchPromise;
 }
 
 export const palworldApi = {
