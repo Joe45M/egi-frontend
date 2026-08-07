@@ -51,8 +51,12 @@
 
     <!-- Preconnect for critical resources -->
     <link rel="preconnect" href="https://api.elitegamerinsights.com">
+    <link rel="preconnect" href="https://images.unsplash.com">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Preload LCP hero image -->
+    <link rel="preload" href="https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1000&auto=format&fit=crop&q=80" as="image" fetchpriority="high">
     
     <!-- Non-render-blocking font loading with swap -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kedebideri:wght@400;600;700&display=swap" media="print" onload="this.media='all'">

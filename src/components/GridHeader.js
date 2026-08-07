@@ -10,8 +10,6 @@ function GridHeader() {
     const hasInitialData = initialData && initialData.postType === 'home' && Array.isArray(initialData.sliderPosts);
 
     const [posts, setPosts] = useState(hasInitialData ? initialData.sliderPosts : []);
-    const [loading, setLoading] = useState(!hasInitialData);
-    const [error, setError] = useState(null);
     const [copiedId, setCopiedId] = useState(null);
 
     const handleCopyLink = (e, post) => {
@@ -30,9 +28,6 @@ function GridHeader() {
 
         const fetchLatestPosts = async () => {
             try {
-                setLoading(true);
-                setError(null);
-                
                 // Fetch the 3 latest posts from the games post type
                 const result = await wordpressApi.posts.getByPostType('games', {
                     perPage: 3,
@@ -51,10 +46,7 @@ function GridHeader() {
                 }
             } catch (err) {
                 console.error('Error fetching latest posts:', err);
-                setError('Failed to load posts');
                 setPosts([]);
-            } finally {
-                setLoading(false);
             }
         };
 
@@ -76,61 +68,18 @@ function GridHeader() {
         return post.slug ? `/games/${post.slug}` : `/games?id=${post.id}`;
     }
 
-    const fallbackImg = 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1470&h=600&fit=crop';
+    const fallbackImg = 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1000&auto=format&fit=crop&q=80';
 
-    // Loading state
-    if (loading) {
-        return (
-            <div className="container mx-auto px-4 pt-[110px] pb-6 lg:pt-[120px]">
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-auto lg:h-[500px]">
-                    {/* Large Skeleton */}
-                    <div className="lg:col-span-2 h-[300px] sm:h-[400px] lg:h-full rounded-2xl bg-base-800/20 border border-base-800/40 animate-pulse flex flex-col justify-end p-6 md:p-8">
-                        <div className="h-4 bg-base-700/60 rounded-full w-24 mb-4"></div>
-                        <div className="h-8 bg-base-700/60 rounded-full w-3/4 mb-3"></div>
-                        <div className="h-4 bg-base-700/60 rounded-full w-1/2"></div>
-                    </div>
-                    {/* Two Smaller Skeletons */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 lg:grid-rows-2 gap-6 lg:h-full">
-                        {[1, 2].map((i) => (
-                            <div key={i} className="h-[200px] lg:h-full rounded-2xl bg-base-800/20 border border-base-800/40 animate-pulse flex flex-col justify-end p-5">
-                                <div className="h-3 bg-base-700/60 rounded-full w-16 mb-3"></div>
-                                <div className="h-6 bg-base-700/60 rounded-full w-5/6 mb-2"></div>
-                                <div className="h-3 bg-base-700/60 rounded-full w-1/3"></div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </div>
-        );
-    }
+    const defaultMainPost = {
+        id: 'default-hero-1',
+        title: 'GTA VI x Netflix trailer lands this month',
+        image: fallbackImg,
+        date: new Date().toISOString(),
+        slug: ''
+    };
 
-    // Error state - show empty or fallback
-    if (error || posts.length === 0) {
-        return (
-            <div className="container mx-auto px-4 pt-[110px] pb-6 lg:pt-[120px]">
-                <div className="h-[250px] lg:h-[500px] flex flex-col justify-end rounded-2xl overflow-hidden relative z-10 border border-base-800/50 shadow-2xl">
-                    <img 
-                        src={fallbackImg} 
-                        alt="Latest News"
-                        className="absolute inset-0 w-full h-full object-cover"
-                        loading="eager"
-                        width="1470"
-                        height="600"
-                    />
-                    <div className="absolute left-0 top-0 w-full h-full z-0 bg-gradient-to-t from-base-950/90 via-base-950/40 to-transparent"></div>
-                    <div className="container mx-auto mb-10 px-6 relative z-10">
-                        <span className="inline-block bg-accent-pink-500/20 text-accent-pink-300 text-xs font-semibold px-2.5 py-1 rounded-full border border-accent-pink-500/30 mb-3 uppercase tracking-wider">
-                            Latest News
-                        </span>
-                        <h3 className="text-2xl lg:text-4xl font-extrabold text-white">Stay updated with the latest gaming news</h3>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
-    const mainPost = posts[0];
-    const sidePosts = posts.slice(1, 3);
+    const mainPost = posts.length > 0 ? posts[0] : defaultMainPost;
+    const sidePosts = posts.length > 1 ? posts.slice(1, 3) : [];
 
     return (
         <div className="container mx-auto px-4 pt-[110px] pb-6 lg:pt-[120px]">

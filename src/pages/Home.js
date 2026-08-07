@@ -7,8 +7,8 @@ import GameList from "../components/GameList";
 import { useStringVariation } from "@launchdarkly/react-sdk";
 
 function Home() {
-  const header = useStringVariation('header', 'old');
-  const showGridHeader = header === 'new';
+  const header = useStringVariation('header', 'new');
+  const showGridHeader = header !== 'old';
 
   const schemas = [
     generateWebPageSchema({

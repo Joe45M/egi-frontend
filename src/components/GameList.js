@@ -1,15 +1,19 @@
-import { useState } from "react";
+import React, { useState, memo } from "react";
 import { Link } from "react-router-dom";
 
 // Fallback hardcoded games list
-const FALLBACK_GAMES = [
+const INITIAL_GAMES = [
   "Arc Raiders",
   "Minecraft",
   "Call of Duty",
   "Rust",
   "GTA",
   "Fortnite",
-];
+].map((name, index) => ({
+  id: index + 1,
+  name: name,
+  slug: name.toLowerCase().replace(/\s+/g, '-')
+}));
 
 // Dimensions of optimized images to prevent Cumulative Layout Shift
 const IMAGE_DIMENSIONS = {
@@ -23,30 +27,15 @@ const IMAGE_DIMENSIONS = {
 };
 
 function GameList() {
-  const [games, setGames] = useState([]);
-
-  console.log(games)
-
-  if (games.length === 0) {
-    const fallbackGames = FALLBACK_GAMES.map((name, index) => ({
-      id: index + 1,
-      name: name,
-      slug: name.toLowerCase().replace(/\s+/g, '-')
-    }));
-    setGames(fallbackGames);
-
-    console.log(games)
-  }
-
-
+  const [games] = useState(INITIAL_GAMES);
 
   return (
     <div className="bg-accent-violet-950/10 py-3 overflow-x-auto scroll-smooth" style={{ WebkitOverflowScrolling: 'touch' }}>
       <div className="container mx-auto px-3">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 lg:grid-cols-6">
-          {games.flatMap((game, index) => {
+          {games.map((game) => {
             const dims = IMAGE_DIMENSIONS[game.slug] || { width: 400, height: 300 };
-            return [
+            return (
               <Link
                 to={`/games?game=${game.slug || game.id}`}
                 key={game.id}
@@ -57,6 +46,7 @@ function GameList() {
                   src={'/assets/images/home/' + game.slug + '.png'}
                   alt={'image of ' + game.name}
                   loading="lazy"
+                  decoding="async"
                   width={dims.width}
                   height={dims.height}
                 />
@@ -64,13 +54,13 @@ function GameList() {
                   {game.name}
                 </div>
               </Link>
-            ];
-          }).filter(Boolean)}
+            );
+          })}
         </div>
       </div>
     </div>
   );
 }
 
-export default GameList;
+export default memo(GameList);
 
