@@ -5,7 +5,6 @@ function AdPlacement({ placement, className = "", style = {} }) {
   const adRef = useRef(null);
   const config = adsConfig.placements[placement];
   const [isAdLoaded, setIsAdLoaded] = useState(false);
-  const [isAdFailed, setIsAdFailed] = useState(false);
 
   useEffect(() => {
     // If the placement is disabled or not configured, do nothing
@@ -26,10 +25,8 @@ function AdPlacement({ placement, className = "", style = {} }) {
 
       if (adStatus === 'filled' || hasIframe) {
         setIsAdLoaded(true);
-        setIsAdFailed(false);
         return true;
       } else if (adStatus === 'unfilled') {
-        setIsAdFailed(true);
         setIsAdLoaded(false);
         return true;
       }
@@ -44,21 +41,15 @@ function AdPlacement({ placement, className = "", style = {} }) {
       mutationObserver.observe(adElement, { attributes: true, childList: true, subtree: true });
     }
 
-    // 2. Set up fallback timeout to check if loading failed (due to AdBlocker or explicit unfilled status)
+    // 2. Set up fallback timeout to check status
     const timeoutTimer = setTimeout(() => {
       const adStatus = adElement.getAttribute('data-ad-status');
       const hasIframe = adElement.querySelector('iframe') !== null;
 
-      if (adStatus === 'unfilled') {
-        setIsAdFailed(true);
-      } else if (!window.adsbygoogle || (!hasIframe && !adStatus)) {
-        // Only collapse if the script is blocked (no adsbygoogle) or it has zero activity
-        setIsAdFailed(true);
-      } else if (adStatus === 'filled' || hasIframe) {
+      if (adStatus === 'filled' || hasIframe) {
         setIsAdLoaded(true);
-        setIsAdFailed(false);
       }
-    }, 8000); // 8 seconds timeout (allows slow network loads without premature collapse)
+    }, 8000);
 
     // 3. AdSense Initialization Logic
     const initAd = () => {
@@ -129,8 +120,8 @@ function AdPlacement({ placement, className = "", style = {} }) {
     };
   }, [placement, config]);
 
-  // If placement is disabled or ad failed to load (no fill / blocked), don't render anything
-  if (!config || !config.enabled || isAdFailed) {
+  // If placement is disabled in config, don't render anything
+  if (!config || !config.enabled) {
     return null;
   }
 
@@ -164,7 +155,7 @@ function AdPlacement({ placement, className = "", style = {} }) {
   };
 
   return (
-    <div className={`ad-placement-container my-8 flex flex-col items-center justify-center w-full transition-all duration-300 ${isAdLoaded ? '' : minHeightClass} ${className}`}>
+    <div className={`ad-placement-container my-8 flex flex-col items-center justify-center w-full ${minHeightClass} ${className}`}>
       {/* Subtle Ad Label - only visible once the ad has successfully loaded */}
       {isAdLoaded && (
         <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1.5 select-none">

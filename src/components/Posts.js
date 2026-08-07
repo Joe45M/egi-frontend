@@ -4,19 +4,26 @@ import wordpressApi from "../services/wordpressApi";
 import { useInitialData } from "../initialDataContext";
 import AdPlacement from "./AdPlacement";
 
+const FALLBACK_POSTS = [
+  { id: 'fb-1', title: 'Call of Duty Black Ops 6 Complete Guide', date: '2026-08-01T00:00:00Z', image: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&h=600&fit=crop', slug: '' },
+  { id: 'fb-2', title: 'Minecraft 1.21 Update Patch Notes & Breakdown', date: '2026-07-30T00:00:00Z', image: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&h=600&fit=crop', slug: '' },
+  { id: 'fb-3', title: 'GTA VI Release Date, Leaks, and Everything We Know', date: '2026-07-28T00:00:00Z', image: 'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=800&h=600&fit=crop', slug: '' },
+  { id: 'fb-4', title: 'Fortnite Chapter 6 Season 1 Map Changes', date: '2026-07-26T00:00:00Z', image: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=800&h=600&fit=crop', slug: '' },
+  { id: 'fb-5', title: 'Rust Base Building Tips & Defense Strategies', date: '2026-07-24T00:00:00Z', image: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800&h=600&fit=crop', slug: '' },
+  { id: 'fb-6', title: 'Arc Raiders Closed Beta Impressions & Gameplay', date: '2026-07-22T00:00:00Z', image: 'https://images.unsplash.com/photo-1580234811497-9df7fd2f357e?w=800&h=600&fit=crop', slug: '' }
+];
+
 function Posts({ posts: propPosts = null }) {
   const initialData = useInitialData();
   const hasInitialData = initialData && initialData.postType === 'home' && Array.isArray(initialData.allPosts);
 
   const [posts, setPosts] = useState(propPosts !== null ? propPosts : (hasInitialData ? initialData.allPosts : []));
-  const [loading, setLoading] = useState(propPosts !== null ? false : !hasInitialData);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     // If posts are provided as prop, use them directly (for flexibility)
     if (propPosts !== null) {
       setPosts(propPosts);
-      setLoading(false);
       return;
     }
 
@@ -27,7 +34,6 @@ function Posts({ posts: propPosts = null }) {
     // Otherwise, fetch from WordPress API
     const fetchGames = async () => {
       try {
-        setLoading(true);
         setError(null);
 
         const result = await wordpressApi.posts.getByPostType('games', {
@@ -49,15 +55,13 @@ function Posts({ posts: propPosts = null }) {
         console.error('Error fetching games:', err);
         setError('Failed to load games. Please try again later.');
         setPosts([]);
-      } finally {
-        setLoading(false);
       }
     };
 
     fetchGames();
   }, [propPosts, hasInitialData]);
 
-  const postsToDisplay = posts;
+  const postsToDisplay = posts.length > 0 ? posts : FALLBACK_POSTS;
 
   const renderedItems = useMemo(() => {
     const list = [];
@@ -69,26 +73,6 @@ function Posts({ posts: propPosts = null }) {
     });
     return list;
   }, [postsToDisplay]);
-
-  // Loading state
-  if (loading) {
-    return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {[1, 2, 3, 4, 5, 6].map((i) => (
-          <div
-            key={i}
-            className="bg-gradient-to-br from-accent-violet-950/20 to-base-800/30 rounded-xl overflow-hidden border border-accent-violet-900/10 animate-pulse block h-full"
-          >
-            <div className="aspect-video bg-base-900/50"></div>
-            <div className="p-5">
-              <div className="h-6 bg-accent-violet-900/30 rounded mb-2 w-5/6"></div>
-              <div className="h-4 bg-accent-violet-900/30 rounded w-1/4"></div>
-            </div>
-          </div>
-        ))}
-      </div>
-    );
-  }
 
   // Error state
   if (error) {

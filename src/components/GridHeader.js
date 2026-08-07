@@ -78,8 +78,25 @@ function GridHeader() {
         slug: ''
     };
 
+    const defaultSidePosts = [
+        {
+            id: 'default-side-1',
+            title: 'Nintendo Palworld Patent Dispute Takes Another Turn After Patent Rejected',
+            image: 'https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=600&auto=format&fit=crop&q=80',
+            date: '2026-07-28T00:00:00Z',
+            slug: ''
+        },
+        {
+            id: 'default-side-2',
+            title: 'The best flying mounts in Palworld',
+            image: 'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=600&auto=format&fit=crop&q=80',
+            date: '2026-07-26T00:00:00Z',
+            slug: ''
+        }
+    ];
+
     const mainPost = posts.length > 0 ? posts[0] : defaultMainPost;
-    const sidePosts = posts.length > 1 ? posts.slice(1, 3) : [];
+    const sidePosts = posts.length >= 3 ? posts.slice(1, 3) : defaultSidePosts;
 
     return (
         <div className="container mx-auto px-4 pt-[110px] pb-6 lg:pt-[120px]">
