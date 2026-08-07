@@ -1,11 +1,11 @@
+import React, { useState, useEffect, useRef, memo } from 'react';
 import { Link } from 'react-router-dom';
-import { useState, useEffect } from 'react';
 import logo from '../assets/images/image.png';
 
 function Navigation() {
   const [open, setOpen] = useState(false);
   const [isScrolledDown, setIsScrolledDown] = useState(false);
-  const [lastScrollY, setLastScrollY] = useState(0);
+  const lastScrollYRef = useRef(0);
 
   useEffect(() => {
     let ticking = false;
@@ -14,6 +14,7 @@ function Navigation() {
       if (!ticking) {
         window.requestAnimationFrame(() => {
           const currentScrollY = window.scrollY;
+          const lastScrollY = lastScrollYRef.current;
           
           // Only hide if scrolled down more than 50px
           if (currentScrollY > 50) {
@@ -29,7 +30,7 @@ function Navigation() {
             setIsScrolledDown(false);
           }
           
-          setLastScrollY(currentScrollY);
+          lastScrollYRef.current = currentScrollY;
           ticking = false;
         });
         ticking = true;
@@ -38,7 +39,7 @@ function Navigation() {
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [lastScrollY]);
+  }, []);
 
   // Lock body scroll when menu is open
   useEffect(() => {
@@ -288,4 +289,4 @@ function Navigation() {
   );
 }
 
-export default Navigation;
+export default memo(Navigation);

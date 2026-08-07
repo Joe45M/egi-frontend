@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, memo } from 'react';
 import adsConfig from '../config/ads.json';
 
 function AdPlacement({ placement, className = "", style = {} }) {
@@ -186,4 +186,4 @@ function AdPlacement({ placement, className = "", style = {} }) {
   );
 }
 
-export default AdPlacement;
+export default memo(AdPlacement);

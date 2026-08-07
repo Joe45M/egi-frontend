@@ -1,3 +1,4 @@
+import React, { memo } from 'react';
 import { Link } from 'react-router-dom';
 
 function PostCard({ post, link }) {
@@ -27,6 +28,7 @@ function PostCard({ post, link }) {
                     alt={post.title || 'Post image'}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     loading="lazy"
+                    decoding="async"
                     width="800"
                     height="450"
                 />
@@ -46,4 +48,4 @@ function PostCard({ post, link }) {
     );
 }
 
-export default PostCard;
+export default memo(PostCard);

@@ -5,23 +5,27 @@ import './index.css';
 import App from './App';
 
 if (
+  typeof window !== 'undefined' &&
   window.location.hostname === 'elitegamerinsights.com'
 ) {
   Sentry.init({
     dsn: "https://1424c055d2b33f51071a3b5da1e06074@o4511100940779520.ingest.de.sentry.io/4511100944056400",
-    sendDefaultPii: true,
+    sendDefaultPii: false,
     integrations: [
       Sentry.browserTracingIntegration(),
-      Sentry.replayIntegration(),
-      Sentry.captureConsoleIntegration({ levels: ['error', 'warn'] }),
+      Sentry.replayIntegration({
+        maskAllText: false,
+        blockAllMedia: true,
+      }),
+      Sentry.captureConsoleIntegration({ levels: ['error'] }),
     ],
-    // Performance Monitoring
-    tracesSampleRate: 1.0, // Capture 100% of the transactions
-    // Session Replay
-    replaysSessionSampleRate: 1.0, // Max telemetry (capture 100% of sessions)
-    replaysOnErrorSampleRate: 1.0, // Capture 100% of sessions with errors
-    debug: false, // Disable debug mode to prevent noise in production
-    enableTracing: true // Enable distributed tracing
+    // Performance Monitoring - sample 10% to reduce JS overhead
+    tracesSampleRate: 0.1,
+    // Session Replay - disable full session replays (huge CPU win); only capture on errors
+    replaysSessionSampleRate: 0.0,
+    replaysOnErrorSampleRate: 1.0,
+    debug: false,
+    enableTracing: true
   });
 }
 

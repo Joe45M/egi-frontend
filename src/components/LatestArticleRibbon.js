@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 import { Link } from 'react-router-dom';
 import { CaretRight } from 'phosphor-react';
 import { postsApi } from '../services/wordpressApi';
@@ -71,4 +71,4 @@ function LatestArticleRibbon() {
   );
 }
 
-export default LatestArticleRibbon;
+export default memo(LatestArticleRibbon);

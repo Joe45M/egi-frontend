@@ -21,6 +21,11 @@ const LDProvider = createLDReactProvider('6a525a8ccd87b60ba57d0fd3', {
   kind: 'user',
   key: getAnonymousUserId(),
   name: 'Anonymous User'
+}, {
+  bootstrap: 'localStorage',
+  flags: {
+    header: 'old'
+  }
 });
 
 function App() {

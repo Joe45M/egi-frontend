@@ -1,3 +1,4 @@
+import React, { memo } from 'react';
 import { Link } from 'react-router-dom';
 import { TwitterLogo, TiktokLogo, YoutubeLogo, RedditLogo } from 'phosphor-react';
 import logo from '../assets/images/image.png';
@@ -136,5 +137,5 @@ function Footer() {
   );
 }
 
-export default Footer;
+export default memo(Footer);
 

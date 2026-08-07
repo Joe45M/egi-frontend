@@ -27,41 +27,81 @@ const AUTHOR_MAP = {
 };
 
 /**
- * Generic fetch function with error handling
+ * In-memory client-side TTL cache for API responses (5 minutes TTL)
+ * and inflight promise deduplication to prevent duplicate concurrent network calls.
+ */
+const API_CACHE = new Map();
+const INFLIGHT_PROMISES = new Map();
+const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+
+/**
+ * Generic fetch function with error handling, caching, and deduplication
  */
 async function fetchFromAPI(endpoint, options = {}) {
-    try {
-        const url = endpoint.startsWith('http') ? endpoint : `${API_BASE_URL}${endpoint}`;
-        const response = await fetch(url, {
-            ...options,
-            headers: {
-                ...(options.method && options.method !== 'GET' ? { 'Content-Type': 'application/json' } : {}),
-                ...options.headers,
-            },
-        });
+    const isGetMethod = !options.method || options.method.toUpperCase() === 'GET';
+    const useCache = isGetMethod && !options.bypassCache;
+    const url = endpoint.startsWith('http') ? endpoint : `${API_BASE_URL}${endpoint}`;
+    const cacheKey = `${url}_headers:${Boolean(options.includeHeaders)}`;
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+    if (useCache) {
+        const cached = API_CACHE.get(cacheKey);
+        if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
+            return cached.data;
         }
 
-        const data = await response.json();
-
-        // Return data with headers for pagination info
-        if (options.includeHeaders) {
-            return {
-                data,
-                headers: {
-                    total: parseInt(response.headers.get('X-WP-Total') || '0', 10),
-                    totalPages: parseInt(response.headers.get('X-WP-TotalPages') || '0', 10),
-                }
-            };
+        if (INFLIGHT_PROMISES.has(cacheKey)) {
+            return INFLIGHT_PROMISES.get(cacheKey);
         }
-
-        return data;
-    } catch (error) {
-        console.error(`API Error fetching ${endpoint}:`, error);
-        throw error;
     }
+
+    const fetchPromise = (async () => {
+        try {
+            const response = await fetch(url, {
+                ...options,
+                headers: {
+                    ...(options.method && options.method !== 'GET' ? { 'Content-Type': 'application/json' } : {}),
+                    ...options.headers,
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            let result = data;
+            // Return data with headers for pagination info
+            if (options.includeHeaders) {
+                result = {
+                    data,
+                    headers: {
+                        total: parseInt(response.headers.get('X-WP-Total') || '0', 10),
+                        totalPages: parseInt(response.headers.get('X-WP-TotalPages') || '0', 10),
+                    }
+                };
+            }
+
+            if (useCache) {
+                API_CACHE.set(cacheKey, { timestamp: Date.now(), data: result });
+            }
+
+            return result;
+        } catch (error) {
+            console.error(`API Error fetching ${endpoint}:`, error);
+            throw error;
+        } finally {
+            if (useCache) {
+                INFLIGHT_PROMISES.delete(cacheKey);
+            }
+        }
+    })();
+
+    if (useCache) {
+        INFLIGHT_PROMISES.set(cacheKey, fetchPromise);
+    }
+
+    return fetchPromise;
 }
 
 /**

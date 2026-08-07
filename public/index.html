@@ -54,44 +54,34 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     
-    <!-- Preload critical font with font-display swap -->
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Kedebideri:wght@400;500;600;700;800;900&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link href="https://fonts.googleapis.com/css2?family=Kedebideri:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"></noscript>
+    <!-- Non-render-blocking font loading with swap -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kedebideri:wght@400;600;700&display=swap" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Kedebideri:wght@400;600;700&display=swap" rel="stylesheet"></noscript>
 
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
-    <!--
-      manifest.json provides metadata used when your web app is installed on a
-      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
-    -->
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <!--
-      Notice the use of %PUBLIC_URL% in the tags above.
-      It will be replaced with the URL of the `public` folder during the build.
-      Only files inside the `public` folder can be referenced from the HTML.
-
-      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
-      work correctly both with client-side routing and a non-root public URL.
-      Learn how to configure a non-root public URL by running `npm run build`.
-    -->
     <title>Elitegamerinsights</title>
 
-      <!-- Fathom - beautiful, simple website analytics -->
-      <link rel="preload" href="https://cdn.usefathom.com/script.js" as="script">
+      <!-- Fathom analytics - loaded async without blocking critical resources -->
       <script src="https://cdn.usefathom.com/script.js" data-site="GPASAVRX" data-spa="auto" defer></script>
       <!-- / Fathom -->
       
-      <!-- Google AdSense script is loaded dynamically in src/components/Layout.js to prevent hydration errors -->
+      <!-- Google AdSense script is loaded dynamically in src/components/Layout.js -->
 
-      <!-- Microsoft Clarity - Load after page load -->
+      <!-- Microsoft Clarity - Load after initial paint and interaction -->
       <script>
-        // Delay Clarity loading to improve initial page load
-        setTimeout(function() {
+        function loadClarity() {
           (function(c,l,a,r,i,t,y){
               c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
               t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
               y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
           })(window, document, "clarity", "script", "uey4q9akxr");
-        }, 2000);
+        }
+        if (window.requestIdleCallback) {
+          window.requestIdleCallback(function() { setTimeout(loadClarity, 3000); });
+        } else {
+          setTimeout(loadClarity, 4000);
+        }
       </script>
     <style>
       html, body {
