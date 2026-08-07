@@ -76,6 +76,9 @@
   node_bundler = "esbuild"
   included_files = ["build/**"]
 
+[functions."warm-cache"]
+  schedule = "*/10 * * * *"
+
 [[headers]]
   for = "/static/*"
   [headers.values]
