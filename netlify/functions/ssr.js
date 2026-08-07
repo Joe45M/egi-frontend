@@ -4,6 +4,31 @@
 const fs = require('fs');
 const path = require('path');
 
+const SITE_URL = 'https://elitegamerinsights.com';
+
+function formatCanonicalUrl(rawUrlStr) {
+  let formatted = rawUrlStr || SITE_URL;
+  if (formatted.startsWith('http://')) {
+    formatted = formatted.replace('http://', 'https://');
+  }
+  if (!formatted.startsWith('http://') && !formatted.startsWith('https://')) {
+    if (!formatted.startsWith('/')) formatted = '/' + formatted;
+    formatted = `${SITE_URL}${formatted}`;
+  }
+  try {
+    const parsed = new URL(formatted);
+    if (parsed.pathname.length > 1 && parsed.pathname.endsWith('/')) {
+      parsed.pathname = parsed.pathname.replace(/\/+$/, '');
+    }
+    return parsed.toString();
+  } catch (e) {
+    if (formatted.length > 30 && formatted.endsWith('/') && !formatted.endsWith('com/')) {
+      formatted = formatted.replace(/\/+$/, '');
+    }
+    return formatted;
+  }
+}
+
 // Helper to resolve build asset paths in different environments (local development vs Netlify serverless deployment)
 function resolveAssetPath(targetFile) {
   const paths = [
@@ -177,32 +202,8 @@ exports.handler = async (event) => {
       }
     }
 
-function formatCanonicalUrl(rawUrlStr) {
-  const siteUrl = 'https://elitegamerinsights.com';
-  let formatted = rawUrlStr || siteUrl;
-  if (formatted.startsWith('http://')) {
-    formatted = formatted.replace('http://', 'https://');
-  }
-  if (!formatted.startsWith('http://') && !formatted.startsWith('https://')) {
-    if (!formatted.startsWith('/')) formatted = '/' + formatted;
-    formatted = `${siteUrl}${formatted}`;
-  }
-  try {
-    const parsed = new URL(formatted);
-    if (parsed.pathname.length > 1 && parsed.pathname.endsWith('/')) {
-      parsed.pathname = parsed.pathname.replace(/\/+$/, '');
-    }
-    return parsed.toString();
-  } catch (e) {
-    if (formatted.length > 30 && formatted.endsWith('/') && !formatted.endsWith('com/')) {
-      formatted = formatted.replace(/\/+$/, '');
-    }
-    return formatted;
-  }
-}
-
     // Inject canonical URL (standardized without trailing slash for inner pages)
-    const finalCanonicalUrl = formatCanonicalUrl(head?.canonicalUrl || `${siteUrl}${url}`);
+    const finalCanonicalUrl = formatCanonicalUrl(head?.canonicalUrl || `${SITE_URL}${url}`);
     const escapedUrl = finalCanonicalUrl.replace(/"/g, '&quot;');
     if (template.match(/<link\s+rel="canonical"[^>]*>/i)) {
       template = template.replace(
@@ -348,7 +349,7 @@ function formatCanonicalUrl(rawUrlStr) {
       let template = fs.readFileSync(htmlPath, 'utf8');
 
       // Always inject canonical URL even in fallback mode for SEO safety
-      const finalCanonicalUrl = formatCanonicalUrl(`${siteUrl}${url}`);
+      const finalCanonicalUrl = formatCanonicalUrl(`${SITE_URL}${url}`);
       const escapedUrl = finalCanonicalUrl.replace(/"/g, '&quot;');
       if (template.match(/<link\s+rel="canonical"[^>]*>/i)) {
         template = template.replace(
