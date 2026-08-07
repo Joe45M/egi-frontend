@@ -77,7 +77,7 @@
   included_files = ["build/**"]
 
 [functions."warm-cache"]
-  schedule = "*/10 * * * *"
+  schedule = "0 */20 * * *"
 
 [[headers]]
   for = "/static/*"

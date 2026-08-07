@@ -1,5 +1,5 @@
-// Netlify Scheduled Function: Runs every 10 minutes to keep Cloudflare KV and Netlify Edge CDN warm 24/7
-// Netlify Cron Expression: */10 * * * *
+// Netlify Scheduled Function: Runs every 20 hours to keep Cloudflare KV and Netlify Edge CDN warm
+// Netlify Cron Expression: 0 */20 * * *
 
 exports.handler = async (event, context) => {
   console.log('[Cache Warmer] Starting scheduled cache warming cycle...');
