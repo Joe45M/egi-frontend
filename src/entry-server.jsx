@@ -299,15 +299,13 @@ export async function render(url) {
   const status = isDedicated404 ? 404 : 200;
 
   const html = renderToString(
-    <React.StrictMode>
-      <HeadProvider head={head}>
-        <InitialDataProvider initialData={initialData}>
-          <LDProvider>
-            <RouterProvider router={router} />
-          </LDProvider>
-        </InitialDataProvider>
-      </HeadProvider>
-    </React.StrictMode>
+    <HeadProvider head={head}>
+      <InitialDataProvider initialData={initialData}>
+        <LDProvider>
+          <RouterProvider router={router} />
+        </LDProvider>
+      </InitialDataProvider>
+    </HeadProvider>
   );
 
   // Debug logging - what did we get from the render?

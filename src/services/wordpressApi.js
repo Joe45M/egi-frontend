@@ -33,6 +33,14 @@ const AUTHOR_MAP = {
 const API_CACHE = new Map();
 const INFLIGHT_PROMISES = new Map();
 const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+const MAX_CACHE_ENTRIES = 250;
+
+function trimCacheIfFull() {
+    if (API_CACHE.size > MAX_CACHE_ENTRIES) {
+        const oldestKey = API_CACHE.keys().next().value;
+        if (oldestKey) API_CACHE.delete(oldestKey);
+    }
+}
 
 /**
  * Generic fetch function with error handling, caching, and deduplication
@@ -56,7 +64,9 @@ async function fetchFromAPI(endpoint, options = {}) {
 
     const fetchPromise = (async () => {
         try {
+            const isServer = typeof window === 'undefined';
             const response = await fetch(url, {
+                keepalive: isServer,
                 ...options,
                 headers: {
                     ...(options.method && options.method !== 'GET' ? { 'Content-Type': 'application/json' } : {}),
@@ -83,6 +93,7 @@ async function fetchFromAPI(endpoint, options = {}) {
             }
 
             if (useCache) {
+                trimCacheIfFull();
                 API_CACHE.set(cacheKey, { timestamp: Date.now(), data: result });
             }
 

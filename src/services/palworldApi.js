@@ -7,7 +7,8 @@ const API_BASE_URL = 'https://api.elitegamerinsights.com/wp-json/palworld/v1';
 async function fetchFromAPI(endpoint, options = {}) {
     try {
         const url = endpoint.startsWith('http') ? endpoint : `${API_BASE_URL}${endpoint}`;
-        const response = await fetch(url, options);
+        const isServer = typeof window === 'undefined';
+        const response = await fetch(url, { keepalive: isServer, ...options });
 
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
