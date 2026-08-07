@@ -213,13 +213,9 @@ async function loadPostDataWithCompositeFallback(postType, slug, basePath) {
       const palId = extractSlug(palsMatch[1]);
       if (palId) {
         try {
-          const pal = await palworldApi.getPalById(palId);
-          let breeding = null;
-          try {
-            breeding = await palworldApi.getBreedingRecipe(pal.id, pal.name);
-          } catch (bErr) {
-            console.error(`Error preloading breeding recipe for pal ${pal.id}:`, bErr);
-          }
+          const palPromise = palworldApi.getPalById(palId);
+          const breedingPromise = palworldApi.getBreedingRecipe(palId, palId).catch(() => null);
+          const [pal, breeding] = await Promise.all([palPromise, breedingPromise]);
           return { pal, breeding, postType: 'palworld-detail', id: palId };
         } catch (error) {
           console.error('Error preloading Pal details:', error);
