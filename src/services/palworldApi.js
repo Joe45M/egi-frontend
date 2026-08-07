@@ -167,12 +167,9 @@ export const palworldApi = {
             try {
                 // Slugify the name to match the breeding recipe post slug (e.g. "Reptyro Cryst" -> "reptyro-cryst")
                 const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-                const response = await fetch(`https://api.elitegamerinsights.com/wp-json/wp/v2/breeding?slug=${slug}`);
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data && data.length > 0) {
-                        return fetchFromAPI(`/breeding/${data[0].id}`);
-                    }
+                const data = await fetchFromAPI(`https://api.elitegamerinsights.com/wp-json/wp/v2/breeding?slug=${slug}`);
+                if (data && Array.isArray(data) && data.length > 0) {
+                    return fetchFromAPI(`/breeding/${data[0].id}`);
                 }
             } catch (err) {
                 console.error(`Error resolving breeding recipe post by slug:`, err);

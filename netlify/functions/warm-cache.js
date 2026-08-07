@@ -9,19 +9,24 @@ exports.handler = async (event, context) => {
   const siteDomain = 'https://elitegamerinsights.com';
 
   try {
-    // 1. Fetch latest 50 game posts and 20 culture posts from WordPress
-    const [gamesRes, cultureRes] = await Promise.all([
+    // 1. Fetch latest 50 game posts, 20 culture posts, and all Palworld Pals from WordPress
+    const [gamesRes, cultureRes, palsRes] = await Promise.all([
       fetch(`${apiDomain}/wp-json/wp/v2/games?per_page=50&_fields=slug`).catch(() => null),
-      fetch(`${apiDomain}/wp-json/wp/v2/culture?per_page=20&_fields=slug`).catch(() => null)
+      fetch(`${apiDomain}/wp-json/wp/v2/culture?per_page=20&_fields=slug`).catch(() => null),
+      fetch(`${apiDomain}/wp-json/palworld/v1/pals?limit=150`).catch(() => null)
     ]);
 
     const gamePosts = (gamesRes && gamesRes.ok) ? await gamesRes.json() : [];
     const culturePosts = (cultureRes && cultureRes.ok) ? await cultureRes.json() : [];
+    const palsData = (palsRes && palsRes.ok) ? await palsRes.json() : null;
+    const palsList = Array.isArray(palsData) ? palsData : (palsData?.data || []);
 
-    // 2. Build composite API target URLs for Cloudflare KV pre-warming
+    // 2. Build composite API & Palworld target URLs for Cloudflare KV pre-warming
     const kvTargets = [
       ...gamePosts.map(p => `${apiDomain}/wp-json/egi/v1/ssr-post?slug=${encodeURIComponent(p.slug)}&type=games`),
-      ...culturePosts.map(p => `${apiDomain}/wp-json/egi/v1/ssr-post?slug=${encodeURIComponent(p.slug)}&type=culture`)
+      ...culturePosts.map(p => `${apiDomain}/wp-json/egi/v1/ssr-post?slug=${encodeURIComponent(p.slug)}&type=culture`),
+      ...palsList.map(pal => `${apiDomain}/wp-json/palworld/v1/pals?search=${encodeURIComponent(pal.name)}&limit=10`),
+      ...palsList.map(pal => `${apiDomain}/wp-json/wp/v2/breeding?slug=${encodeURIComponent(pal.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'))}`)
     ];
 
     // 3. Build HTML page target URLs for Netlify Edge CDN pre-warming
@@ -31,7 +36,8 @@ exports.handler = async (event, context) => {
       `${siteDomain}/culture/`,
       `${siteDomain}/palworld/`,
       `${siteDomain}/palworld/pals/`,
-      ...gamePosts.slice(0, 15).map(p => `${siteDomain}/games/${p.slug}/`)
+      ...gamePosts.slice(0, 15).map(p => `${siteDomain}/games/${p.slug}/`),
+      ...palsList.slice(0, 20).map(pal => `${siteDomain}/palworld/pals/${encodeURIComponent(pal.name)}/`)
     ];
 
     // 4. Warm Cloudflare KV in parallel batches (10 concurrent requests per batch)
