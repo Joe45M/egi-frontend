@@ -54,62 +54,62 @@ function AdPlacement({ placement, className = "", style = {} }) {
     // 3. AdSense Initialization Logic
     const initAd = () => {
       if (!window.adsbygoogle) return false;
+      if (adElement.dataset.adsbygoogleStatus === 'done') return true;
 
-      // Check if the element is visible (has width > 0)
-      if (adElement.offsetWidth > 0) {
-        try {
-          if (!adElement.dataset.adsbygoogleStatus) {
-            window.adsbygoogle.push({});
-            adElement.dataset.adsbygoogleStatus = 'done';
-          }
-          return true; // Successfully initialized
-        } catch (e) {
-          console.error(`AdSense error for placement "${placement}":`, e);
-          return true; // Don't try again if it errored
-        }
+      try {
+        window.adsbygoogle.push({});
+        adElement.dataset.adsbygoogleStatus = 'done';
+        return true;
+      } catch (e) {
+        console.error(`AdSense error for placement "${placement}":`, e);
+        return true; // Don't try again if it errored
       }
-      return false; // Not initialized yet because width is 0
     };
 
     const tryInit = () => {
-      const success = initAd();
-      if (!success) {
-        // If adsbygoogle is not loaded yet, or element width is 0, poll for script availability
-        let pollCount = 0;
-        pollInterval = setInterval(() => {
-          pollCount++;
-          if (window.adsbygoogle && adElement.offsetWidth > 0) {
-            if (initAd()) {
-              clearInterval(pollInterval);
-              pollInterval = null;
-            }
-          } else if (pollCount > 30) { // Stop polling after 6 seconds (30 * 200ms)
-            clearInterval(pollInterval);
-            pollInterval = null;
-          }
-        }, 200);
+      if (typeof window !== 'undefined' && window.adsbygoogle) {
+        initAd();
+        return;
+      }
 
-        // Also monitor for size changes if width was 0 initially
-        if (adElement.offsetWidth === 0 && typeof ResizeObserver !== 'undefined') {
-          observer = new ResizeObserver(() => {
-            if (adElement.offsetWidth > 0 && window.adsbygoogle) {
-              if (initAd()) {
+      // If adsbygoogle is not loaded yet, observe visibility/resize without querying offsetWidth
+      if (typeof ResizeObserver !== 'undefined') {
+        observer = new ResizeObserver((entries) => {
+          const width = entries[0]?.contentRect?.width || 0;
+          if (width > 0 && window.adsbygoogle) {
+            if (initAd()) {
+              if (observer) {
                 observer.disconnect();
                 observer = null;
-                if (pollInterval) {
-                  clearInterval(pollInterval);
-                  pollInterval = null;
-                }
               }
             }
-          });
-          observer.observe(adElement);
-        }
+          }
+        });
+        observer.observe(adElement);
       }
+
+      // Check when adsbygoogle script becomes available
+      let pollCount = 0;
+      pollInterval = setInterval(() => {
+        pollCount++;
+        if (window.adsbygoogle) {
+          if (initAd()) {
+            clearInterval(pollInterval);
+            pollInterval = null;
+            if (observer) {
+              observer.disconnect();
+              observer = null;
+            }
+          }
+        } else if (pollCount > 30) {
+          clearInterval(pollInterval);
+          pollInterval = null;
+        }
+      }, 250);
     };
 
-    // Delay slightly to ensure layout has computed sizes
-    timer = setTimeout(tryInit, 150);
+    // Delay initialization slightly to let the initial render frame settle
+    timer = setTimeout(tryInit, 200);
 
     return () => {
       if (timer) clearTimeout(timer);
