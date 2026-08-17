@@ -2,61 +2,52 @@ import React, { useState, useEffect, memo } from 'react';
 import { Link } from 'react-router-dom';
 import { CaretRight } from 'phosphor-react';
 import { postsApi } from '../services/wordpressApi';
+import { useInitialData } from '../initialDataContext';
+
+const DEFAULT_LATEST_POST = {
+  id: 'default-ribbon-post',
+  title: 'Palworld Update v1.0.3 Patch Notes: Complete Breakdown',
+  image: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1000&auto=format&fit=crop&q=80',
+  slug: 'palworld-update-v1-0-3-patch-notes-complete-breakdown'
+};
 
 function LatestArticleRibbon() {
-  const [latestPost, setLatestPost] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const initialData = useInitialData();
+  const initialPost = (initialData?.sliderPosts && initialData.sliderPosts.length > 0 && initialData.sliderPosts[0]) ||
+                      (initialData?.allPosts && initialData.allPosts.length > 0 && initialData.allPosts[0]) ||
+                      DEFAULT_LATEST_POST;
+
+  const [latestPost, setLatestPost] = useState(initialPost);
 
   useEffect(() => {
     const fetchLatestPost = async () => {
       try {
-        setLoading(true);
         // Fetch the single latest post from the 'games' post type
         const response = await postsApi.getByPostType('games', { perPage: 1, includeImages: true });
-        
-        // getByPostType returns either an array or an object with { posts, pagination }
-        const posts = Array.isArray(response) ? response : response.posts;
+        const posts = Array.isArray(response) ? response : response?.posts;
         
         if (posts && posts.length > 0) {
           setLatestPost(posts[0]);
         }
       } catch (err) {
         console.error('Error fetching latest post for ribbon:', err);
-      } finally {
-        setLoading(false);
       }
     };
 
     fetchLatestPost();
   }, []);
 
-  if (loading && !latestPost) {
-    return (
-      <div className="w-full bg-base-900 border-t border-gray-500/10 min-h-[100px] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 animate-pulse">
-        <div className="container mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-4 w-full max-w-xl">
-            <div className="h-6 w-28 bg-white/10 rounded-full shrink-0"></div>
-            <div className="h-6 w-3/4 bg-white/10 rounded-lg"></div>
-          </div>
-          <div className="h-10 w-32 bg-white/10 rounded-full shrink-0"></div>
-        </div>
-      </div>
-    );
-  }
-
-  if (!latestPost) {
-    return null;
-  }
+  const activePost = latestPost || DEFAULT_LATEST_POST;
 
   // Fallback to a default color if there's no image
-  const bgStyle = latestPost.image
-    ? { backgroundImage: `url(${latestPost.image})` }
+  const bgStyle = activePost.image
+    ? { backgroundImage: `url(${activePost.image})` }
     : { backgroundColor: '#1e1e2f' };
 
   return (
-    <div className="w-full bg-base-900 border-t border-gray-500/10">
+    <div className="w-full bg-base-900 border-t border-gray-500/10 min-h-[110px]">
       <Link 
-        to={`/games/${latestPost.slug}`} 
+        to={`/games/${activePost.slug || ''}`} 
         className="block relative overflow-hidden group w-full"
       >
         <div 
