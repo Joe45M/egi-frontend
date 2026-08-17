@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, memo } from 'react';
 import { Link } from 'react-router-dom';
-import logo from '../assets/images/image.png';
+import logo from '../assets/images/logo.webp';
 
 function Navigation() {
   const [open, setOpen] = useState(false);
@@ -66,7 +66,7 @@ function Navigation() {
             {/* Logo */}
             <div className="flex-shrink-0 flex items-center">
               <Link to="/" className="text-xl font-bold text-gray-800">
-                <img src={logo} alt="EGI Logo" className="w-[100px] h-[50px] object-contain" fetchPriority="high" />
+                <img src={logo} alt="EGI Logo" className="w-[100px] h-[50px] object-contain" width="100" height="50" decoding="async" fetchPriority="high" />
               </Link>
             </div>
 

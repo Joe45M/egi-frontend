@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { Link } from 'react-router-dom';
 import { TwitterLogo, TiktokLogo, YoutubeLogo, RedditLogo } from 'phosphor-react';
-import logo from '../assets/images/image.png';
+import logo from '../assets/images/logo.webp';
 
 function Footer() {
   const currentYear = new Date().getFullYear();
