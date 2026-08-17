@@ -4,7 +4,7 @@ import wordpressApi from "../services/wordpressApi";
 import Pagination from "../components/Pagination";
 import PageMetadata, { SITE_URL } from "../components/PageMetadata";
 import StructuredSchema, { generateCollectionPageSchema, generateBreadcrumbSchema, generateWebPageSchema } from "../components/StructuredSchema";
-import PostCard from "../components/PostCard";
+import PostCard, { PostCardSkeleton } from "../components/PostCard";
 import AdPlacement from "../components/AdPlacement";
 function Archive({ type: propType }) {
   const { type: paramType } = useParams();
@@ -191,14 +191,11 @@ function Archive({ type: propType }) {
   // Loading state
   if (loading) {
     return (
-      <div className="pt-[200px] p-4 container mx-auto">
+      <div className="pt-[200px] p-4 container mx-auto min-h-[1200px]">
         <h1 className="text-4xl font-bold mb-8 text-white">{getPostTypeLabel()}</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div
-              key={i}
-              className="relative h-64 bg-accent-violet-950/10 animate-pulse rounded-lg"
-            ></div>
+          {Array.from({ length: 24 }).map((_, i) => (
+            <PostCardSkeleton key={`archive-skeleton-${i}`} />
           ))}
         </div>
       </div>

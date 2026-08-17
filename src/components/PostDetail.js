@@ -512,7 +512,7 @@ function PostDetail({ postType = 'games', basePath = '/games' }) {
 
                             {/* Table of Contents - Visible on Mobile, hidden on Desktop */}
                             <div className="lg:hidden mb-6">
-                                <TableOfContents defaultOpen={false} />
+                                <TableOfContents content={post.content} defaultOpen={false} />
                             </div>
 
                             <div
@@ -654,7 +654,7 @@ function PostDetail({ postType = 'games', basePath = '/games' }) {
                         <div className="lg:col-span-2 space-y-6">
                             {/* Table of Contents - Sidebar on Desktop */}
                             <div className="hidden lg:block lg:pt-[130px]">
-                                <TableOfContents defaultOpen={false} />
+                                <TableOfContents content={post.content} defaultOpen={false} />
                             </div>
 
                             {/* Palworld Banner - Sidebar on Desktop */}

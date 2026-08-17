@@ -99,8 +99,8 @@ function GridHeader() {
     const sidePosts = posts.length >= 3 ? posts.slice(1, 3) : defaultSidePosts;
 
     return (
-        <div className="container mx-auto px-4 pt-[110px] pb-6 lg:pt-[120px]">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-auto lg:h-[500px]">
+        <div className="container mx-auto px-4 pt-[110px] pb-6 lg:pt-[120px] min-h-[780px] sm:min-h-[880px] lg:min-h-[540px]">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-auto lg:h-[500px] min-h-[748px] sm:min-h-[848px] lg:min-h-[500px]">
                 {/* Main Large Post */}
                 {mainPost && (
                     <div className="lg:col-span-2 h-[300px] sm:h-[400px] lg:h-full relative overflow-hidden rounded-2xl group border border-base-800/50 hover:border-accent-pink-500/40 transition-all duration-500 shadow-2xl">

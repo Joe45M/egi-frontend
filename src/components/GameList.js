@@ -30,7 +30,7 @@ function GameList() {
   const [games] = useState(INITIAL_GAMES);
 
   return (
-    <div className="bg-accent-violet-950/10 py-3 overflow-x-auto scroll-smooth" style={{ WebkitOverflowScrolling: 'touch' }}>
+    <div className="bg-accent-violet-950/10 py-3 overflow-x-auto scroll-smooth min-h-[160px] md:min-h-[208px]" style={{ WebkitOverflowScrolling: 'touch' }}>
       <div className="container mx-auto px-3">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 lg:grid-cols-6">
           {games.map((game) => {

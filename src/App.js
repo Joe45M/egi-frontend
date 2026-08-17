@@ -24,7 +24,7 @@ const LDProvider = createLDReactProvider('6a525a8ccd87b60ba57d0fd3', {
 }, {
   bootstrap: 'localStorage',
   flags: {
-    header: 'old'
+    header: 'new'
   }
 });
 

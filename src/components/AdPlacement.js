@@ -156,12 +156,10 @@ function AdPlacement({ placement, className = "", style = {} }) {
 
   return (
     <div className={`ad-placement-container my-8 flex flex-col items-center justify-center w-full ${minHeightClass} ${className}`}>
-      {/* Subtle Ad Label - only visible once the ad has successfully loaded */}
-      {isAdLoaded && (
-        <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1.5 select-none">
-          Advertisement
-        </span>
-      )}
+      {/* Subtle Ad Label - height reserved to prevent Cumulative Layout Shift */}
+      <span className={`text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1.5 select-none transition-opacity duration-300 ${isAdLoaded ? 'opacity-100' : 'opacity-0 invisible'}`}>
+        Advertisement
+      </span>
       <div className="w-full flex justify-center overflow-hidden">
         <ins
           ref={adRef}

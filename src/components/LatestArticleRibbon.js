@@ -30,7 +30,21 @@ function LatestArticleRibbon() {
     fetchLatestPost();
   }, []);
 
-  if (loading || !latestPost) {
+  if (loading && !latestPost) {
+    return (
+      <div className="w-full bg-base-900 border-t border-gray-500/10 min-h-[100px] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 animate-pulse">
+        <div className="container mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
+          <div className="flex items-center gap-4 w-full max-w-xl">
+            <div className="h-6 w-28 bg-white/10 rounded-full shrink-0"></div>
+            <div className="h-6 w-3/4 bg-white/10 rounded-lg"></div>
+          </div>
+          <div className="h-10 w-32 bg-white/10 rounded-full shrink-0"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!latestPost) {
     return null;
   }
 

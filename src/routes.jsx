@@ -2,6 +2,16 @@ import { createRoutesFromElements, createBrowserRouter, Route, Navigate, useRout
 import { lazy, Suspense } from 'react';
 import Layout from './components/Layout';
 
+// Direct imports for core routes to eliminate React Suspense hydration flash and layout shift
+import Home from './pages/Home';
+import Games from './pages/Games';
+import GameReviews from './pages/GameReviews';
+import OldGame from './pages/OldGame';
+import OldGameRedirect from './pages/OldGameRedirect';
+import Culture from './pages/Culture';
+import Archive from './pages/Archive';
+import Author from './pages/Author';
+
 // Helper to retry dynamic imports when ChunkLoadError occurs
 const lazyWithRetry = (componentImport) => {
     return lazy(async () => {
@@ -87,14 +97,7 @@ function RouteErrorBoundary() {
     );
 }
 
-// Lazy load all route components for code splitting using lazyWithRetry
-const Home = lazyWithRetry(() => import('./pages/Home'));
-const Games = lazyWithRetry(() => import('./pages/Games'));
-const GameReviews = lazyWithRetry(() => import('./pages/GameReviews'));
-const OldGame = lazyWithRetry(() => import('./pages/OldGame'));
-const OldGameRedirect = lazyWithRetry(() => import('./pages/OldGameRedirect'));
-const Culture = lazyWithRetry(() => import('./pages/Culture'));
-const Archive = lazyWithRetry(() => import('./pages/Archive'));
+// Lazy load secondary/heavy tool routes for code splitting
 const Readlist = lazyWithRetry(() => import('./pages/Readlist'));
 const DownloadSpeedCalculator = lazyWithRetry(() => import('./pages/DownloadSpeedCalculator'));
 const KDCalculator = lazyWithRetry(() => import('./pages/KDCalculator'));
@@ -103,7 +106,6 @@ const Terms = lazyWithRetry(() => import('./pages/Terms'));
 const Cookies = lazyWithRetry(() => import('./pages/Cookies'));
 const Accessibility = lazyWithRetry(() => import('./pages/Accessibility'));
 const Contact = lazyWithRetry(() => import('./pages/Contact'));
-const Author = lazyWithRetry(() => import('./pages/Author'));
 const NotFound = lazyWithRetry(() => import('./pages/NotFound'));
 const Tags = lazyWithRetry(() => import('./pages/Tags'));
 const TagArchive = lazyWithRetry(() => import('./pages/TagArchive'));
@@ -115,9 +117,9 @@ const PalworldHub = lazyWithRetry(() => import('./pages/PalworldHub'));
 const PalworldBreeding = lazyWithRetry(() => import('./pages/PalworldBreeding'));
 const PalworldMap = lazyWithRetry(() => import('./pages/PalworldMap'));
 
-// Loading fallback component
+// Loading fallback component with stable minimum height
 const RouteLoadingFallback = () => (
-    <div className="pt-[200px] p-4 container mx-auto">
+    <div className="pt-[200px] p-4 container mx-auto min-h-[800px]">
         <div className="animate-pulse">
             <div className="h-12 bg-accent-violet-950/10 rounded-lg mb-4 w-3/4"></div>
             <div className="h-px bg-gray-600 mb-4"></div>
@@ -130,13 +132,13 @@ export function getRouteElements() {
     return (
         <>
             <Route path="/" element={<Layout />} errorElement={<RouteErrorBoundary />}>
-                <Route index element={<Suspense fallback={<RouteLoadingFallback />}><Home /></Suspense>} />
-                <Route path="games/:slug" element={<Suspense fallback={<RouteLoadingFallback />}><Games /></Suspense>} />
-                <Route path="game-reviews/:slug" element={<Suspense fallback={<RouteLoadingFallback />}><GameReviews /></Suspense>} />
-                <Route path="game/:slug/" element={<Suspense fallback={<RouteLoadingFallback />}><OldGameRedirect /></Suspense>} />
-                <Route path="game/:slug" element={<Suspense fallback={<RouteLoadingFallback />}><OldGame /></Suspense>} />
-                <Route path="culture/:slug" element={<Suspense fallback={<RouteLoadingFallback />}><Culture /></Suspense>} />
-                <Route path="author/:slug" element={<Suspense fallback={<RouteLoadingFallback />}><Author /></Suspense>} />
+                <Route index element={<Home />} />
+                <Route path="games/:slug" element={<Games />} />
+                <Route path="game-reviews/:slug" element={<GameReviews />} />
+                <Route path="game/:slug/" element={<OldGameRedirect />} />
+                <Route path="game/:slug" element={<OldGame />} />
+                <Route path="culture/:slug" element={<Culture />} />
+                <Route path="author/:slug" element={<Author />} />
                 <Route path="readlist" element={<Suspense fallback={<RouteLoadingFallback />}><Readlist /></Suspense>} />
                 <Route path="game-download-speed-calculator" element={<Suspense fallback={<RouteLoadingFallback />}><DownloadSpeedCalculator /></Suspense>} />
                 <Route path="k-d-calculator-calculate-your-kill-death-ratio" element={<Suspense fallback={<RouteLoadingFallback />}><KDCalculator /></Suspense>} />
@@ -145,9 +147,9 @@ export function getRouteElements() {
                 <Route path="cookies" element={<Suspense fallback={<RouteLoadingFallback />}><Cookies /></Suspense>} />
                 <Route path="accessibility" element={<Suspense fallback={<RouteLoadingFallback />}><Accessibility /></Suspense>} />
                 <Route path="contact" element={<Suspense fallback={<RouteLoadingFallback />}><Contact /></Suspense>} />
-                <Route path="games" element={<Suspense fallback={<RouteLoadingFallback />}><Archive type="games" /></Suspense>} />
-                <Route path="culture" element={<Suspense fallback={<RouteLoadingFallback />}><Archive type="culture" /></Suspense>} />
-                <Route path="game-reviews" element={<Suspense fallback={<RouteLoadingFallback />}><Archive type="game-reviews" /></Suspense>} />
+                <Route path="games" element={<Archive type="games" />} />
+                <Route path="culture" element={<Archive type="culture" />} />
+                <Route path="game-reviews" element={<Archive type="game-reviews" />} />
                 <Route path="tags" element={<Suspense fallback={<RouteLoadingFallback />}><Tags /></Suspense>} />
                 <Route path="tags/:slug" element={<Suspense fallback={<RouteLoadingFallback />}><TagArchive /></Suspense>} />
                 

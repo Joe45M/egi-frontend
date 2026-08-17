@@ -20,11 +20,9 @@
 /* WordPress Content Styles */
 /* Styles for HTML content rendered from WordPress API */
 
-/* Base container for WordPress content - optimize rendering for long posts */
+/* Base container for WordPress content */
 .wp-content {
   @apply text-gray-300 leading-relaxed;
-  content-visibility: auto;
-  contain-intrinsic-size: 1px 1000px;
 }
 
 /* Paragraphs - plenty of white space */
@@ -159,6 +157,8 @@
 /* Images */
 .wp-content img {
   @apply my-8 rounded-lg shadow-lg max-w-full h-auto;
+  aspect-ratio: auto;
+  content-visibility: auto;
 }
 
 /* Tables */

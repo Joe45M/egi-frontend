@@ -1,52 +1,76 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 
-function TableOfContents({ defaultOpen = false }) {
-  const [headings, setHeadings] = useState([]);
-  const [isOpen, setIsOpen] = useState(defaultOpen);
+function parseHeadingsFromHtml(html) {
+  if (!html || typeof html !== 'string') return [];
+  const headings = [];
+  const regex = /<h([1-6])[^>]*>([\s\S]*?)<\/h\1>/gi;
+  let match;
+  while ((match = regex.exec(html)) !== null) {
+    const level = parseInt(match[1], 10);
+    const rawText = match[2].replace(/<[^>]+>/g, '').trim();
+    if (rawText) {
+      const id = rawText
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/(^-|-$)/g, '');
+      headings.push({
+        id: id || `heading-${headings.length}`,
+        text: rawText,
+        level,
+      });
+    }
+  }
+  return headings;
+}
+
+function TableOfContents({ content = null, defaultOpen = false }) {
   const location = useLocation();
+  
+  // Parse initial headings synchronously from content string if available
+  const initialHeadings = useMemo(() => {
+    return content ? parseHeadingsFromHtml(content) : [];
+  }, [content]);
+
+  const [headings, setHeadings] = useState(initialHeadings);
+  const [isOpen, setIsOpen] = useState(defaultOpen);
 
   useEffect(() => {
-    // Delay slightly to ensure page components are fully mounted
-    const timeout = setTimeout(() => {
-      const mainElement = document.querySelector('main');
+    // Sync IDs with real DOM elements immediately upon mounting
+    const syncDomHeadings = () => {
+      const mainElement = document.querySelector('main') || document.querySelector('.wp-content');
       if (!mainElement) return;
 
       const elements = Array.from(
-        mainElement.querySelectorAll('h1, h2, h3, h4, h5, h6')
+        mainElement.querySelectorAll('.wp-content h1, .wp-content h2, .wp-content h3, .wp-content h4, .wp-content h5, .wp-content h6, main h1, main h2, main h3, main h4, main h5, main h6')
       );
 
-      const parsedHeadings = elements.map((elem) => {
-        // Only assign an ID if it doesn't have one
-        if (!elem.id) {
-          const text = elem.innerText || elem.textContent;
-          if (text) {
-            // Create a URL-safe id
-            // e.g. "My Great Heading!" -> "my-great-heading"
-            const generatedId = text
-              .toLowerCase()
-              .replace(/[^a-z0-9]+/g, '-')
-              .replace(/(^-|-$)/g, '');
-            // Only assign if valid generatedId and avoiding collisions ideally
-            // Simple generation for now
-            elem.id = generatedId || `heading-${Math.random().toString(36).substr(2, 9)}`;
-          } else {
-             elem.id = `heading-${Math.random().toString(36).substr(2, 9)}`;
-          }
+      if (elements.length === 0) return;
+
+      const parsed = elements.map((elem) => {
+        const text = elem.innerText || elem.textContent || '';
+        if (!elem.id && text) {
+          const generatedId = text
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/(^-|-$)/g, '');
+          elem.id = generatedId || `heading-${Math.random().toString(36).substr(2, 9)}`;
         }
 
         return {
           id: elem.id,
-          text: elem.innerText || elem.textContent,
+          text: text.trim(),
           level: parseInt(elem.tagName.substring(1), 10),
         };
-      }).filter(h => h.text && h.text.trim() !== '');
+      }).filter(h => h.text !== '');
 
-      setHeadings(parsedHeadings);
-    }, 500);
+      if (parsed.length > 0) {
+        setHeadings(parsed);
+      }
+    };
 
-    return () => clearTimeout(timeout);
-  }, [location.pathname]);
+    syncDomHeadings();
+  }, [location.pathname, content]);
 
   if (headings.length === 0) {
     return null; // Don't render if no headings found

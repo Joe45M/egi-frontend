@@ -48,4 +48,16 @@ function PostCard({ post, link }) {
     );
 }
 
+export function PostCardSkeleton() {
+    return (
+        <div className="bg-gradient-to-br from-accent-violet-950/20 to-base-800/30 rounded-xl overflow-hidden border border-accent-violet-900/10 block h-full animate-pulse">
+            <div className="aspect-video bg-base-900/80 w-full" />
+            <div className="p-5 space-y-3">
+                <div className="h-5 bg-white/10 rounded w-5/6" />
+                <div className="h-4 bg-white/5 rounded w-1/3" />
+            </div>
+        </div>
+    );
+}
+
 export default memo(PostCard);

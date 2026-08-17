@@ -1,39 +1,36 @@
 import { useState, useEffect, useMemo } from "react";
-import PostCard from "./PostCard";
+import PostCard, { PostCardSkeleton } from "./PostCard";
 import wordpressApi from "../services/wordpressApi";
 import { useInitialData } from "../initialDataContext";
 import AdPlacement from "./AdPlacement";
 
-const FALLBACK_POSTS = [
-  { id: 'fb-1', title: 'Call of Duty Black Ops 6 Complete Guide', date: '2026-08-01T00:00:00Z', image: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&h=600&fit=crop', slug: '' },
-  { id: 'fb-2', title: 'Minecraft 1.21 Update Patch Notes & Breakdown', date: '2026-07-30T00:00:00Z', image: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&h=600&fit=crop', slug: '' },
-  { id: 'fb-3', title: 'GTA VI Release Date, Leaks, and Everything We Know', date: '2026-07-28T00:00:00Z', image: 'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=800&h=600&fit=crop', slug: '' },
-  { id: 'fb-4', title: 'Fortnite Chapter 6 Season 1 Map Changes', date: '2026-07-26T00:00:00Z', image: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=800&h=600&fit=crop', slug: '' },
-  { id: 'fb-5', title: 'Rust Base Building Tips & Defense Strategies', date: '2026-07-24T00:00:00Z', image: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800&h=600&fit=crop', slug: '' },
-  { id: 'fb-6', title: 'Arc Raiders Closed Beta Impressions & Gameplay', date: '2026-07-22T00:00:00Z', image: 'https://images.unsplash.com/photo-1580234811497-9df7fd2f357e?w=800&h=600&fit=crop', slug: '' }
-];
+const SKELETON_COUNT = 36;
 
 function Posts({ posts: propPosts = null }) {
   const initialData = useInitialData();
-  const hasInitialData = initialData && initialData.postType === 'home' && Array.isArray(initialData.allPosts);
+  const hasInitialData = initialData && initialData.postType === 'home' && Array.isArray(initialData.allPosts) && initialData.allPosts.length > 0;
 
   const [posts, setPosts] = useState(propPosts !== null ? propPosts : (hasInitialData ? initialData.allPosts : []));
+  const [loading, setLoading] = useState(propPosts === null && !hasInitialData);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     // If posts are provided as prop, use them directly (for flexibility)
     if (propPosts !== null) {
       setPosts(propPosts);
+      setLoading(false);
       return;
     }
 
     if (hasInitialData) {
+      setLoading(false);
       return;
     }
 
     // Otherwise, fetch from WordPress API
     const fetchGames = async () => {
       try {
+        setLoading(true);
         setError(null);
 
         const result = await wordpressApi.posts.getByPostType('games', {
@@ -55,29 +52,40 @@ function Posts({ posts: propPosts = null }) {
         console.error('Error fetching games:', err);
         setError('Failed to load games. Please try again later.');
         setPosts([]);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchGames();
   }, [propPosts, hasInitialData]);
 
-  const postsToDisplay = posts.length > 0 ? posts : FALLBACK_POSTS;
-
   const renderedItems = useMemo(() => {
+    if (loading && posts.length === 0) {
+      const list = [];
+      for (let idx = 0; idx < SKELETON_COUNT; idx++) {
+        if (idx > 0 && idx % 12 === 0) {
+          list.push({ isAd: true, id: `ad-skeleton-${idx}` });
+        }
+        list.push({ isSkeleton: true, id: `skeleton-${idx}` });
+      }
+      return list;
+    }
+
     const list = [];
-    postsToDisplay.forEach((post, idx) => {
+    posts.forEach((post, idx) => {
       if (idx > 0 && idx % 12 === 0) {
         list.push({ isAd: true, id: `ad-posts-grid-${idx}` });
       }
       list.push(post);
     });
     return list;
-  }, [postsToDisplay]);
+  }, [posts, loading]);
 
   // Error state
-  if (error) {
+  if (error && posts.length === 0) {
     return (
-      <div className="text-center py-8">
+      <div className="text-center py-8 min-h-[300px] flex flex-col items-center justify-center">
         <p className="text-red-400 mb-4">{error}</p>
         <button
           onClick={() => window.location.reload()}
@@ -90,16 +98,16 @@ function Posts({ posts: propPosts = null }) {
   }
 
   // Empty state
-  if (postsToDisplay.length === 0) {
+  if (!loading && posts.length === 0) {
     return (
-      <div className="text-center py-8">
+      <div className="text-center py-8 min-h-[300px] flex items-center justify-center">
         <p className="text-gray-400">No games found.</p>
       </div>
     );
   }
 
   return (
-    <div>
+    <div className="min-h-[1200px] md:min-h-[2200px] lg:min-h-[3600px]">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {renderedItems.map((item) => {
           if (item.isAd) {
@@ -110,10 +118,15 @@ function Posts({ posts: propPosts = null }) {
             );
           }
 
+          if (item.isSkeleton) {
+            return (
+              <PostCardSkeleton key={item.id} />
+            );
+          }
+
           const post = item;
           // Use post slug for link, or fallback to /games with id
           const postLink = post.slug ? `/games/${post.slug}` : `/games?id=${post.id}`;
-          // Fallback image if no featured image
           return (
             <PostCard key={post.id} post={post} link={postLink} />
           );
