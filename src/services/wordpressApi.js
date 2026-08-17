@@ -159,6 +159,19 @@ function decodeHtmlEntities(html) {
 }
 
 /**
+ * Extract optimal featured image URL (preferring WebP/medium_large/large responsive sizes over massive raw source)
+ */
+function getOptimalFeaturedImageUrl(featuredMedia) {
+    if (!featuredMedia) return null;
+    const sizes = featuredMedia.media_details?.sizes;
+    return sizes?.medium_large?.source_url ||
+           sizes?.large?.source_url ||
+           sizes?.medium?.source_url ||
+           featuredMedia.source_url ||
+           null;
+}
+
+/**
  * Get featured image URL from media ID
  */
 async function getFeaturedImageUrl(mediaId) {
@@ -168,7 +181,7 @@ async function getFeaturedImageUrl(mediaId) {
 
     try {
         const media = await fetchFromAPI(`/media/${mediaId}`);
-        return media?.source_url || null;
+        return getOptimalFeaturedImageUrl(media);
     } catch (error) {
         console.error(`Error fetching featured image ${mediaId}:`, error);
         return null;
@@ -337,8 +350,9 @@ export const postsApi = {
                     transformedPosts.map(async (post) => {
                         // Try to get image from _embedded first (faster)
                         const originalPost = posts.find(p => p.id === post.id);
-                        if (originalPost?._embedded?.['wp:featuredmedia']?.[0]?.source_url) {
-                            post.image = originalPost._embedded['wp:featuredmedia'][0].source_url;
+                        const embeddedImage = getOptimalFeaturedImageUrl(originalPost?._embedded?.['wp:featuredmedia']?.[0]);
+                        if (embeddedImage) {
+                            post.image = embeddedImage;
                         } else if (post.featuredMediaId) {
                             post.image = await getFeaturedImageUrl(post.featuredMediaId);
                         }
@@ -427,8 +441,9 @@ export const postsApi = {
                     transformedPosts.map(async (post) => {
                         // Try to get image from _embedded first (faster)
                         const originalPost = posts.find(p => p.id === post.id);
-                        if (originalPost?._embedded?.['wp:featuredmedia']?.[0]?.source_url) {
-                            post.image = originalPost._embedded['wp:featuredmedia'][0].source_url;
+                        const embeddedImage = getOptimalFeaturedImageUrl(originalPost?._embedded?.['wp:featuredmedia']?.[0]);
+                        if (embeddedImage) {
+                            post.image = embeddedImage;
                         } else if (post.featuredMediaId) {
                             post.image = await getFeaturedImageUrl(post.featuredMediaId);
                         }
@@ -488,8 +503,9 @@ export const postsApi = {
             Object.assign(transformedItem, authorData);
 
             if (includeImage) {
-                if (item._embedded?.['wp:featuredmedia']?.[0]?.source_url) {
-                    transformedItem.image = item._embedded['wp:featuredmedia'][0].source_url;
+                const embeddedImage = getOptimalFeaturedImageUrl(item._embedded?.['wp:featuredmedia']?.[0]);
+                if (embeddedImage) {
+                    transformedItem.image = embeddedImage;
                 } else if (transformedItem.featuredMediaId) {
                     transformedItem.image = await getFeaturedImageUrl(transformedItem.featuredMediaId);
                 }
@@ -526,8 +542,9 @@ export const postsApi = {
             Object.assign(transformedItem, authorData);
 
             if (includeImage) {
-                if (item._embedded?.['wp:featuredmedia']?.[0]?.source_url) {
-                    transformedItem.image = item._embedded['wp:featuredmedia'][0].source_url;
+                const embeddedImage = getOptimalFeaturedImageUrl(item._embedded?.['wp:featuredmedia']?.[0]);
+                if (embeddedImage) {
+                    transformedItem.image = embeddedImage;
                 } else if (transformedItem.featuredMediaId) {
                     transformedItem.image = await getFeaturedImageUrl(transformedItem.featuredMediaId);
                 }
@@ -571,8 +588,9 @@ export const postsApi = {
             Object.assign(transformedPost, authorData);
 
             if (includeImage) {
-                if (post._embedded?.['wp:featuredmedia']?.[0]?.source_url) {
-                    transformedPost.image = post._embedded['wp:featuredmedia'][0].source_url;
+                const embeddedImage = getOptimalFeaturedImageUrl(post._embedded?.['wp:featuredmedia']?.[0]);
+                if (embeddedImage) {
+                    transformedPost.image = embeddedImage;
                 } else if (transformedPost.featuredMediaId) {
                     transformedPost.image = await getFeaturedImageUrl(transformedPost.featuredMediaId);
                 }
@@ -608,8 +626,9 @@ export const postsApi = {
             Object.assign(transformedPost, authorData);
 
             if (includeImage) {
-                if (post._embedded?.['wp:featuredmedia']?.[0]?.source_url) {
-                    transformedPost.image = post._embedded['wp:featuredmedia'][0].source_url;
+                const embeddedImage = getOptimalFeaturedImageUrl(post._embedded?.['wp:featuredmedia']?.[0]);
+                if (embeddedImage) {
+                    transformedPost.image = embeddedImage;
                 } else if (transformedPost.featuredMediaId) {
                     transformedPost.image = await getFeaturedImageUrl(transformedPost.featuredMediaId);
                 }
@@ -665,8 +684,9 @@ export const postsApi = {
             // Take only the limit and transform
             const relatedPosts = posts.slice(0, limit).map(post => {
                 const transformed = transformPost(post);
-                if (post._embedded?.['wp:featuredmedia']?.[0]?.source_url) {
-                    transformed.image = post._embedded['wp:featuredmedia'][0].source_url;
+                const embeddedImage = getOptimalFeaturedImageUrl(post._embedded?.['wp:featuredmedia']?.[0]);
+                if (embeddedImage) {
+                    transformed.image = embeddedImage;
                 }
                 return transformed;
             });
@@ -713,8 +733,9 @@ export const postsApi = {
             // Transform posts
             const relatedPosts = filteredPosts.map(post => {
                 const transformed = transformPost(post);
-                if (post._embedded?.['wp:featuredmedia']?.[0]?.source_url) {
-                    transformed.image = post._embedded['wp:featuredmedia'][0].source_url;
+                const embeddedImage = getOptimalFeaturedImageUrl(post._embedded?.['wp:featuredmedia']?.[0]);
+                if (embeddedImage) {
+                    transformed.image = embeddedImage;
                 }
                 return transformed;
             });
@@ -1111,8 +1132,9 @@ export const authorsApi = {
                     })
                     .map((post) => {
                         const transformed = transformPost(post);
-                        if (post._embedded?.['wp:featuredmedia']?.[0]?.source_url) {
-                            transformed.image = post._embedded['wp:featuredmedia'][0].source_url;
+                        const embeddedImage = getOptimalFeaturedImageUrl(post._embedded?.['wp:featuredmedia']?.[0]);
+                        if (embeddedImage) {
+                            transformed.image = embeddedImage;
                         }
                         transformed.postType = postType;
                         transformed.basePath = basePath;

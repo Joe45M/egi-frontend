@@ -43,7 +43,7 @@ function GameList() {
               >
                 <img
                   className="w-full h-32 md:h-44 object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
-                  src={'/assets/images/home/' + game.slug + '.png'}
+                  src={'/assets/images/home/' + game.slug + '.webp'}
                   alt={'image of ' + game.name}
                   loading="lazy"
                   decoding="async"

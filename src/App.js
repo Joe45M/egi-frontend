@@ -23,6 +23,9 @@ const LDProvider = createLDReactProvider('6a525a8ccd87b60ba57d0fd3', {
   name: 'Anonymous User'
 }, {
   bootstrap: 'localStorage',
+  streaming: false,
+  sendEvents: false,
+  sendEventsOnlyForVariation: true,
   flags: {
     header: 'new'
   }

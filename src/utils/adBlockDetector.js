@@ -15,8 +15,26 @@ export async function detectAdBlock() {
   }
 
   try {
-    // Vector 1: DOM Bait Element Probe
-    // Create elements with classes & IDs commonly blocked by uBlock, AdBlock Plus, AdGuard, Brave
+    // Vector 1: Fast Global AdSense Object Probe
+    if (window.adsbygoogle && window.adsbygoogle.loaded === false && window.adsbygoogle.length === 0) {
+      const isStubbed = typeof window.adsbygoogle.push !== 'function';
+      if (isStubbed) return true;
+    }
+
+    // Vector 2: Fast Network Probe (Fetch probe targeting ad script URL - no DOM mutation)
+    try {
+      const adUrl = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js';
+      await fetch(adUrl, {
+        method: 'HEAD',
+        mode: 'no-cors',
+        cache: 'no-store'
+      });
+    } catch (networkError) {
+      // Network fetch error indicates adblocker blocked network request
+      return true;
+    }
+
+    // Vector 3: DOM Bait Element Probe (only if network probe passed)
     const baitClasses = [
       'adsbygoogle',
       'ad-placement',
@@ -32,7 +50,6 @@ export async function detectAdBlock() {
     bait.setAttribute('aria-hidden', 'true');
     bait.style.cssText = 'position: absolute !important; top: -9999px !important; left: -9999px !important; width: 100px !important; height: 100px !important; pointer-events: none !important;';
 
-    // Add a fake inner element mimicking AdSense structure
     const baitInner = document.createElement('ins');
     baitInner.className = 'adsbygoogle';
     baitInner.style.cssText = 'display: block !important; width: 100px !important; height: 100px !important;';
@@ -40,51 +57,25 @@ export async function detectAdBlock() {
 
     document.body.appendChild(bait);
 
-    // Give browser paint cycle a moment to apply adblocker CSS rules
+    // Give browser idle paint cycle a moment to apply adblocker CSS rules
     await new Promise((resolve) => setTimeout(resolve, 80));
 
     const computedStyle = window.getComputedStyle(bait);
     const innerComputedStyle = window.getComputedStyle(baitInner);
 
     const isDomBlocked =
-      bait.offsetHeight === 0 ||
-      bait.offsetWidth === 0 ||
-      bait.clientHeight === 0 ||
       computedStyle.display === 'none' ||
       computedStyle.visibility === 'hidden' ||
       innerComputedStyle.display === 'none' ||
-      innerComputedStyle.visibility === 'hidden';
+      innerComputedStyle.visibility === 'hidden' ||
+      bait.clientHeight === 0;
 
     // Cleanup bait element
     if (bait.parentNode) {
       bait.parentNode.removeChild(bait);
     }
 
-    if (isDomBlocked) {
-      return true;
-    }
-
-    // Vector 2: Network Probe (Fetch probe targeting ad script URL)
-    try {
-      const adUrl = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js';
-      await fetch(adUrl, {
-        method: 'HEAD',
-        mode: 'no-cors',
-        cache: 'no-store'
-      });
-      // In no-cors mode, fetch succeeding means request wasn't blocked.
-    } catch (networkError) {
-      // Network fetch error (TypeError: Failed to fetch) indicates adblocker blocked network request
-      return true;
-    }
-
-    // Vector 3: Global AdSense Object Probe
-    if (window.adsbygoogle && window.adsbygoogle.loaded === false && window.adsbygoogle.length === 0) {
-      const isStubbed = typeof window.adsbygoogle.push !== 'function';
-      if (isStubbed) return true;
-    }
-
-    return false;
+    return isDomBlocked;
   } catch (e) {
     console.warn('AdBlock detection probe error:', e);
     return false;
@@ -118,7 +109,21 @@ export function useAdBlockDetector() {
       return;
     }
 
-    runCheck();
+    // Defer adblock check using requestIdleCallback or setTimeout so it never blocks LCP or triggers forced reflow during initial page load
+    let cancelTimer;
+    if ('requestIdleCallback' in window) {
+      const handle = window.requestIdleCallback(() => {
+        runCheck();
+      }, { timeout: 3000 });
+      cancelTimer = () => window.cancelIdleCallback(handle);
+    } else {
+      const timer = setTimeout(runCheck, 2500);
+      cancelTimer = () => clearTimeout(timer);
+    }
+
+    return () => {
+      if (cancelTimer) cancelTimer();
+    };
   }, [runCheck]);
 
   const recheckAdBlock = async () => {
