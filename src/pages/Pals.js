@@ -168,6 +168,7 @@ function Pals() {
         description={getPageDescription()}
         keywords="palworld, pals directory, pals statistics, palworld elemental, work suitability, palworld database"
         image={`${SITE_URL}/pal-directory-og.png`}
+        hideSiteNameInTitle={true}
       />
       <StructuredSchema schemas={schemas} />
 

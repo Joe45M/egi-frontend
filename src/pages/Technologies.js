@@ -110,6 +110,7 @@ function Technologies() {
         title={getPageTitle()}
         description={getPageDescription()}
         keywords="palworld, technologies tree, ancient technology points, tech cost, unlock items, unlock structures"
+        hideSiteNameInTitle={true}
       />
       <StructuredSchema schemas={schemas} />
 

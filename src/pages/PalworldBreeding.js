@@ -143,7 +143,7 @@ export default function PalworldBreeding() {
     );
   }, [data, targetPal, parentFilter]);
 
-  const getPageTitle = () => "Palworld Breeding Calculator (1.0 Mutation Update) | Elite Gamer Insights";
+  const getPageTitle = () => "Palworld Breeding Calculator (1.0 Mutation Update)";
   const getPageDescription = () => "Interactive Palworld 1.0 Breeding Calculator. Select parents to discover offspring, find all parent combinations for a target Pal, and explore the new 1.0 mutation system & exclusive passives.";
 
   const schemas = [
@@ -178,6 +178,7 @@ export default function PalworldBreeding() {
           imageWidth={1200}
           imageHeight={630}
           keywords="palworld breeding calculator, palworld breeding combos, palworld 1.0 breeding, palworld breeding mutation, passive skill inheritance"
+          hideSiteNameInTitle={true}
         />
         <StructuredSchema schemas={schemas} />
         <div className="pt-[200px] p-4 container mx-auto text-center">
@@ -202,6 +203,7 @@ export default function PalworldBreeding() {
           imageWidth={1200}
           imageHeight={630}
           keywords="palworld breeding calculator, palworld breeding combos, palworld 1.0 breeding, palworld breeding mutation, passive skill inheritance"
+          hideSiteNameInTitle={true}
         />
         <StructuredSchema schemas={schemas} />
         <div className="pt-[200px] p-4 container mx-auto text-center text-white">
@@ -225,6 +227,7 @@ export default function PalworldBreeding() {
         imageWidth={1200}
         imageHeight={630}
         keywords="palworld breeding calculator, palworld breeding combos, palworld 1.0 breeding, palworld breeding mutation, passive skill inheritance"
+        hideSiteNameInTitle={true}
       />
       <StructuredSchema schemas={schemas} />
 

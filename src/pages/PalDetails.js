@@ -218,6 +218,7 @@ function PalDetails() {
         description={getPageDescription()}
         image={pal?.image_url}
         keywords={pal ? `palworld, ${pal.name}, ${pal.name} stats, ${pal.name} element, palworld database` : "palworld database"}
+        hideSiteNameInTitle={true}
       />
       {pal && <StructuredSchema schemas={schemas} />}
 

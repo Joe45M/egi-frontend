@@ -273,6 +273,7 @@ function Archive({ type: propType }) {
         title={getPageTitle()}
         description={getPageDescription()}
         keywords={`${type}, gaming articles, game news, ${selectedGame ? selectedGame.name + ', ' : ''}gaming content`}
+        hideSiteNameInTitle={true}
       />
       <StructuredSchema schemas={schemas} />
       <div className="pt-[200px] p-4 container mx-auto">

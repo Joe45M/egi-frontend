@@ -120,7 +120,7 @@ function TagArchive() {
 
   const getPageTitle = () => {
     if (tag) {
-      return `${tag.name} Articles - EliteGamerInsights`;
+      return `${tag.name} Articles`;
     }
     return "Tag Archive";
   };
@@ -186,6 +186,7 @@ function TagArchive() {
         title={getPageTitle()}
         description={getPageDescription()}
         keywords={tag ? `${tag.name}, gaming, guides, tutorials` : "gaming, tags"}
+        hideSiteNameInTitle={true}
       />
       {tag && <StructuredSchema schemas={schemas} />}
 

@@ -257,6 +257,7 @@ function PalworldHub() {
         imageWidth={1200}
         imageHeight={630}
         keywords="palworld, palworld hub, palworld database, palworld guide, palworld bingo, palworld tech tree, palworld tools, palworld wiki"
+        hideSiteNameInTitle={true}
       />
       <StructuredSchema schemas={schemas} />
 

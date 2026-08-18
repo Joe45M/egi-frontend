@@ -391,6 +391,7 @@ function PalworldMap() {
         description={getPageDescription()}
         image="/palworld-hub-og.png"
         keywords="palworld spawn map, interactive palworld map, palworld alpha boss coordinates, wild spawn zones, palworld world tree, sunreach islands map"
+        hideSiteNameInTitle={true}
       />
       <StructuredSchema schemas={schemas} />
 

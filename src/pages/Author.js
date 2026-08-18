@@ -80,9 +80,10 @@ function Author() {
     return (
         <>
             <PageMetadata
-                title={`${author.name} - Author at EliteGamerInsights`}
+                title={`${author.name} - Author`}
                 description={author.description || `Articles and posts written by ${author.name} on EliteGamerInsights.`}
                 type="profile"
+                hideSiteNameInTitle={true}
             />
 
             <div className="pt-[200px] p-4 container mx-auto">

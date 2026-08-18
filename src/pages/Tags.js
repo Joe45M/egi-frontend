@@ -65,7 +65,7 @@ function Tags() {
   // Get sorted keys (letters)
   const sortedLetters = Object.keys(groupedTags).sort();
 
-  const getPageTitle = () => "All Tags - EliteGamerInsights";
+  const getPageTitle = () => "All Tags";
   const getPageDescription = () => "Browse and filter all gaming articles, tutorials, and culture news by tags on EliteGamerInsights.";
 
   const schemas = [
@@ -88,6 +88,7 @@ function Tags() {
         title={getPageTitle()}
         description={getPageDescription()}
         keywords="gaming tags, game topics, gaming articles index, tags list"
+        hideSiteNameInTitle={true}
       />
       <StructuredSchema schemas={schemas} />
       

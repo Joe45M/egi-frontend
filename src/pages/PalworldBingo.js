@@ -510,7 +510,7 @@ function PalworldBingo() {
       });
   }, []);
 
-  const getPageTitle = () => "Palworld Bingo Card Generator & Board Maker - EliteGamerInsights";
+  const getPageTitle = () => "Palworld Bingo Card Generator & Board Maker";
   const getPageDescription = () => "Free online Palworld Bingo generator. Create customized Palworld Bingo cards based on random seeds, with easy, medium, and hard difficulties for speedruns and challenges.";
 
   const schemas = [
@@ -562,6 +562,7 @@ function PalworldBingo() {
         imageWidth={1200}
         imageHeight={630}
         keywords="palworld bingo, palworld bingo card, palworld bingo generator, palworld bingo board, palworld speedrun bingo, palworld challenge board, palworld race, free palworld board generator, palworld bingo maker, play palworld bingo online"
+        hideSiteNameInTitle={true}
       />
       <StructuredSchema schemas={schemas} />
 
