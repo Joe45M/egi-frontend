@@ -64,6 +64,19 @@
   status = 200
   force = true
 
+# Redirect legacy WordPress /tag/:slug to /tags/:slug
+[[redirects]]
+  from = "/tag/*"
+  to = "/tags/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/tag"
+  to = "/tags"
+  status = 301
+  force = true
+
 # Redirect ALL other requests to SSR function (this catches HTML pages)
 # This must be last to catch everything else
 [[redirects]]

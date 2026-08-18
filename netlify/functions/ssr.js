@@ -126,6 +126,33 @@ exports.handler = async (event) => {
     url = url.split('?')[0];
   }
 
+  // Handle legacy /tag URLs -> redirect directly to /tags/
+  if (url === '/tag' || url === '/tag/') {
+    return {
+      statusCode: 301,
+      headers: {
+        'Location': '/tags/',
+        'Cache-Control': 'public, max-age=31536000, immutable',
+      },
+      body: '',
+    };
+  }
+
+  if (url.startsWith('/tag/')) {
+    let target = url.replace(/^\/tag\//, '/tags/');
+    if (!target.endsWith('/')) {
+      target += '/';
+    }
+    return {
+      statusCode: 301,
+      headers: {
+        'Location': target,
+        'Cache-Control': 'public, max-age=31536000, immutable',
+      },
+      body: '',
+    };
+  }
+
   // Handle trailing slash enforcement: game-reviews MUST NOT use trailing slashes, other routes do
   const isStaticAsset = url.startsWith('/static/') || STATIC_ASSET_REGEX.test(url);
   const isGameReviewsRoute = url.startsWith('/game-reviews');

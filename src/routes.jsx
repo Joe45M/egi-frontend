@@ -8,6 +8,7 @@ import Games from './pages/Games';
 import GameReviews from './pages/GameReviews';
 import OldGame from './pages/OldGame';
 import OldGameRedirect from './pages/OldGameRedirect';
+import OldTagRedirect from './pages/OldTagRedirect';
 import Culture from './pages/Culture';
 import Archive from './pages/Archive';
 import Author from './pages/Author';
@@ -152,6 +153,10 @@ export function getRouteElements() {
                 <Route path="game-reviews" element={<Archive type="game-reviews" />} />
                 <Route path="tags" element={<Suspense fallback={<RouteLoadingFallback />}><Tags /></Suspense>} />
                 <Route path="tags/:slug" element={<Suspense fallback={<RouteLoadingFallback />}><TagArchive /></Suspense>} />
+                <Route path="tag/:slug/" element={<OldTagRedirect />} />
+                <Route path="tag/:slug" element={<OldTagRedirect />} />
+                <Route path="tag" element={<Navigate to="/tags" replace />} />
+                <Route path="tag/" element={<Navigate to="/tags" replace />} />
                 
                 {/* Palworld Routes */}
                 <Route path="palworld" element={<Suspense fallback={<RouteLoadingFallback />}><PalworldHub /></Suspense>} />

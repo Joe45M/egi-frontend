@@ -10,6 +10,11 @@
 /*.txt /:splat.txt 200
 /*.webmanifest /:splat.webmanifest 200
 
+# Legacy WordPress tag redirects
+/tag/* /tags/:splat 301
+/tag /tags 301
+
 # All other requests go to SSR function
 /* /.netlify/functions/ssr 200
+
 

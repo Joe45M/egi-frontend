@@ -5,22 +5,32 @@ import Pagination from "../components/Pagination";
 import PageMetadata, { SITE_URL } from "../components/PageMetadata";
 import StructuredSchema, { generateCollectionPageSchema, generateBreadcrumbSchema, generateWebPageSchema } from "../components/StructuredSchema";
 import PostCard from "../components/PostCard";
+import { useInitialData } from "../initialDataContext";
 
 function TagArchive() {
   const { slug } = useParams();
   const [searchParams] = useSearchParams();
-  const [tag, setTag] = useState(null);
-  const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [pagination, setPagination] = useState(null);
-  const [notFound, setNotFound] = useState(false);
+  const initialData = useInitialData();
 
   const currentPage = parseInt(searchParams.get("page") || "1", 10);
   const postsPerPage = 24;
 
-  // Step 1: Fetch tag details by slug
+  const normalizedSlug = slug ? decodeURIComponent(slug).toLowerCase() : "";
+  const hasInitialData = initialData &&
+    initialData.postType === "tag-archive" &&
+    initialData.tag &&
+    (typeof window === "undefined" || initialData.slug?.toLowerCase() === normalizedSlug);
+
+  const [tag, setTag] = useState(hasInitialData ? initialData.tag : null);
+  const [posts, setPosts] = useState(hasInitialData ? (initialData.posts || []) : []);
+  const [loading, setLoading] = useState(!hasInitialData);
+  const [error, setError] = useState(null);
+  const [pagination, setPagination] = useState(hasInitialData ? (initialData.pagination || null) : null);
+  const [notFound, setNotFound] = useState(false);
+
+  // Step 1: Fetch tag details by slug if not already available
   useEffect(() => {
+    if (hasInitialData && tag) return;
     let active = true;
 
     const fetchTagDetails = async () => {
@@ -54,10 +64,11 @@ function TagArchive() {
     return () => {
       active = false;
     };
-  }, [slug]);
+  }, [slug, hasInitialData, tag]);
 
   // Step 2: Fetch posts once tag ID is resolved
   useEffect(() => {
+    if (hasInitialData && initialData?.posts?.length > 0 && currentPage === 1) return;
     if (!tag?.id) return;
     let active = true;
 
@@ -105,7 +116,7 @@ function TagArchive() {
     return () => {
       active = false;
     };
-  }, [tag, currentPage]);
+  }, [tag, currentPage, hasInitialData, initialData]);
 
   const getPageTitle = () => {
     if (tag) {

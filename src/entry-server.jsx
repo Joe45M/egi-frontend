@@ -241,6 +241,42 @@ async function loadPostDataWithCompositeFallback(postType, slug, basePath) {
         return await loadPostDataWithCompositeFallback('game-reviews', slug, '/game-reviews');
       }
     }
+
+    // Check if this is a tag archive route: /tags/:slug
+    const tagsMatch = pathname.match(/^\/tags\/(.+)$/);
+    if (tagsMatch) {
+      const slug = extractSlug(tagsMatch[1]);
+      if (slug) {
+        try {
+          const tagData = await wordpressApi.tags.getBySlug(slug);
+          if (tagData && tagData.id) {
+            const params = {
+              page: 1,
+              perPage: 24,
+              tag: tagData.id,
+              includeImages: true,
+              orderBy: 'date',
+              order: 'desc',
+            };
+            const result = await wordpressApi.posts.getByPostType('games', params);
+            const posts = Array.isArray(result) ? result : (result.posts || []);
+            const pagination = result.pagination || null;
+            return {
+              tag: tagData,
+              posts,
+              pagination,
+              postType: 'tag-archive',
+              slug
+            };
+          }
+        } catch (error) {
+          console.error('Error preloading tag data:', error);
+          if (error.message && error.message.includes('not found')) {
+            return { redirect: '/404' };
+          }
+        }
+      }
+    }
   } catch (error) {
     console.error('Error in preloadRouteData:', error);
   }
