@@ -38,7 +38,7 @@ function Home() {
           <GameList />
 
           <div className="container mx-auto px-4 py-4 min-h-[1200px] md:min-h-[2200px] lg:min-h-[3600px]">
-              <h3 className="text-accent-pink-500 text-2xl font-bold mb-5">All gaming news</h3>
+              <h2 className="text-accent-pink-500 text-2xl font-bold mb-5">All gaming news</h2>
               <Posts />
 
               <div className="mt-16 mb-8 border-t border-base-800 pt-8">
